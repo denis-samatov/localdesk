@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LocalDesk — обращения находят свою команду</title>
+<style>
+:root{color-scheme:light;--ink:#142f30;--muted:#536b68;--green:#087d66;--line:#d7e0db;--paper:#f4f5ed}
+*{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+header{max-width:1200px;margin:auto;padding:28px 32px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--line)}
+.brand{font-size:23px;letter-spacing:-1px;font-weight:800}.brand span{color:var(--green)}.badge{font-size:12px;letter-spacing:.06em;color:var(--green);background:#e1ece3;padding:9px 13px;border-radius:30px}
+main{max-width:1200px;margin:auto;padding:65px 32px;display:grid;grid-template-columns:.95fr 1.05fr;gap:65px}.eyebrow{font-size:12px;text-transform:uppercase;letter-spacing:.16em;color:var(--green);font-weight:700}
+h1{font-size:clamp(36px,4.5vw,58px);line-height:1.08;letter-spacing:-2.5px;margin:22px 0 24px;font-weight:700}h1 em{font-style:normal;color:var(--green)}.intro{font-size:17px;line-height:1.7;max-width:430px;color:var(--muted)}
+.facts{margin:38px 0;display:grid;grid-template-columns:repeat(3,1fr);gap:12px;border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:24px 0}.facts strong{display:block;font-size:27px;font-weight:650}.facts span{font-size:12px;color:var(--muted)}
+.steps{display:flex;gap:13px;align-items:flex-start;margin:18px 0;color:var(--muted);font-size:14px;line-height:1.6}.number{border:1px solid #bccfc5;border-radius:50%;min-width:25px;height:25px;display:grid;place-items:center;font-size:11px;color:var(--green)}
+.card{background:#fff;border:1px solid var(--line);border-radius:20px;padding:30px;box-shadow:0 12px 36px #183a2810;align-self:start}.card-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:23px}.card h2{font-size:20px;margin:0;letter-spacing:-.5px}.live{color:var(--green);font-size:12px}.live:before{content:"";display:inline-block;width:6px;height:6px;background:var(--green);border-radius:50%;margin-right:6px}
+label{display:block;font-size:13px;font-weight:600;margin-bottom:10px}textarea{resize:vertical;width:100%;min-height:145px;max-height:400px;padding:15px;border:1px solid #c9d6cf;border-radius:10px;background:#fafbf8;font:inherit;font-size:14px;line-height:1.6;color:var(--ink)}textarea:focus{outline:3px solid #a9d7c4;border-color:var(--green)}.hint{font-size:12px;color:var(--muted);margin:8px 0 18px;line-height:1.5}
+.examples{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:22px}.example{background:#f3f5ef;border:1px solid #dce4db;border-radius:7px;padding:8px 10px;font:inherit;font-size:11px;color:var(--muted);cursor:pointer}.example:hover{background:#e6eee5}.submit{border:0;border-radius:10px;background:var(--green);color:#fff;width:100%;padding:15px 18px;text-align:left;display:flex;justify-content:space-between;font:inherit;font-weight:600;font-size:14px;cursor:pointer}.submit:hover{background:#076650}.submit:disabled{opacity:.55;cursor:wait}
+#result{border-top:1px solid var(--line);margin-top:24px;padding-top:23px}#result[hidden]{display:none}.status{font-size:11px;text-transform:uppercase;letter-spacing:.09em;font-weight:650;color:var(--green)}.decision{font-size:24px;letter-spacing:-.7px;margin:9px 0 6px}.reason{font-size:13px;line-height:1.6;color:var(--muted);margin:0 0 20px}.row{display:grid;grid-template-columns:1fr auto;gap:7px;font-size:12px;margin:13px 0}.bar{grid-column:1/-1;height:5px;background:#edf1e9;border-radius:5px;overflow:hidden}.fill{height:100%;background:var(--green);border-radius:5px}.error{color:#a33124;font-size:13px;line-height:1.5;margin-top:14px}.footnote{font-size:11px;line-height:1.7;color:var(--muted);margin:22px 0 0}.footer{max-width:1200px;margin:auto;padding:0 32px 28px;color:var(--muted);font-size:12px;display:flex;justify-content:space-between;gap:20px}a{color:var(--green)}button:focus-visible,a:focus-visible{outline:3px solid #72bca3;outline-offset:3px}
+@media(max-width:780px){main{grid-template-columns:1fr;gap:30px;padding:35px 22px}header{padding:22px}.card{padding:23px}.facts{margin:25px 0}.footer{flex-direction:column;padding:0 22px 24px}h1{letter-spacing:-1.5px}}
+</style>
+</head>
+<body>
+<header><div class="brand">Local<span>Desk</span><span aria-hidden="true"> ·</span></div><div class="badge">НА ВАШЕМ КОМПЬЮТЕРЕ</div></header>
+<main>
+<section><div class="eyebrow">Помощник IT-поддержки</div><h1>Обращения находят <em>свою команду.</em></h1>
+<p class="intro">LocalDesk предлагает категорию заявки. Если уверенности мало, обращение остаётся на ручной разбор.</p>
+<div class="facts"><div><strong>6</strong><span>категорий сервиса</span></div><div><strong>Локально</strong><span>без внешнего API</span></div><div><strong>Вы</strong><span>принимаете решение</span></div></div>
+<div class="steps"><span class="number">1</span><span>Опишите проблему: что произошло и с каким сервисом.</span></div>
+<div class="steps"><span class="number">2</span><span>Посмотрите категорию и оценки остальных вариантов.</span></div>
+<div class="steps"><span class="number">3</span><span>Подтвердите маршрут или разберите заявку вручную.</span></div>
+</section>
+<section class="card" aria-label="Классификация обращения">
+<div class="card-head"><h2>Новое обращение</h2><span class="live" id="backend">Локальная модель</span></div>
+<form id="form"><label for="ticket">Текст заявки</label><textarea id="ticket" maxlength="4000" required placeholder="Например: Please grant access to the shared project folder."></textarea>
+<p class="hint">Качество проверено на публичном корпусе IT-заявок. Для русского языка отдельной проверки пока нет.</p>
+<div class="examples" aria-label="Примеры ввода"><button type="button" class="example" data-text="File share access request">Общая папка</button><button type="button" class="example" data-text="Please install software on my computer">Установка программы</button><button type="button" class="example" data-text="My password is not working">Проблема с входом</button></div>
+<button class="submit" id="submit" type="submit"><span>Определить категорию</span><span aria-hidden="true">↗</span></button></form>
+<div id="error" class="error" role="alert"></div>
+<div id="result" aria-live="polite" hidden><div class="status" id="status"></div><h3 class="decision" id="category"></h3><p class="reason" id="reason"></p><div id="scores"></div></div>
+<p class="footnote">Тексты не сохраняются сервером. Оценки модели могут ошибаться. Заявка никуда не отправляется автоматически.</p>
+</section>
+</main>
+<footer class="footer"><span>LocalDesk / открытый проект принятия решений</span><span>Данные: <a href="https://zenodo.org/records/7648117" target="_blank" rel="noopener noreferrer">IT Support Tickets · CC BY 4.0</a></span></footer>
+<script nonce="__NONCE__">
+const form=document.getElementById('form'),ticket=document.getElementById('ticket'),submit=document.getElementById('submit'),error=document.getElementById('error'),result=document.getElementById('result');
+document.querySelectorAll('.example').forEach(button=>button.addEventListener('click',()=>{ticket.value=button.dataset.text;ticket.focus()}));
+fetch('/api/info').then(response=>response.json()).then(info=>{document.getElementById('backend').textContent=info.backend==='unsloth'?'Qwen / Unsloth':'CPU-модель'}).catch(()=>{document.getElementById('backend').textContent='Нет соединения'});
+form.addEventListener('submit',async event=>{event.preventDefault();submit.disabled=true;error.textContent='';result.hidden=true;try{const response=await fetch('/api/decide',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text:ticket.value})});const data=await response.json();if(!response.ok)throw new Error(data.error||'Не удалось обработать заявку');document.getElementById('status').textContent=data.action==='route'?'Предложенный маршрут':'Нужен ручной разбор';document.getElementById('category').textContent=data.category;document.getElementById('reason').textContent=data.action==='route'?'Проверьте категорию перед передачей специалисту.':'Модель не уверена в маршруте. Уточните детали или выберите команду вручную.';const scores=document.getElementById('scores');scores.replaceChildren();Object.entries(data.probabilities.category).sort((a,b)=>b[1]-a[1]).forEach(([label,score])=>{const row=document.createElement('div');row.className='row';const name=document.createElement('span');name.textContent=label;const value=document.createElement('span');value.textContent=(score*100).toFixed(1)+'%';const bar=document.createElement('div');bar.className='bar';const fill=document.createElement('div');fill.className='fill';fill.style.width=(score*100)+'%';bar.append(fill);row.append(name,value,bar);scores.append(row)});result.hidden=false}catch(exception){error.textContent=exception.message}finally{submit.disabled=false}});
+</script>
+</body></html>
