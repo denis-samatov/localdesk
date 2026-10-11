@@ -1,0 +1,4 @@
+# Recipe/data hashes refer to LF bytes on every platform.
+* text=auto eol=lf
+*.gz binary
+*.png binary
