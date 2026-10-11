@@ -100,6 +100,20 @@ def test_http_errors_match_documented_envelope_and_openapi(client):
     assert error_schema["$ref"].endswith("/ErrorResponse")
 
 
+def test_dashboard_does_not_depend_on_system_text_encoding(client, monkeypatch):
+    from pathlib import Path
+
+    original = Path.read_text
+
+    def windows_read(self, encoding=None, errors=None):
+        return original(self, encoding=encoding or "cp1252", errors=errors)
+
+    monkeypatch.setattr(Path, "read_text", windows_read)
+    response = client.get("/")
+    assert response.status_code == 200
+    assert "Данные меняются" in response.text
+
+
 def test_unavailable_artifact_fails_readiness_and_predictions(tmp_path):
     with TestClient(create_app(registry=tmp_path, api_key="test-key")) as client:
         client.headers["X-API-Key"] = "test-key"

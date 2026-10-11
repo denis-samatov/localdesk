@@ -225,7 +225,9 @@ def create_app(*, registry: Path, api_key: str | None = None, anonymous_local: b
     def dashboard():
         from importlib.resources import files
 
-        return HTMLResponse(files("localdesk").joinpath("assets/service.html").read_text())
+        return HTMLResponse(
+            files("localdesk").joinpath("assets/service.html").read_text(encoding="utf-8")
+        )
 
     @app.get("/health/ready")
     def ready(request: Request):

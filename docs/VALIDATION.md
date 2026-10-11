@@ -22,7 +22,7 @@ contract check, not load testing or a field accuracy trial.
 
 ## Executed software checks
 
-- Full pytest suite on the locked Python 3.11 environment: 94 tests. Tests cover arbitrary
+- Full pytest suite on the locked Python 3.11 environment: 95 tests. Tests cover arbitrary
   labels, binary/multiclass export parity, strict config/types, group transitivity,
   mixed conversations, conflicting/equivalent inputs, split leakage, corrupted
   artifact hashes, model/data/report identity, failed/ungated candidates, partial
