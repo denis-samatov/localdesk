@@ -16,9 +16,24 @@ UPSTREAM = {
     "unsloth": "62354edbf4fd246cf120ef07272934fb405ec705",
     "unsloth_zoo": "ac1410cc766efedd5e4ced1b1d1338138eb7eaa5",
 }
+QWEN_DEFAULTS = {
+    "epochs": 2,
+    "rank": 16,
+    "batch_size": 2,
+    "gradient_accumulation": 4,
+    "learning_rate": 2e-4,
+}
 
 
-def fit_qwen(experiment, prepared, output: Path):
+def resolve_qwen_training(training: dict) -> dict:
+    return {
+        "backend": "unsloth",
+        **QWEN_DEFAULTS,
+        **{key: value for key, value in training.items() if key in {*QWEN_DEFAULTS, "max_steps"}},
+    }
+
+
+def fit_qwen(experiment, prepared, output: Path, *, calibrate: bool = True):
     """Same prepared TaskSpec/splits as CPU fitting. Requires actual CUDA execution."""
     from localdesk.model import ModelBackend
     from localdesk.registry import atomic_json
@@ -33,11 +48,12 @@ def fit_qwen(experiment, prepared, output: Path):
     # isort: on
     if not torch.cuda.is_available():
         raise RuntimeError("Qwen training requires an NVIDIA CUDA GPU")
-    parameters = experiment.training
+    parameters = resolve_qwen_training(experiment.training)
     bf16 = is_bfloat16_supported()
     model, tokenizer = FastDecisionModel.from_pretrained(
         model_name=BASE_MODEL,
         revision=BASE_REVISION,
+        use_exact_model_name=True,
         max_seq_length=2048,
         load_in_4bit=True,
         dtype=torch.bfloat16 if bf16 else torch.float32,
@@ -75,7 +91,11 @@ def fit_qwen(experiment, prepared, output: Path):
         ),
     )
     stats = trainer.train()
-    calibration = FastDecisionModel.calibrate(model, tokenizer, items["calibration"])
+    calibration = (
+        FastDecisionModel.calibrate(model, tokenizer, items["calibration"])
+        if calibrate
+        else {"method": "identity_for_benchmark", "temperature": 1.0}
+    )
     model.save_pretrained(str(output), tokenizer)
     manifest = {
         "task": experiment.task.to_dict(),
@@ -149,6 +169,7 @@ def main():
     model, tokenizer = FastDecisionModel.from_pretrained(
         model_name=BASE_MODEL,
         revision=BASE_REVISION,
+        use_exact_model_name=True,
         max_seq_length=2048,
         load_in_4bit=True,
         dtype=torch.bfloat16 if bf16 else torch.float32,

@@ -186,6 +186,31 @@ The shipped v0.1 CPU baseline remains available for backward compatibility via
 service uses explicitly trained, qualified registry versions. Existing local
 HTTP aliases `/api/decide` and `/api/info` are retained.
 
+## Comparative quality experiment
+
+The service also has an offline comparison command:
+
+```bash
+localdesk benchmark experiments/it-support.json --out artifacts/benchmarks/my-comparison
+```
+
+It compares a training-majority reference, hashed logistic regression and tuned
+word+character TF-IDF logistic regression/SVM on the same heldout rows. Append
+`--qwen` in the CUDA environment to include ordinary zero-shot Qwen and a saved,
+reloaded fine-tuned decision Qwen. Tuning, probability calibration and test are
+group-isolated; the CPU reference is selected on tuning before test scoring.
+Reports include paired group-bootstrap intervals, raw/calibrated probabilities,
+review coverage at a declared error target, latency and scoped memory measurements.
+
+See [the frozen protocol](docs/BENCHMARK.md),
+[executed IT comparison](reports/comparison-it.md) and
+[executed SMS comparison](reports/comparison-sms.md).
+An incomplete GPU comparison cannot establish Qwen superiority. Failed error
+targets and zero coverage remain visible. These are reused public corpus
+holdouts, not a new independent blind test or a field trial.
+
+[Run the comparative notebook in Colab](https://colab.research.google.com/github/denis-samatov/localdesk/blob/main/notebooks/benchmark_qwen.ipynb).
+
 ## Qwen / Unsloth training
 
 Replace the `training` block with Unsloth parameters (`backend: unsloth`,

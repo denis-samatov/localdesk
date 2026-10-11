@@ -1,0 +1,1332 @@
+{
+  "comparisons": {
+    "hashed_logistic_vs_tfidf_svm": {
+      "accuracy_delta": -0.07633587786259532,
+      "accuracy_delta_ci95": [
+        -0.10877862595419852,
+        -0.04389312977099247
+      ],
+      "direction": "candidate minus reference",
+      "macro_f1_delta": -0.08616603814031454,
+      "macro_f1_delta_ci95": [
+        -0.12595670970202824,
+        -0.04810004962627275
+      ],
+      "quality_gain_demonstrated": false,
+      "repetitions": 2000,
+      "resampling": "paired whole test groups; fixed classes; unsupported class F1=0",
+      "seed": 3407,
+      "test_groups": 524
+    }
+  },
+  "conclusion": {
+    "status": "incomplete_qwen_comparison"
+  },
+  "hardware": {
+    "cpu_count": 12,
+    "machine": "arm64",
+    "platform": "macOS-26.6.2-arm64-arm-64bit",
+    "thread_environment": {
+      "OMP_NUM_THREADS": "1",
+      "OPENBLAS_NUM_THREADS": "1",
+      "VECLIB_MAXIMUM_THREADS": "1"
+    }
+  },
+  "memory": {
+    "gpu_scope": "per-stage peak VRAM includes loading/training/inference",
+    "process_peak_rss_bytes": 219463680,
+    "scope": "cumulative whole benchmark process; not per-model resident size"
+  },
+  "methods": {
+    "hashed_logistic": {
+      "classification": {
+        "accuracy": 0.6946564885496184,
+        "brier": 0.41083037016646873,
+        "confusion_matrix": {
+          "Active Directory": {
+            "Active Directory": 15,
+            "Computer-Services": 1,
+            "Fileservice": 2,
+            "O365": 3,
+            "Software": 3,
+            "Support general": 21
+          },
+          "Computer-Services": {
+            "Active Directory": 1,
+            "Computer-Services": 25,
+            "Fileservice": 1,
+            "O365": 6,
+            "Software": 2,
+            "Support general": 6
+          },
+          "Fileservice": {
+            "Active Directory": 3,
+            "Computer-Services": 1,
+            "Fileservice": 98,
+            "O365": 3,
+            "Software": 2,
+            "Support general": 3
+          },
+          "O365": {
+            "Active Directory": 1,
+            "Computer-Services": 2,
+            "Fileservice": 1,
+            "O365": 63,
+            "Software": 4,
+            "Support general": 17
+          },
+          "Software": {
+            "Active Directory": 3,
+            "Computer-Services": 2,
+            "Fileservice": 1,
+            "O365": 8,
+            "Software": 36,
+            "Support general": 8
+          },
+          "Support general": {
+            "Active Directory": 8,
+            "Computer-Services": 4,
+            "Fileservice": 1,
+            "O365": 22,
+            "Software": 20,
+            "Support general": 127
+          }
+        },
+        "count": 524,
+        "ece": 0.04939836963469516,
+        "macro_f1": 0.6491952280249165,
+        "macro_recall": 0.6447332442811837,
+        "nll": 0.8285142301264372,
+        "per_class": {
+          "Active Directory": {
+            "f1": 0.39473684210526316,
+            "precision": 0.4838709677419355,
+            "recall": 0.3333333333333333,
+            "support": 45
+          },
+          "Computer-Services": {
+            "f1": 0.6578947368421052,
+            "precision": 0.7142857142857143,
+            "recall": 0.6097560975609756,
+            "support": 41
+          },
+          "Fileservice": {
+            "f1": 0.9158878504672897,
+            "precision": 0.9423076923076923,
+            "recall": 0.8909090909090909,
+            "support": 110
+          },
+          "O365": {
+            "f1": 0.6528497409326425,
+            "precision": 0.6,
+            "recall": 0.7159090909090909,
+            "support": 88
+          },
+          "Software": {
+            "f1": 0.576,
+            "precision": 0.5373134328358209,
+            "recall": 0.6206896551724138,
+            "support": 58
+          },
+          "Support general": {
+            "f1": 0.6978021978021978,
+            "precision": 0.6978021978021978,
+            "recall": 0.6978021978021978,
+            "support": 182
+          }
+        },
+        "per_class_recall": {
+          "Active Directory": 0.3333333333333333,
+          "Computer-Services": 0.6097560975609756,
+          "Fileservice": 0.8909090909090909,
+          "O365": 0.7159090909090909,
+          "Software": 0.6206896551724138,
+          "Support general": 0.6978021978021978
+        },
+        "per_class_support": {
+          "Active Directory": 45,
+          "Computer-Services": 41,
+          "Fileservice": 110,
+          "O365": 88,
+          "Software": 58,
+          "Support general": 182
+        },
+        "weighted_f1": 0.6934032115624762
+      },
+      "fit": {
+        "C": 4,
+        "fit_split": "train"
+      },
+      "fixed_task_policy": {
+        "accepted_accuracy": 0.9269406392694064,
+        "accepted_count": 219,
+        "coverage": 0.4179389312977099,
+        "min_confidence": 0.75,
+        "min_margin": 0.2
+      },
+      "latency_ms": {
+        "mean": 0.054660511717648165,
+        "p50": 0.02862501423805952,
+        "p95": 0.1452893571695312,
+        "requests": 524,
+        "scope": "warmed sequential batch=1 local backend+validation; no HTTP"
+      },
+      "probability_kind": "softmax_temperature_fitted_on_calibration",
+      "raw_classification": {
+        "accuracy": 0.6946564885496184,
+        "brier": 0.4383292218201773,
+        "confusion_matrix": {
+          "Active Directory": {
+            "Active Directory": 15,
+            "Computer-Services": 1,
+            "Fileservice": 2,
+            "O365": 3,
+            "Software": 3,
+            "Support general": 21
+          },
+          "Computer-Services": {
+            "Active Directory": 1,
+            "Computer-Services": 25,
+            "Fileservice": 1,
+            "O365": 6,
+            "Software": 2,
+            "Support general": 6
+          },
+          "Fileservice": {
+            "Active Directory": 3,
+            "Computer-Services": 1,
+            "Fileservice": 98,
+            "O365": 3,
+            "Software": 2,
+            "Support general": 3
+          },
+          "O365": {
+            "Active Directory": 1,
+            "Computer-Services": 2,
+            "Fileservice": 1,
+            "O365": 63,
+            "Software": 4,
+            "Support general": 17
+          },
+          "Software": {
+            "Active Directory": 3,
+            "Computer-Services": 2,
+            "Fileservice": 1,
+            "O365": 8,
+            "Software": 36,
+            "Support general": 8
+          },
+          "Support general": {
+            "Active Directory": 8,
+            "Computer-Services": 4,
+            "Fileservice": 1,
+            "O365": 22,
+            "Software": 20,
+            "Support general": 127
+          }
+        },
+        "count": 524,
+        "ece": 0.135261271644359,
+        "macro_f1": 0.6491952280249165,
+        "macro_recall": 0.6447332442811837,
+        "nll": 0.9011802776722733,
+        "per_class": {
+          "Active Directory": {
+            "f1": 0.39473684210526316,
+            "precision": 0.4838709677419355,
+            "recall": 0.3333333333333333,
+            "support": 45
+          },
+          "Computer-Services": {
+            "f1": 0.6578947368421052,
+            "precision": 0.7142857142857143,
+            "recall": 0.6097560975609756,
+            "support": 41
+          },
+          "Fileservice": {
+            "f1": 0.9158878504672897,
+            "precision": 0.9423076923076923,
+            "recall": 0.8909090909090909,
+            "support": 110
+          },
+          "O365": {
+            "f1": 0.6528497409326425,
+            "precision": 0.6,
+            "recall": 0.7159090909090909,
+            "support": 88
+          },
+          "Software": {
+            "f1": 0.576,
+            "precision": 0.5373134328358209,
+            "recall": 0.6206896551724138,
+            "support": 58
+          },
+          "Support general": {
+            "f1": 0.6978021978021978,
+            "precision": 0.6978021978021978,
+            "recall": 0.6978021978021978,
+            "support": 182
+          }
+        },
+        "per_class_recall": {
+          "Active Directory": 0.3333333333333333,
+          "Computer-Services": 0.6097560975609756,
+          "Fileservice": 0.8909090909090909,
+          "O365": 0.7159090909090909,
+          "Software": 0.6206896551724138,
+          "Support general": 0.6978021978021978
+        },
+        "per_class_support": {
+          "Active Directory": 45,
+          "Computer-Services": 41,
+          "Fileservice": 110,
+          "O365": 88,
+          "Software": 58,
+          "Support general": 182
+        },
+        "weighted_f1": 0.6934032115624762
+      },
+      "stage_seconds": 0.19883370801107958,
+      "status": "complete",
+      "target_policy": {
+        "calibration_accepted": 0,
+        "calibration_count": 85,
+        "calibration_upper_error_95": null,
+        "limitation": "selection bound is descriptive; validate target on untouched test",
+        "selection_split": "calibration",
+        "target_error": 0.05,
+        "threshold": null
+      },
+      "target_policy_test": {
+        "accepted_accuracy": null,
+        "accepted_count": 0,
+        "coverage": 0.0,
+        "error_rate": null,
+        "error_upper_95": null
+      },
+      "target_validated_on_test": false,
+      "temperature": 0.65,
+      "test_independent_groups": 524,
+      "uncertainty_assumption": "Wilson is a descriptive IID-row bound; multiple rows per group invalidate this bound"
+    },
+    "majority": {
+      "classification": {
+        "accuracy": 0.3473282442748092,
+        "brier": 0.7838054681951685,
+        "confusion_matrix": {
+          "Active Directory": {
+            "Active Directory": 0,
+            "Computer-Services": 0,
+            "Fileservice": 0,
+            "O365": 0,
+            "Software": 0,
+            "Support general": 45
+          },
+          "Computer-Services": {
+            "Active Directory": 0,
+            "Computer-Services": 0,
+            "Fileservice": 0,
+            "O365": 0,
+            "Software": 0,
+            "Support general": 41
+          },
+          "Fileservice": {
+            "Active Directory": 0,
+            "Computer-Services": 0,
+            "Fileservice": 0,
+            "O365": 0,
+            "Software": 0,
+            "Support general": 110
+          },
+          "O365": {
+            "Active Directory": 0,
+            "Computer-Services": 0,
+            "Fileservice": 0,
+            "O365": 0,
+            "Software": 0,
+            "Support general": 88
+          },
+          "Software": {
+            "Active Directory": 0,
+            "Computer-Services": 0,
+            "Fileservice": 0,
+            "O365": 0,
+            "Software": 0,
+            "Support general": 58
+          },
+          "Support general": {
+            "Active Directory": 0,
+            "Computer-Services": 0,
+            "Fileservice": 0,
+            "O365": 0,
+            "Software": 0,
+            "Support general": 182
+          }
+        },
+        "count": 524,
+        "ece": 0.008112212201409563,
+        "macro_f1": 0.08593012275731822,
+        "macro_recall": 0.16666666666666666,
+        "nll": 1.6569107726966124,
+        "per_class": {
+          "Active Directory": {
+            "f1": 0.0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "support": 45
+          },
+          "Computer-Services": {
+            "f1": 0.0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "support": 41
+          },
+          "Fileservice": {
+            "f1": 0.0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "support": 110
+          },
+          "O365": {
+            "f1": 0.0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "support": 88
+          },
+          "Software": {
+            "f1": 0.0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "support": 58
+          },
+          "Support general": {
+            "f1": 0.5155807365439093,
+            "precision": 0.3473282442748092,
+            "recall": 1.0,
+            "support": 182
+          }
+        },
+        "per_class_recall": {
+          "Active Directory": 0.0,
+          "Computer-Services": 0.0,
+          "Fileservice": 0.0,
+          "O365": 0.0,
+          "Software": 0.0,
+          "Support general": 1.0
+        },
+        "per_class_support": {
+          "Active Directory": 45,
+          "Computer-Services": 41,
+          "Fileservice": 110,
+          "O365": 88,
+          "Software": 58,
+          "Support general": 182
+        },
+        "weighted_f1": 0.179075752005709
+      },
+      "fit": {
+        "fit_split": "train"
+      },
+      "fixed_task_policy": {
+        "accepted_accuracy": null,
+        "accepted_count": 0,
+        "coverage": 0.0,
+        "min_confidence": 0.75,
+        "min_margin": 0.2
+      },
+      "latency_ms": {
+        "mean": 0.0017231762611826186,
+        "p50": 0.0016249832697212696,
+        "p95": 0.0017920057871378958,
+        "requests": 524,
+        "scope": "warmed sequential batch=1 local backend+validation; no HTTP"
+      },
+      "probability_kind": "training_class_frequencies",
+      "raw_classification": {
+        "accuracy": 0.3473282442748092,
+        "brier": 0.7836568589253307,
+        "confusion_matrix": {
+          "Active Directory": {
+            "Active Directory": 0,
+            "Computer-Services": 0,
+            "Fileservice": 0,
+            "O365": 0,
+            "Software": 0,
+            "Support general": 45
+          },
+          "Computer-Services": {
+            "Active Directory": 0,
+            "Computer-Services": 0,
+            "Fileservice": 0,
+            "O365": 0,
+            "Software": 0,
+            "Support general": 41
+          },
+          "Fileservice": {
+            "Active Directory": 0,
+            "Computer-Services": 0,
+            "Fileservice": 0,
+            "O365": 0,
+            "Software": 0,
+            "Support general": 110
+          },
+          "O365": {
+            "Active Directory": 0,
+            "Computer-Services": 0,
+            "Fileservice": 0,
+            "O365": 0,
+            "Software": 0,
+            "Support general": 88
+          },
+          "Software": {
+            "Active Directory": 0,
+            "Computer-Services": 0,
+            "Fileservice": 0,
+            "O365": 0,
+            "Software": 0,
+            "Support general": 58
+          },
+          "Support general": {
+            "Active Directory": 0,
+            "Computer-Services": 0,
+            "Fileservice": 0,
+            "O365": 0,
+            "Software": 0,
+            "Support general": 182
+          }
+        },
+        "count": 524,
+        "ece": 0.0019471180440323588,
+        "macro_f1": 0.08593012275731822,
+        "macro_recall": 0.16666666666666666,
+        "nll": 1.656476958027407,
+        "per_class": {
+          "Active Directory": {
+            "f1": 0.0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "support": 45
+          },
+          "Computer-Services": {
+            "f1": 0.0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "support": 41
+          },
+          "Fileservice": {
+            "f1": 0.0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "support": 110
+          },
+          "O365": {
+            "f1": 0.0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "support": 88
+          },
+          "Software": {
+            "f1": 0.0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "support": 58
+          },
+          "Support general": {
+            "f1": 0.5155807365439093,
+            "precision": 0.3473282442748092,
+            "recall": 1.0,
+            "support": 182
+          }
+        },
+        "per_class_recall": {
+          "Active Directory": 0.0,
+          "Computer-Services": 0.0,
+          "Fileservice": 0.0,
+          "O365": 0.0,
+          "Software": 0.0,
+          "Support general": 1.0
+        },
+        "per_class_support": {
+          "Active Directory": 45,
+          "Computer-Services": 41,
+          "Fileservice": 110,
+          "O365": 88,
+          "Software": 58,
+          "Support general": 182
+        },
+        "weighted_f1": 0.179075752005709
+      },
+      "stage_seconds": 0.024480541003867984,
+      "status": "complete",
+      "target_policy": {
+        "calibration_accepted": 0,
+        "calibration_count": 85,
+        "calibration_upper_error_95": null,
+        "limitation": "selection bound is descriptive; validate target on untouched test",
+        "selection_split": "calibration",
+        "target_error": 0.05,
+        "threshold": null
+      },
+      "target_policy_test": {
+        "accepted_accuracy": null,
+        "accepted_count": 0,
+        "coverage": 0.0,
+        "error_rate": null,
+        "error_upper_95": null
+      },
+      "target_validated_on_test": false,
+      "temperature": 1.05,
+      "test_independent_groups": 524,
+      "uncertainty_assumption": "Wilson is a descriptive IID-row bound; multiple rows per group invalidate this bound"
+    },
+    "qwen_decision": {
+      "reason": "CUDA stage not requested",
+      "status": "not_run"
+    },
+    "qwen_zero_shot": {
+      "reason": "CUDA stage not requested",
+      "status": "not_run"
+    },
+    "tfidf_logistic": {
+      "classification": {
+        "accuracy": 0.7767175572519084,
+        "brier": 0.3135562675723936,
+        "confusion_matrix": {
+          "Active Directory": {
+            "Active Directory": 20,
+            "Computer-Services": 0,
+            "Fileservice": 2,
+            "O365": 2,
+            "Software": 1,
+            "Support general": 20
+          },
+          "Computer-Services": {
+            "Active Directory": 0,
+            "Computer-Services": 30,
+            "Fileservice": 0,
+            "O365": 4,
+            "Software": 1,
+            "Support general": 6
+          },
+          "Fileservice": {
+            "Active Directory": 0,
+            "Computer-Services": 0,
+            "Fileservice": 103,
+            "O365": 2,
+            "Software": 2,
+            "Support general": 3
+          },
+          "O365": {
+            "Active Directory": 2,
+            "Computer-Services": 1,
+            "Fileservice": 2,
+            "O365": 68,
+            "Software": 2,
+            "Support general": 13
+          },
+          "Software": {
+            "Active Directory": 3,
+            "Computer-Services": 1,
+            "Fileservice": 0,
+            "O365": 7,
+            "Software": 35,
+            "Support general": 12
+          },
+          "Support general": {
+            "Active Directory": 6,
+            "Computer-Services": 1,
+            "Fileservice": 3,
+            "O365": 8,
+            "Software": 13,
+            "Support general": 151
+          }
+        },
+        "count": 524,
+        "ece": 0.02755226575043223,
+        "macro_f1": 0.7397714216778207,
+        "macro_recall": 0.7197268793568204,
+        "nll": 0.6390184058321687,
+        "per_class": {
+          "Active Directory": {
+            "f1": 0.5263157894736842,
+            "precision": 0.6451612903225806,
+            "recall": 0.4444444444444444,
+            "support": 45
+          },
+          "Computer-Services": {
+            "f1": 0.8108108108108109,
+            "precision": 0.9090909090909091,
+            "recall": 0.7317073170731707,
+            "support": 41
+          },
+          "Fileservice": {
+            "f1": 0.9363636363636364,
+            "precision": 0.9363636363636364,
+            "recall": 0.9363636363636364,
+            "support": 110
+          },
+          "O365": {
+            "f1": 0.7597765363128491,
+            "precision": 0.7472527472527473,
+            "recall": 0.7727272727272727,
+            "support": 88
+          },
+          "Software": {
+            "f1": 0.625,
+            "precision": 0.6481481481481481,
+            "recall": 0.603448275862069,
+            "support": 58
+          },
+          "Support general": {
+            "f1": 0.7803617571059432,
+            "precision": 0.7365853658536585,
+            "recall": 0.8296703296703297,
+            "support": 182
+          }
+        },
+        "per_class_recall": {
+          "Active Directory": 0.4444444444444444,
+          "Computer-Services": 0.7317073170731707,
+          "Fileservice": 0.9363636363636364,
+          "O365": 0.7727272727272727,
+          "Software": 0.603448275862069,
+          "Support general": 0.8296703296703297
+        },
+        "per_class_support": {
+          "Active Directory": 45,
+          "Computer-Services": 41,
+          "Fileservice": 110,
+          "O365": 88,
+          "Software": 58,
+          "Support general": 182
+        },
+        "weighted_f1": 0.7730221922869684
+      },
+      "fit": {
+        "candidates": [
+          {
+            "C": 0.25,
+            "tuning_macro_f1": 0.7660864225380354
+          },
+          {
+            "C": 1.0,
+            "tuning_macro_f1": 0.7843181865819103
+          },
+          {
+            "C": 4.0,
+            "tuning_macro_f1": 0.7870087362231902
+          },
+          {
+            "C": 16.0,
+            "tuning_macro_f1": 0.7870087362231902
+          }
+        ],
+        "features": {
+          "char": 21054,
+          "word": 6705
+        },
+        "fit_seconds": 2.648457957984647,
+        "raw_score_kind": "logistic_probabilities",
+        "selected_C": 4.0,
+        "selection_split": "tuning",
+        "tuning_macro_f1": 0.7870087362231902
+      },
+      "fixed_task_policy": {
+        "accepted_accuracy": 0.9331103678929766,
+        "accepted_count": 299,
+        "coverage": 0.5706106870229007,
+        "min_confidence": 0.75,
+        "min_margin": 0.2
+      },
+      "latency_ms": {
+        "mean": 0.6908982042298751,
+        "p50": 0.5835000047227368,
+        "p95": 1.0740874437033192,
+        "requests": 524,
+        "scope": "warmed sequential batch=1 local backend+validation; no HTTP"
+      },
+      "probability_kind": "softmax_margins_then_temperature_on_calibration",
+      "raw_classification": {
+        "accuracy": 0.7767175572519084,
+        "brier": 0.32714953144334297,
+        "confusion_matrix": {
+          "Active Directory": {
+            "Active Directory": 20,
+            "Computer-Services": 0,
+            "Fileservice": 2,
+            "O365": 2,
+            "Software": 1,
+            "Support general": 20
+          },
+          "Computer-Services": {
+            "Active Directory": 0,
+            "Computer-Services": 30,
+            "Fileservice": 0,
+            "O365": 4,
+            "Software": 1,
+            "Support general": 6
+          },
+          "Fileservice": {
+            "Active Directory": 0,
+            "Computer-Services": 0,
+            "Fileservice": 103,
+            "O365": 2,
+            "Software": 2,
+            "Support general": 3
+          },
+          "O365": {
+            "Active Directory": 2,
+            "Computer-Services": 1,
+            "Fileservice": 2,
+            "O365": 68,
+            "Software": 2,
+            "Support general": 13
+          },
+          "Software": {
+            "Active Directory": 3,
+            "Computer-Services": 1,
+            "Fileservice": 0,
+            "O365": 7,
+            "Software": 35,
+            "Support general": 12
+          },
+          "Support general": {
+            "Active Directory": 6,
+            "Computer-Services": 1,
+            "Fileservice": 3,
+            "O365": 8,
+            "Software": 13,
+            "Support general": 151
+          }
+        },
+        "count": 524,
+        "ece": 0.09469031365729998,
+        "macro_f1": 0.7397714216778207,
+        "macro_recall": 0.7197268793568204,
+        "nll": 0.6775245390080215,
+        "per_class": {
+          "Active Directory": {
+            "f1": 0.5263157894736842,
+            "precision": 0.6451612903225806,
+            "recall": 0.4444444444444444,
+            "support": 45
+          },
+          "Computer-Services": {
+            "f1": 0.8108108108108109,
+            "precision": 0.9090909090909091,
+            "recall": 0.7317073170731707,
+            "support": 41
+          },
+          "Fileservice": {
+            "f1": 0.9363636363636364,
+            "precision": 0.9363636363636364,
+            "recall": 0.9363636363636364,
+            "support": 110
+          },
+          "O365": {
+            "f1": 0.7597765363128491,
+            "precision": 0.7472527472527473,
+            "recall": 0.7727272727272727,
+            "support": 88
+          },
+          "Software": {
+            "f1": 0.625,
+            "precision": 0.6481481481481481,
+            "recall": 0.603448275862069,
+            "support": 58
+          },
+          "Support general": {
+            "f1": 0.7803617571059432,
+            "precision": 0.7365853658536585,
+            "recall": 0.8296703296703297,
+            "support": 182
+          }
+        },
+        "per_class_recall": {
+          "Active Directory": 0.4444444444444444,
+          "Computer-Services": 0.7317073170731707,
+          "Fileservice": 0.9363636363636364,
+          "O365": 0.7727272727272727,
+          "Software": 0.603448275862069,
+          "Support general": 0.8296703296703297
+        },
+        "per_class_support": {
+          "Active Directory": 45,
+          "Computer-Services": 41,
+          "Fileservice": 110,
+          "O365": 88,
+          "Software": 58,
+          "Support general": 182
+        },
+        "weighted_f1": 0.7730221922869684
+      },
+      "stage_seconds": 0.4530045000137761,
+      "status": "complete",
+      "target_policy": {
+        "calibration_accepted": 0,
+        "calibration_count": 85,
+        "calibration_upper_error_95": null,
+        "limitation": "selection bound is descriptive; validate target on untouched test",
+        "selection_split": "calibration",
+        "target_error": 0.05,
+        "threshold": null
+      },
+      "target_policy_test": {
+        "accepted_accuracy": null,
+        "accepted_count": 0,
+        "coverage": 0.0,
+        "error_rate": null,
+        "error_upper_95": null
+      },
+      "target_validated_on_test": false,
+      "temperature": 0.75,
+      "test_independent_groups": 524,
+      "uncertainty_assumption": "Wilson is a descriptive IID-row bound; multiple rows per group invalidate this bound"
+    },
+    "tfidf_svm": {
+      "classification": {
+        "accuracy": 0.7709923664122137,
+        "brier": 0.36443607613767187,
+        "confusion_matrix": {
+          "Active Directory": {
+            "Active Directory": 19,
+            "Computer-Services": 0,
+            "Fileservice": 2,
+            "O365": 2,
+            "Software": 1,
+            "Support general": 21
+          },
+          "Computer-Services": {
+            "Active Directory": 0,
+            "Computer-Services": 33,
+            "Fileservice": 0,
+            "O365": 1,
+            "Software": 1,
+            "Support general": 6
+          },
+          "Fileservice": {
+            "Active Directory": 0,
+            "Computer-Services": 0,
+            "Fileservice": 104,
+            "O365": 3,
+            "Software": 1,
+            "Support general": 2
+          },
+          "O365": {
+            "Active Directory": 3,
+            "Computer-Services": 1,
+            "Fileservice": 3,
+            "O365": 67,
+            "Software": 2,
+            "Support general": 12
+          },
+          "Software": {
+            "Active Directory": 3,
+            "Computer-Services": 1,
+            "Fileservice": 0,
+            "O365": 9,
+            "Software": 34,
+            "Support general": 11
+          },
+          "Support general": {
+            "Active Directory": 9,
+            "Computer-Services": 1,
+            "Fileservice": 3,
+            "O365": 8,
+            "Software": 14,
+            "Support general": 147
+          }
+        },
+        "count": 524,
+        "ece": 0.16690065481363017,
+        "macro_f1": 0.735361266165231,
+        "macro_recall": 0.721302942844154,
+        "nll": 0.7812485561395065,
+        "per_class": {
+          "Active Directory": {
+            "f1": 0.48101265822784806,
+            "precision": 0.5588235294117647,
+            "recall": 0.4222222222222222,
+            "support": 45
+          },
+          "Computer-Services": {
+            "f1": 0.8571428571428571,
+            "precision": 0.9166666666666666,
+            "recall": 0.8048780487804879,
+            "support": 41
+          },
+          "Fileservice": {
+            "f1": 0.9369369369369368,
+            "precision": 0.9285714285714286,
+            "recall": 0.9454545454545454,
+            "support": 110
+          },
+          "O365": {
+            "f1": 0.7528089887640451,
+            "precision": 0.7444444444444445,
+            "recall": 0.7613636363636364,
+            "support": 88
+          },
+          "Software": {
+            "f1": 0.6126126126126126,
+            "precision": 0.6415094339622641,
+            "recall": 0.5862068965517241,
+            "support": 58
+          },
+          "Support general": {
+            "f1": 0.7716535433070866,
+            "precision": 0.7386934673366834,
+            "recall": 0.8076923076923077,
+            "support": 182
+          }
+        },
+        "per_class_recall": {
+          "Active Directory": 0.4222222222222222,
+          "Computer-Services": 0.8048780487804879,
+          "Fileservice": 0.9454545454545454,
+          "O365": 0.7613636363636364,
+          "Software": 0.5862068965517241,
+          "Support general": 0.8076923076923077
+        },
+        "per_class_support": {
+          "Active Directory": 45,
+          "Computer-Services": 41,
+          "Fileservice": 110,
+          "O365": 88,
+          "Software": 58,
+          "Support general": 182
+        },
+        "weighted_f1": 0.7673113687992952
+      },
+      "fit": {
+        "candidates": [
+          {
+            "C": 0.25,
+            "tuning_macro_f1": 0.7925536924375933
+          },
+          {
+            "C": 1.0,
+            "tuning_macro_f1": 0.773819073083779
+          },
+          {
+            "C": 4.0,
+            "tuning_macro_f1": 0.7760438091320445
+          },
+          {
+            "C": 16.0,
+            "tuning_macro_f1": 0.751648083099696
+          }
+        ],
+        "features": {
+          "char": 21054,
+          "word": 6705
+        },
+        "fit_seconds": 0.5081391659914516,
+        "raw_score_kind": "softmax_of_svm_margins_not_calibrated_probabilities",
+        "selected_C": 0.25,
+        "selection_split": "tuning",
+        "tuning_macro_f1": 0.7925536924375933
+      },
+      "fixed_task_policy": {
+        "accepted_accuracy": 0.9776536312849162,
+        "accepted_count": 179,
+        "coverage": 0.3416030534351145,
+        "min_confidence": 0.75,
+        "min_margin": 0.2
+      },
+      "latency_ms": {
+        "mean": 0.6973619888517082,
+        "p50": 0.5063959979452193,
+        "p95": 1.3034598567173816,
+        "requests": 524,
+        "scope": "warmed sequential batch=1 local backend+validation; no HTTP"
+      },
+      "probability_kind": "softmax_margins_then_temperature_on_calibration",
+      "raw_classification": {
+        "accuracy": 0.7709923664122137,
+        "brier": 0.5111921778007064,
+        "confusion_matrix": {
+          "Active Directory": {
+            "Active Directory": 19,
+            "Computer-Services": 0,
+            "Fileservice": 2,
+            "O365": 2,
+            "Software": 1,
+            "Support general": 21
+          },
+          "Computer-Services": {
+            "Active Directory": 0,
+            "Computer-Services": 33,
+            "Fileservice": 0,
+            "O365": 1,
+            "Software": 1,
+            "Support general": 6
+          },
+          "Fileservice": {
+            "Active Directory": 0,
+            "Computer-Services": 0,
+            "Fileservice": 104,
+            "O365": 3,
+            "Software": 1,
+            "Support general": 2
+          },
+          "O365": {
+            "Active Directory": 3,
+            "Computer-Services": 1,
+            "Fileservice": 3,
+            "O365": 67,
+            "Software": 2,
+            "Support general": 12
+          },
+          "Software": {
+            "Active Directory": 3,
+            "Computer-Services": 1,
+            "Fileservice": 0,
+            "O365": 9,
+            "Software": 34,
+            "Support general": 11
+          },
+          "Support general": {
+            "Active Directory": 9,
+            "Computer-Services": 1,
+            "Fileservice": 3,
+            "O365": 8,
+            "Software": 14,
+            "Support general": 147
+          }
+        },
+        "count": 524,
+        "ece": 0.37347233431212706,
+        "macro_f1": 0.735361266165231,
+        "macro_recall": 0.721302942844154,
+        "nll": 1.0919569039910113,
+        "per_class": {
+          "Active Directory": {
+            "f1": 0.48101265822784806,
+            "precision": 0.5588235294117647,
+            "recall": 0.4222222222222222,
+            "support": 45
+          },
+          "Computer-Services": {
+            "f1": 0.8571428571428571,
+            "precision": 0.9166666666666666,
+            "recall": 0.8048780487804879,
+            "support": 41
+          },
+          "Fileservice": {
+            "f1": 0.9369369369369368,
+            "precision": 0.9285714285714286,
+            "recall": 0.9454545454545454,
+            "support": 110
+          },
+          "O365": {
+            "f1": 0.7528089887640451,
+            "precision": 0.7444444444444445,
+            "recall": 0.7613636363636364,
+            "support": 88
+          },
+          "Software": {
+            "f1": 0.6126126126126126,
+            "precision": 0.6415094339622641,
+            "recall": 0.5862068965517241,
+            "support": 58
+          },
+          "Support general": {
+            "f1": 0.7716535433070866,
+            "precision": 0.7386934673366834,
+            "recall": 0.8076923076923077,
+            "support": 182
+          }
+        },
+        "per_class_recall": {
+          "Active Directory": 0.4222222222222222,
+          "Computer-Services": 0.8048780487804879,
+          "Fileservice": 0.9454545454545454,
+          "O365": 0.7613636363636364,
+          "Software": 0.5862068965517241,
+          "Support general": 0.8076923076923077
+        },
+        "per_class_support": {
+          "Active Directory": 45,
+          "Computer-Services": 41,
+          "Fileservice": 110,
+          "O365": 88,
+          "Software": 58,
+          "Support general": 182
+        },
+        "weighted_f1": 0.7673113687992952
+      },
+      "stage_seconds": 0.4432596669939812,
+      "status": "complete",
+      "target_policy": {
+        "calibration_accepted": 0,
+        "calibration_count": 85,
+        "calibration_upper_error_95": null,
+        "limitation": "selection bound is descriptive; validate target on untouched test",
+        "selection_split": "calibration",
+        "target_error": 0.05,
+        "threshold": null
+      },
+      "target_policy_test": {
+        "accepted_accuracy": null,
+        "accepted_count": 0,
+        "coverage": 0.0,
+        "error_rate": null,
+        "error_upper_95": null
+      },
+      "target_validated_on_test": false,
+      "temperature": 0.5,
+      "test_independent_groups": 524,
+      "uncertainty_assumption": "Wilson is a descriptive IID-row bound; multiple rows per group invalidate this bound"
+    }
+  },
+  "protocol": {
+    "C_grid": [
+      0.25,
+      1.0,
+      4.0,
+      16.0
+    ],
+    "bootstrap": {
+      "class_absence": "F1=0",
+      "samples": 2000,
+      "seed": 3407,
+      "unit": "whole test groups"
+    },
+    "calibration_count": 85,
+    "evidence": "public_real_it_tickets_zenodo_7648117",
+    "format": "localdesk-benchmark-v1",
+    "primary_comparison": "qwen_decision minus best tuning-selected TF-IDF method",
+    "probability_calibration_sha256": "4bf95b80a3df8b79896a68997479babea61c5387fc5ad073017cee5624d0ce5a",
+    "quality_gain_rule": "both paired accuracy and macro-F1 CI95 lower bounds >0",
+    "qwen": {
+      "base_model": "unsloth/Qwen3.5-4B",
+      "base_revision": "3764fa359b9082ea5a1e4a5e3ac3aaf6e9671636",
+      "decision_training_context": 2048,
+      "training": {
+        "backend": "unsloth",
+        "batch_size": 2,
+        "epochs": 2,
+        "gradient_accumulation": 4,
+        "learning_rate": 0.0002,
+        "rank": 16
+      },
+      "upstream": {
+        "unsloth": "62354edbf4fd246cf120ef07272934fb405ec705",
+        "unsloth_zoo": "ac1410cc766efedd5e4ced1b1d1338138eb7eaa5"
+      },
+      "zero_shot_context": 8192,
+      "zero_shot_option_order": [
+        "Active Directory",
+        "Computer-Services",
+        "Fileservice",
+        "O365",
+        "Software",
+        "Support general"
+      ],
+      "zero_shot_scoring": "conditional symbolic next-token likelihood; no thinking"
+    },
+    "seed": 3407,
+    "source_code_sha256": "174adc94df3a7311947f0694709858b35b7b0e1e4f23729c49b1ceb4a61bcdcc",
+    "source_sha256": {
+      "calibration": "7f70da4bdc380a9598bb7f73b33561e958628863a1850b9ffed2beab26ff768f",
+      "test": "9f3030027499102ded838f00a6ff9091aca6ec5418a0597c4b01650f24eaea80",
+      "train": "6ff23f10b38f2bb592889927f459a5b0f9d272a90ecde63156362231e097cd5a"
+    },
+    "split_counts": {
+      "calibration": 170,
+      "test": 524,
+      "train": 690
+    },
+    "split_sha256": {
+      "calibration": "eb2af5dc7d97f718164fb6d83127b91a1831f4aa2c4a77d7868c395f5e1519a7",
+      "test": "0d1fe15e7937ba5be656d20b0a2db2cc6446ea859cbb39eb8ff2daffbc987a60",
+      "train": "0f20ff538704cb118a163527852c583e27d522bd77e5d681e3e456e4608a85e5"
+    },
+    "target_error": 0.05,
+    "task_sha256": "7e0328fe1ba3923301cc4c63ce1b4f29765db32d94390aa6955cb85a1c8970be",
+    "temperature_grid": [
+      0.5,
+      0.55,
+      0.6,
+      0.65,
+      0.7,
+      0.75,
+      0.8,
+      0.8500000000000001,
+      0.9,
+      0.95,
+      1.0,
+      1.05,
+      1.1,
+      1.15,
+      1.2000000000000002,
+      1.25,
+      1.3,
+      1.35,
+      1.4,
+      1.4500000000000002,
+      1.5,
+      1.55,
+      1.6,
+      1.6500000000000001,
+      1.7000000000000002,
+      1.75,
+      1.8,
+      1.85,
+      1.9000000000000001,
+      1.9500000000000002,
+      2.0,
+      2.05,
+      2.1,
+      2.1500000000000004,
+      2.2,
+      2.25,
+      2.3,
+      2.35,
+      2.4000000000000004,
+      2.45,
+      2.5,
+      2.5500000000000003,
+      2.6,
+      2.65,
+      2.7,
+      2.75,
+      2.8000000000000003,
+      2.85,
+      2.9000000000000004,
+      2.95,
+      3.0,
+      3.0500000000000003,
+      3.1,
+      3.1500000000000004,
+      3.2,
+      3.25,
+      3.3000000000000003,
+      3.35,
+      3.4000000000000004,
+      3.45,
+      3.5,
+      3.5500000000000003,
+      3.6,
+      3.6500000000000004,
+      3.7,
+      3.75,
+      3.8000000000000003,
+      3.85,
+      3.9000000000000004,
+      3.95,
+      4.0
+    ],
+    "test_reuse": "existing published holdout; not a new independent blind holdout",
+    "tuning_count": 85,
+    "tuning_sha256": "b4f76d011fea4508abf5147b572e096330f76005a6eb5507e0080a372b92b63c"
+  },
+  "protocol_sha256": "d7555be5ccfd154221122c30a036b3c307b86596f65b7d8f754701e7805c9108",
+  "reference": "tfidf_svm",
+  "versions": {
+    "numpy": "2.2.6",
+    "scikit-learn": "1.6.0",
+    "scipy": "1.14.1"
+  }
+}

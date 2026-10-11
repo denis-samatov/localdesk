@@ -1,0 +1,750 @@
+{
+  "comparisons": {
+    "hashed_logistic_vs_tfidf_logistic": {
+      "accuracy_delta": -0.0146484375,
+      "accuracy_delta_ci95": [
+        -0.0224609375,
+        -0.0078125
+      ],
+      "direction": "candidate minus reference",
+      "macro_f1_delta": -0.03593887354694236,
+      "macro_f1_delta_ci95": [
+        -0.05575326314666254,
+        -0.018873565145866442
+      ],
+      "quality_gain_demonstrated": false,
+      "repetitions": 2000,
+      "resampling": "paired whole test groups; fixed classes; unsupported class F1=0",
+      "seed": 3407,
+      "test_groups": 1024
+    }
+  },
+  "conclusion": {
+    "status": "incomplete_qwen_comparison"
+  },
+  "hardware": {
+    "cpu_count": 12,
+    "machine": "arm64",
+    "platform": "macOS-26.6.2-arm64-arm-64bit",
+    "thread_environment": {
+      "OMP_NUM_THREADS": "1",
+      "OPENBLAS_NUM_THREADS": "1",
+      "VECLIB_MAXIMUM_THREADS": "1"
+    }
+  },
+  "memory": {
+    "gpu_scope": "per-stage peak VRAM includes loading/training/inference",
+    "process_peak_rss_bytes": 206372864,
+    "scope": "cumulative whole benchmark process; not per-model resident size"
+  },
+  "methods": {
+    "hashed_logistic": {
+      "classification": {
+        "accuracy": 0.974609375,
+        "brier": 0.03752443054212919,
+        "confusion_matrix": {
+          "ham": {
+            "ham": 892,
+            "spam": 7
+          },
+          "spam": {
+            "ham": 19,
+            "spam": 106
+          }
+        },
+        "count": 1024,
+        "ece": 0.00618761541280767,
+        "macro_f1": 0.9381958308185153,
+        "macro_recall": 0.9201067853170188,
+        "nll": 0.07883616999196597,
+        "per_class": {
+          "ham": {
+            "f1": 0.9856353591160222,
+            "precision": 0.9791437980241493,
+            "recall": 0.9922135706340378,
+            "support": 899
+          },
+          "spam": {
+            "f1": 0.8907563025210085,
+            "precision": 0.9380530973451328,
+            "recall": 0.848,
+            "support": 125
+          }
+        },
+        "per_class_recall": {
+          "ham": 0.9922135706340378,
+          "spam": 0.848
+        },
+        "per_class_support": {
+          "ham": 899,
+          "spam": 125
+        },
+        "weighted_f1": 0.9740534430277636
+      },
+      "fit": {
+        "C": 4,
+        "fit_split": "train"
+      },
+      "fixed_task_policy": {
+        "accepted_accuracy": 0.9897854954034729,
+        "accepted_count": 979,
+        "coverage": 0.9560546875,
+        "min_confidence": 0.85,
+        "min_margin": 0.25
+      },
+      "latency_ms": {
+        "mean": 0.025698863083789547,
+        "p50": 0.020583014702424407,
+        "p95": 0.049737401423044496,
+        "requests": 1024,
+        "scope": "warmed sequential batch=1 local backend+validation; no HTTP"
+      },
+      "probability_kind": "softmax_temperature_fitted_on_calibration",
+      "raw_classification": {
+        "accuracy": 0.974609375,
+        "brier": 0.04625238766669332,
+        "confusion_matrix": {
+          "ham": {
+            "ham": 892,
+            "spam": 7
+          },
+          "spam": {
+            "ham": 19,
+            "spam": 106
+          }
+        },
+        "count": 1024,
+        "ece": 0.04681565150050809,
+        "macro_f1": 0.9381958308185153,
+        "macro_recall": 0.9201067853170188,
+        "nll": 0.10729038129681753,
+        "per_class": {
+          "ham": {
+            "f1": 0.9856353591160222,
+            "precision": 0.9791437980241493,
+            "recall": 0.9922135706340378,
+            "support": 899
+          },
+          "spam": {
+            "f1": 0.8907563025210085,
+            "precision": 0.9380530973451328,
+            "recall": 0.848,
+            "support": 125
+          }
+        },
+        "per_class_recall": {
+          "ham": 0.9922135706340378,
+          "spam": 0.848
+        },
+        "per_class_support": {
+          "ham": 899,
+          "spam": 125
+        },
+        "weighted_f1": 0.9740534430277636
+      },
+      "stage_seconds": 0.2680884159926791,
+      "status": "complete",
+      "target_policy": {
+        "calibration_accepted": 384,
+        "calibration_count": 384,
+        "calibration_upper_error_95": 0.04393685829948359,
+        "limitation": "selection bound is descriptive; validate target on untouched test",
+        "selection_split": "calibration",
+        "target_error": 0.05,
+        "threshold": 0.503302018102642
+      },
+      "target_policy_test": {
+        "accepted_accuracy": 0.974609375,
+        "accepted_count": 1024,
+        "coverage": 1.0,
+        "error_rate": 0.025390625,
+        "error_upper_95": 0.0369435920684239
+      },
+      "target_validated_on_test": true,
+      "temperature": 0.5,
+      "test_independent_groups": 1024,
+      "uncertainty_assumption": "Wilson is a descriptive IID-row bound; multiple rows per group invalidate this bound"
+    },
+    "majority": {
+      "classification": {
+        "accuracy": 0.8779296875,
+        "brier": 0.2145311265305156,
+        "confusion_matrix": {
+          "ham": {
+            "ham": 899,
+            "spam": 0
+          },
+          "spam": {
+            "ham": 125,
+            "spam": 0
+          }
+        },
+        "count": 1024,
+        "ece": 0.00981895916598663,
+        "macro_f1": 0.4674986999479979,
+        "macro_recall": 0.5,
+        "nll": 0.3715016980680085,
+        "per_class": {
+          "ham": {
+            "f1": 0.9349973998959958,
+            "precision": 0.8779296875,
+            "recall": 1.0,
+            "support": 899
+          },
+          "spam": {
+            "f1": 0.0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "support": 125
+          }
+        },
+        "per_class_recall": {
+          "ham": 1.0,
+          "spam": 0.0
+        },
+        "per_class_support": {
+          "ham": 899,
+          "spam": 125
+        },
+        "weighted_f1": 0.8208619751040042
+      },
+      "fit": {
+        "fit_split": "train"
+      },
+      "fixed_task_policy": {
+        "accepted_accuracy": 0.8779296875,
+        "accepted_count": 1024,
+        "coverage": 1.0,
+        "min_confidence": 0.85,
+        "min_margin": 0.25
+      },
+      "latency_ms": {
+        "mean": 0.0009616478564566933,
+        "p50": 0.0009580107871443033,
+        "p95": 0.0010830117389559746,
+        "requests": 1024,
+        "scope": "warmed sequential batch=1 local backend+validation; no HTTP"
+      },
+      "probability_kind": "training_class_frequencies",
+      "raw_classification": {
+        "accuracy": 0.8779296875,
+        "brier": 0.2143399409968822,
+        "confusion_matrix": {
+          "ham": {
+            "ham": 899,
+            "spam": 0
+          },
+          "spam": {
+            "ham": 125,
+            "spam": 0
+          }
+        },
+        "count": 1024,
+        "ece": 0.0009050924190013854,
+        "macro_f1": 0.4674986999479979,
+        "macro_recall": 0.5,
+        "nll": 0.37103355557233725,
+        "per_class": {
+          "ham": {
+            "f1": 0.9349973998959958,
+            "precision": 0.8779296875,
+            "recall": 1.0,
+            "support": 899
+          },
+          "spam": {
+            "f1": 0.0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "support": 125
+          }
+        },
+        "per_class_recall": {
+          "ham": 1.0,
+          "spam": 0.0
+        },
+        "per_class_support": {
+          "ham": 899,
+          "spam": 125
+        },
+        "weighted_f1": 0.8208619751040042
+      },
+      "stage_seconds": 0.06442087498726323,
+      "status": "complete",
+      "target_policy": {
+        "calibration_accepted": 0,
+        "calibration_count": 384,
+        "calibration_upper_error_95": null,
+        "limitation": "selection bound is descriptive; validate target on untouched test",
+        "selection_split": "calibration",
+        "target_error": 0.05,
+        "threshold": null
+      },
+      "target_policy_test": {
+        "accepted_accuracy": null,
+        "accepted_count": 0,
+        "coverage": 0.0,
+        "error_rate": null,
+        "error_upper_95": null
+      },
+      "target_validated_on_test": false,
+      "temperature": 0.95,
+      "test_independent_groups": 1024,
+      "uncertainty_assumption": "Wilson is a descriptive IID-row bound; multiple rows per group invalidate this bound"
+    },
+    "qwen_decision": {
+      "reason": "CUDA stage not requested",
+      "status": "not_run"
+    },
+    "qwen_zero_shot": {
+      "reason": "CUDA stage not requested",
+      "status": "not_run"
+    },
+    "tfidf_logistic": {
+      "classification": {
+        "accuracy": 0.9892578125,
+        "brier": 0.020555974935089566,
+        "confusion_matrix": {
+          "ham": {
+            "ham": 898,
+            "spam": 1
+          },
+          "spam": {
+            "ham": 10,
+            "spam": 115
+          }
+        },
+        "count": 1024,
+        "ece": 0.005354202462162349,
+        "macro_f1": 0.9741347043654575,
+        "macro_recall": 0.9594438264738598,
+        "nll": 0.048244599657277655,
+        "per_class": {
+          "ham": {
+            "f1": 0.9939125622578858,
+            "precision": 0.9889867841409692,
+            "recall": 0.9988876529477196,
+            "support": 899
+          },
+          "spam": {
+            "f1": 0.9543568464730291,
+            "precision": 0.9913793103448276,
+            "recall": 0.92,
+            "support": 125
+          }
+        },
+        "per_class_recall": {
+          "ham": 0.9988876529477196,
+          "spam": 0.92
+        },
+        "per_class_support": {
+          "ham": 899,
+          "spam": 125
+        },
+        "weighted_f1": 0.9890839836708671
+      },
+      "fit": {
+        "candidates": [
+          {
+            "C": 0.25,
+            "tuning_macro_f1": 0.9327120669056153
+          },
+          {
+            "C": 1.0,
+            "tuning_macro_f1": 0.9327120669056153
+          },
+          {
+            "C": 4.0,
+            "tuning_macro_f1": 0.9439024786144432
+          },
+          {
+            "C": 16.0,
+            "tuning_macro_f1": 0.9439024786144432
+          }
+        ],
+        "features": {
+          "char": 40000,
+          "word": 36167
+        },
+        "fit_seconds": 1.2454521660110913,
+        "raw_score_kind": "logistic_probabilities",
+        "selected_C": 4.0,
+        "selection_split": "tuning",
+        "tuning_macro_f1": 0.9439024786144432
+      },
+      "fixed_task_policy": {
+        "accepted_accuracy": 0.9920556107249255,
+        "accepted_count": 1007,
+        "coverage": 0.9833984375,
+        "min_confidence": 0.85,
+        "min_margin": 0.25
+      },
+      "latency_ms": {
+        "mean": 0.5778734972636812,
+        "p50": 0.44072949094697833,
+        "p95": 1.4209544897312296,
+        "requests": 1024,
+        "scope": "warmed sequential batch=1 local backend+validation; no HTTP"
+      },
+      "probability_kind": "softmax_margins_then_temperature_on_calibration",
+      "raw_classification": {
+        "accuracy": 0.9892578125,
+        "brier": 0.02493271107830634,
+        "confusion_matrix": {
+          "ham": {
+            "ham": 898,
+            "spam": 1
+          },
+          "spam": {
+            "ham": 10,
+            "spam": 115
+          }
+        },
+        "count": 1024,
+        "ece": 0.033015830084861454,
+        "macro_f1": 0.9741347043654575,
+        "macro_recall": 0.9594438264738598,
+        "nll": 0.06636556409269323,
+        "per_class": {
+          "ham": {
+            "f1": 0.9939125622578858,
+            "precision": 0.9889867841409692,
+            "recall": 0.9988876529477196,
+            "support": 899
+          },
+          "spam": {
+            "f1": 0.9543568464730291,
+            "precision": 0.9913793103448276,
+            "recall": 0.92,
+            "support": 125
+          }
+        },
+        "per_class_recall": {
+          "ham": 0.9988876529477196,
+          "spam": 0.92
+        },
+        "per_class_support": {
+          "ham": 899,
+          "spam": 125
+        },
+        "weighted_f1": 0.9890839836708671
+      },
+      "stage_seconds": 0.8571361250069458,
+      "status": "complete",
+      "target_policy": {
+        "calibration_accepted": 384,
+        "calibration_count": 384,
+        "calibration_upper_error_95": 0.02647361271859711,
+        "limitation": "selection bound is descriptive; validate target on untouched test",
+        "selection_split": "calibration",
+        "target_error": 0.05,
+        "threshold": 0.5206770303528004
+      },
+      "target_policy_test": {
+        "accepted_accuracy": 0.9892578125,
+        "accepted_count": 1024,
+        "coverage": 1.0,
+        "error_rate": 0.0107421875,
+        "error_upper_95": 0.019132770955518102
+      },
+      "target_validated_on_test": true,
+      "temperature": 0.5,
+      "test_independent_groups": 1024,
+      "uncertainty_assumption": "Wilson is a descriptive IID-row bound; multiple rows per group invalidate this bound"
+    },
+    "tfidf_svm": {
+      "classification": {
+        "accuracy": 0.9892578125,
+        "brier": 0.05702292120187063,
+        "confusion_matrix": {
+          "ham": {
+            "ham": 898,
+            "spam": 1
+          },
+          "spam": {
+            "ham": 10,
+            "spam": 115
+          }
+        },
+        "count": 1024,
+        "ece": 0.12847346965289758,
+        "macro_f1": 0.9741347043654575,
+        "macro_recall": 0.9594438264738598,
+        "nll": 0.16319400175423443,
+        "per_class": {
+          "ham": {
+            "f1": 0.9939125622578858,
+            "precision": 0.9889867841409692,
+            "recall": 0.9988876529477196,
+            "support": 899
+          },
+          "spam": {
+            "f1": 0.9543568464730291,
+            "precision": 0.9913793103448276,
+            "recall": 0.92,
+            "support": 125
+          }
+        },
+        "per_class_recall": {
+          "ham": 0.9988876529477196,
+          "spam": 0.92
+        },
+        "per_class_support": {
+          "ham": 899,
+          "spam": 125
+        },
+        "weighted_f1": 0.9890839836708671
+      },
+      "fit": {
+        "candidates": [
+          {
+            "C": 0.25,
+            "tuning_macro_f1": 0.9439024786144432
+          },
+          {
+            "C": 1.0,
+            "tuning_macro_f1": 0.9370698131760079
+          },
+          {
+            "C": 4.0,
+            "tuning_macro_f1": 0.9370698131760079
+          },
+          {
+            "C": 16.0,
+            "tuning_macro_f1": 0.9370698131760079
+          }
+        ],
+        "features": {
+          "char": 40000,
+          "word": 36167
+        },
+        "fit_seconds": 0.6716132500150707,
+        "raw_score_kind": "softmax_of_svm_margins_not_calibrated_probabilities",
+        "selected_C": 0.25,
+        "selection_split": "tuning",
+        "tuning_macro_f1": 0.9439024786144432
+      },
+      "fixed_task_policy": {
+        "accepted_accuracy": 0.9971305595408895,
+        "accepted_count": 697,
+        "coverage": 0.6806640625,
+        "min_confidence": 0.85,
+        "min_margin": 0.25
+      },
+      "latency_ms": {
+        "mean": 0.623540118880328,
+        "p50": 0.4519789945334196,
+        "p95": 1.4176411074004132,
+        "requests": 1024,
+        "scope": "warmed sequential batch=1 local backend+validation; no HTTP"
+      },
+      "probability_kind": "softmax_margins_then_temperature_on_calibration",
+      "raw_classification": {
+        "accuracy": 0.9892578125,
+        "brier": 0.16684268012082223,
+        "confusion_matrix": {
+          "ham": {
+            "ham": 898,
+            "spam": 1
+          },
+          "spam": {
+            "ham": 10,
+            "spam": 115
+          }
+        },
+        "count": 1024,
+        "ece": 0.2686466732408296,
+        "macro_f1": 0.9741347043654575,
+        "macro_recall": 0.9594438264738598,
+        "nll": 0.3355458610597975,
+        "per_class": {
+          "ham": {
+            "f1": 0.9939125622578858,
+            "precision": 0.9889867841409692,
+            "recall": 0.9988876529477196,
+            "support": 899
+          },
+          "spam": {
+            "f1": 0.9543568464730291,
+            "precision": 0.9913793103448276,
+            "recall": 0.92,
+            "support": 125
+          }
+        },
+        "per_class_recall": {
+          "ham": 0.9988876529477196,
+          "spam": 0.92
+        },
+        "per_class_support": {
+          "ham": 899,
+          "spam": 125
+        },
+        "weighted_f1": 0.9890839836708671
+      },
+      "stage_seconds": 0.9232749169750605,
+      "status": "complete",
+      "target_policy": {
+        "calibration_accepted": 384,
+        "calibration_count": 384,
+        "calibration_upper_error_95": 0.022714512020235444,
+        "limitation": "selection bound is descriptive; validate target on untouched test",
+        "selection_split": "calibration",
+        "target_error": 0.05,
+        "threshold": 0.5456815725050168
+      },
+      "target_policy_test": {
+        "accepted_accuracy": 0.990215264187867,
+        "accepted_count": 1022,
+        "coverage": 0.998046875,
+        "error_rate": 0.009784735812133072,
+        "error_upper_95": 0.017917431471015852
+      },
+      "target_validated_on_test": true,
+      "temperature": 0.5,
+      "test_independent_groups": 1024,
+      "uncertainty_assumption": "Wilson is a descriptive IID-row bound; multiple rows per group invalidate this bound"
+    }
+  },
+  "protocol": {
+    "C_grid": [
+      0.25,
+      1.0,
+      4.0,
+      16.0
+    ],
+    "bootstrap": {
+      "class_absence": "F1=0",
+      "samples": 2000,
+      "seed": 3407,
+      "unit": "whole test groups"
+    },
+    "calibration_count": 384,
+    "evidence": "public_real_sms_uci_228",
+    "format": "localdesk-benchmark-v1",
+    "primary_comparison": "qwen_decision minus best tuning-selected TF-IDF method",
+    "probability_calibration_sha256": "5603d917064bda1634d874b7876a2eb061ead2ac7088cc606a594270f929baad",
+    "quality_gain_rule": "both paired accuracy and macro-F1 CI95 lower bounds >0",
+    "qwen": {
+      "base_model": "unsloth/Qwen3.5-4B",
+      "base_revision": "3764fa359b9082ea5a1e4a5e3ac3aaf6e9671636",
+      "decision_training_context": 2048,
+      "training": {
+        "backend": "unsloth",
+        "batch_size": 2,
+        "epochs": 2,
+        "gradient_accumulation": 4,
+        "learning_rate": 0.0002,
+        "rank": 16
+      },
+      "upstream": {
+        "unsloth": "62354edbf4fd246cf120ef07272934fb405ec705",
+        "unsloth_zoo": "ac1410cc766efedd5e4ced1b1d1338138eb7eaa5"
+      },
+      "zero_shot_context": 8192,
+      "zero_shot_option_order": [
+        "ham",
+        "spam"
+      ],
+      "zero_shot_scoring": "conditional symbolic next-token likelihood; no thinking"
+    },
+    "seed": 3407,
+    "source_code_sha256": "174adc94df3a7311947f0694709858b35b7b0e1e4f23729c49b1ceb4a61bcdcc",
+    "source_sha256": {
+      "all": "309296b18bf9ebc30fc226bf26f33b923742f7e2fd6a6f21a97a3389c2daf30b"
+    },
+    "split_counts": {
+      "calibration": 768,
+      "test": 1024,
+      "train": 3334
+    },
+    "split_sha256": {
+      "calibration": "da19bc1ec8798f84b4793b4de3dd6e54a3f64f766a6426de79f31b0ae0c72a2a",
+      "test": "181395a0f3dee00a5178802d0876d151c273d87458867f0f043987cd5cb5479c",
+      "train": "ef4eca9e21f74268aa24c930608c4adcbf16742deab86bfad4d8eb6456bd8c3e"
+    },
+    "target_error": 0.05,
+    "task_sha256": "a08f55729b7775454ff2372e2dd3e4eacacf79c904d75d1f88fb2eb2ebaa2822",
+    "temperature_grid": [
+      0.5,
+      0.55,
+      0.6,
+      0.65,
+      0.7,
+      0.75,
+      0.8,
+      0.8500000000000001,
+      0.9,
+      0.95,
+      1.0,
+      1.05,
+      1.1,
+      1.15,
+      1.2000000000000002,
+      1.25,
+      1.3,
+      1.35,
+      1.4,
+      1.4500000000000002,
+      1.5,
+      1.55,
+      1.6,
+      1.6500000000000001,
+      1.7000000000000002,
+      1.75,
+      1.8,
+      1.85,
+      1.9000000000000001,
+      1.9500000000000002,
+      2.0,
+      2.05,
+      2.1,
+      2.1500000000000004,
+      2.2,
+      2.25,
+      2.3,
+      2.35,
+      2.4000000000000004,
+      2.45,
+      2.5,
+      2.5500000000000003,
+      2.6,
+      2.65,
+      2.7,
+      2.75,
+      2.8000000000000003,
+      2.85,
+      2.9000000000000004,
+      2.95,
+      3.0,
+      3.0500000000000003,
+      3.1,
+      3.1500000000000004,
+      3.2,
+      3.25,
+      3.3000000000000003,
+      3.35,
+      3.4000000000000004,
+      3.45,
+      3.5,
+      3.5500000000000003,
+      3.6,
+      3.6500000000000004,
+      3.7,
+      3.75,
+      3.8000000000000003,
+      3.85,
+      3.9000000000000004,
+      3.95,
+      4.0
+    ],
+    "test_reuse": "existing published holdout; not a new independent blind holdout",
+    "tuning_count": 384,
+    "tuning_sha256": "254f492be9c00f7f5e67cea6ac1971d8ea34f743fcfc63d1e39cde538f1b6198"
+  },
+  "protocol_sha256": "f6e5d013093e6c26fa15a13482cd4c27177a73242d42f45ad85ffa22bd94af67",
+  "reference": "tfidf_logistic",
+  "versions": {
+    "numpy": "2.2.6",
+    "scikit-learn": "1.6.0",
+    "scipy": "1.14.1"
+  }
+}

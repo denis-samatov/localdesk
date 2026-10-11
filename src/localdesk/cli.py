@@ -38,15 +38,42 @@ def main():
         command.add_argument("--registry", type=Path, default=Path("artifacts/registry"))
         if name == "promote":
             command.add_argument("run_id")
+    command = subparsers.add_parser("benchmark")
+    command.add_argument("config", type=Path)
+    command.add_argument("--out", type=Path, required=True)
+    command.add_argument("--qwen", action="store_true")
+    command.add_argument("--target-error", type=float, default=0.05)
+    command.add_argument("--bootstrap-samples", type=int, default=2000)
     command = subparsers.add_parser("api")
     command.add_argument("--registry", type=Path, default=Path("artifacts/registry"))
     command.add_argument("--host", default="127.0.0.1")
     command.add_argument("--port", type=int, default=8765)
     command.add_argument("--anonymous-local", action="store_true")
     args = parser.parse_args()
-    if args.command in {"validate", "train", "runs", "promote", "api"}:
+    if args.command in {"validate", "train", "runs", "promote", "api", "benchmark"}:
         try:
-            if args.command in {"validate", "train"}:
+            if args.command == "benchmark":
+                from localdesk.benchmark import run_benchmark
+
+                report = run_benchmark(
+                    Experiment.load(args.config),
+                    args.out,
+                    qwen=args.qwen,
+                    target_error=args.target_error,
+                    bootstrap_samples=args.bootstrap_samples,
+                )
+                print(
+                    json.dumps(
+                        {
+                            "report": str(args.out / "report.json"),
+                            "conclusion": report["conclusion"],
+                        },
+                        indent=2,
+                    )
+                )
+                if args.qwen and report["conclusion"]["status"] == "incomplete_qwen_comparison":
+                    raise SystemExit(2)
+            elif args.command in {"validate", "train"}:
                 experiment = Experiment.load(args.config)
                 if args.command == "validate":
                     print(json.dumps(prepare(experiment).manifest, indent=2))

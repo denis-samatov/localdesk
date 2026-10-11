@@ -44,8 +44,9 @@ def test_upstream_data_loss_stops_training(report):
         build_training_items(FakeAPI, None, None, {"train": [{"id": "one"}]})
 
 
-def test_notebook_cells_are_clean_and_python_cells_parse():
-    notebook = Path(__file__).resolve().parents[1] / "notebooks/train_qwen.ipynb"
+@pytest.mark.parametrize("filename", ["train_qwen.ipynb", "benchmark_qwen.ipynb"])
+def test_notebook_cells_are_clean_and_python_cells_parse(filename):
+    notebook = Path(__file__).resolve().parents[1] / "notebooks" / filename
     document = json.loads(notebook.read_text())
     assert document["nbformat"] == 4
     for cell in document["cells"]:

@@ -49,6 +49,7 @@ class ModelBackend:
             max_seq_length=2048,
             load_in_4bit=True,
             local_files_only=True,
+            use_exact_model_name=True,
         )
         self.api.for_inference(self.model)
 
