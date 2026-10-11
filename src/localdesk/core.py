@@ -41,10 +41,16 @@ def decide(
     text: str,
     backend: Backend,
     *,
-    min_confidence: float = 0.75,
-    min_margin: float = 0.2,
+    min_confidence: float | None = None,
+    min_margin: float | None = None,
 ) -> dict:
     text = validate_text(text)
+    task = getattr(backend, "task", None)
+    questions = task.questions if task else QUESTIONS
+    if min_confidence is None:
+        min_confidence = task.min_confidence if task else 0.75
+    if min_margin is None:
+        min_margin = task.min_margin if task else 0.2
     for threshold in (min_confidence, min_margin):
         if (
             isinstance(threshold, bool)
@@ -54,9 +60,9 @@ def decide(
         ):
             raise ValueError("thresholds must be finite numbers between zero and one")
     raw = backend.predict(text)
-    if not isinstance(raw, dict) or set(raw) != set(QUESTIONS):
+    if not isinstance(raw, dict) or set(raw) != set(questions):
         raise ValueError("backend must return exactly the category question")
-    probs = validate_distribution(raw["category"], list(QUESTIONS["category"]["criteria"]))
+    probs = validate_distribution(raw["category"], list(questions["category"]["criteria"]))
     ranked = sorted(probs, key=probs.get, reverse=True)
     reasons = []
     if probs[ranked[0]] + 1e-12 < min_confidence:

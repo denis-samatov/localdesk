@@ -35,6 +35,22 @@ def classification_metrics(gold: list[str], probabilities: list[dict], choices: 
         else None
         for label in choices
     }
+    confusion = {target: {label: 0 for label in choices} for target in choices}
+    for target, prediction in zip(gold, selected, strict=True):
+        confusion[target][prediction] += 1
+    per_class = {}
+    for label in choices:
+        tp = confusion[label][label]
+        predicted = selected.count(label)
+        precision = tp / predicted if predicted else 0.0
+        recall = recalls[label]
+        f1 = 2 * precision * recall / (precision + recall) if recall and precision else 0.0
+        per_class[label] = {
+            "precision": precision,
+            "recall": recall,
+            "f1": f1,
+            "support": support[label],
+        }
     return {
         "count": count,
         "accuracy": sum(correct) / count,
@@ -53,6 +69,10 @@ def classification_metrics(gold: list[str], probabilities: list[dict], choices: 
         / sum(v is not None for v in recalls.values()),
         "per_class_recall": recalls,
         "per_class_support": support,
+        "per_class": per_class,
+        "confusion_matrix": confusion,
+        "macro_f1": sum(v["f1"] for v in per_class.values()) / len(choices),
+        "weighted_f1": sum(v["f1"] * v["support"] for v in per_class.values()) / count,
     }
 
 
@@ -63,7 +83,7 @@ def evaluate_rows(rows: list[dict], backend: Backend) -> dict:
     metrics = classification_metrics(
         [row["gold"]["category"] for row in rows],
         [result["probabilities"]["category"] for result in results],
-        list(CATEGORIES),
+        list(backend.task.labels) if getattr(backend, "task", None) else list(CATEGORIES),
     )
     accepted = [
         (row, result)

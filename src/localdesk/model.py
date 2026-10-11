@@ -4,15 +4,19 @@ import json
 import os
 from pathlib import Path
 
+from localdesk.config import TaskSpec
 from localdesk.core import validate_distribution, validate_text
 from localdesk.schema import CATEGORIES, QUESTIONS, schema_hash
 
 
 def validate_manifest(manifest: dict) -> None:
-    required = {"schema_sha256", "base_model", "dataset_sha256", "upstream", "calibration"}
+    required = {"base_model", "dataset_sha256", "upstream", "calibration"}
     if not isinstance(manifest, dict) or not required <= manifest.keys():
         raise ValueError("checkpoint requires a complete LocalDesk manifest")
-    if manifest["schema_sha256"] != schema_hash():
+    if "task" in manifest:
+        if TaskSpec.from_dict(manifest["task"]).digest != manifest.get("task_sha256"):
+            raise ValueError("checkpoint task mismatch")
+    elif manifest.get("schema_sha256") != schema_hash():
         raise ValueError("checkpoint schema mismatch")
     if not isinstance(manifest["calibration"], dict) or not manifest["calibration"]:
         raise ValueError("checkpoint must include calibration provenance")
@@ -31,6 +35,7 @@ class ModelBackend:
             )
         self.manifest = json.loads(path.read_text(encoding="utf-8"))
         validate_manifest(self.manifest)
+        self.task = TaskSpec.from_dict(self.manifest["task"]) if "task" in self.manifest else None
         # Offline inference needs the adapter AND its base model already in the local HF cache.
         os.environ["HF_HUB_OFFLINE"] = "1"
         os.environ["HF_HUB_DISABLE_TELEMETRY"] = "1"
@@ -47,13 +52,27 @@ class ModelBackend:
         )
         self.api.for_inference(self.model)
 
+    @classmethod
+    def from_loaded(cls, api, model, tokenizer, manifest):
+        validate_manifest(manifest)
+        instance = cls.__new__(cls)
+        instance.api, instance.model, instance.tokenizer, instance.manifest = (
+            api,
+            model,
+            tokenizer,
+            manifest,
+        )
+        instance.task = TaskSpec.from_dict(manifest["task"]) if "task" in manifest else None
+        api.for_inference(model)
+        return instance
+
     def predict(self, text: str) -> dict[str, dict[str, float]]:
         text = validate_text(text)
-        raw = self.api.predict(self.model, self.tokenizer, text, QUESTIONS)
-        if not isinstance(raw, dict) or set(raw) != set(QUESTIONS):
+        questions = self.task.questions if self.task else QUESTIONS
+        labels = self.task.labels if self.task else tuple(CATEGORIES)
+        raw = self.api.predict(self.model, self.tokenizer, text, questions)
+        if not isinstance(raw, dict) or set(raw) != set(questions):
             raise ValueError("Unsloth returned an invalid question set")
         if not isinstance(raw["category"], dict) or "probabilities" not in raw["category"]:
             raise ValueError("Unsloth did not return category probabilities")
-        return {
-            "category": validate_distribution(raw["category"]["probabilities"], list(CATEGORIES))
-        }
+        return {"category": validate_distribution(raw["category"]["probabilities"], list(labels))}

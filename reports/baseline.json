@@ -5,9 +5,9 @@
   "classification": {
     "count": 524,
     "accuracy": 0.6946564885496184,
-    "ece": 0.03678665929929821,
-    "nll": 0.8241721564120535,
-    "brier": 0.4092938427192959,
+    "ece": 0.0367866592992982,
+    "nll": 0.8241721564120533,
+    "brier": 0.40929384271929575,
     "macro_recall": 0.6447332442811837,
     "per_class_recall": {
       "Active Directory": 0.3333333333333333,
@@ -24,7 +24,97 @@
       "O365": 88,
       "Software": 58,
       "Support general": 182
-    }
+    },
+    "per_class": {
+      "Active Directory": {
+        "precision": 0.4838709677419355,
+        "recall": 0.3333333333333333,
+        "f1": 0.39473684210526316,
+        "support": 45
+      },
+      "Computer-Services": {
+        "precision": 0.7142857142857143,
+        "recall": 0.6097560975609756,
+        "f1": 0.6578947368421052,
+        "support": 41
+      },
+      "Fileservice": {
+        "precision": 0.9423076923076923,
+        "recall": 0.8909090909090909,
+        "f1": 0.9158878504672897,
+        "support": 110
+      },
+      "O365": {
+        "precision": 0.6,
+        "recall": 0.7159090909090909,
+        "f1": 0.6528497409326425,
+        "support": 88
+      },
+      "Software": {
+        "precision": 0.5373134328358209,
+        "recall": 0.6206896551724138,
+        "f1": 0.576,
+        "support": 58
+      },
+      "Support general": {
+        "precision": 0.6978021978021978,
+        "recall": 0.6978021978021978,
+        "f1": 0.6978021978021978,
+        "support": 182
+      }
+    },
+    "confusion_matrix": {
+      "Active Directory": {
+        "Active Directory": 15,
+        "Computer-Services": 1,
+        "Fileservice": 2,
+        "O365": 3,
+        "Software": 3,
+        "Support general": 21
+      },
+      "Computer-Services": {
+        "Active Directory": 1,
+        "Computer-Services": 25,
+        "Fileservice": 1,
+        "O365": 6,
+        "Software": 2,
+        "Support general": 6
+      },
+      "Fileservice": {
+        "Active Directory": 3,
+        "Computer-Services": 1,
+        "Fileservice": 98,
+        "O365": 3,
+        "Software": 2,
+        "Support general": 3
+      },
+      "O365": {
+        "Active Directory": 1,
+        "Computer-Services": 2,
+        "Fileservice": 1,
+        "O365": 63,
+        "Software": 4,
+        "Support general": 17
+      },
+      "Software": {
+        "Active Directory": 3,
+        "Computer-Services": 2,
+        "Fileservice": 1,
+        "O365": 8,
+        "Software": 36,
+        "Support general": 8
+      },
+      "Support general": {
+        "Active Directory": 8,
+        "Computer-Services": 4,
+        "Fileservice": 1,
+        "O365": 22,
+        "Software": 20,
+        "Support general": 127
+      }
+    },
+    "macro_f1": 0.6491952280249165,
+    "weighted_f1": 0.6934032115624762
   },
   "accepted_count": 231,
   "coverage": 0.44083969465648853,
@@ -41,13 +131,13 @@
     "ood": "35133b6e60bf3bea62256e6a66531f888713782131f10fb4787625c5b9c90c19"
   },
   "source": "https://zenodo.org/records/7648117",
-  "model_sha256": "5113c679d962419bf34f0cd49159519d176933a3fa42ee9437c2fa41e0c5767e",
+  "model_sha256": "50250544140f138471257d75ae2f68e714eb37fcd927de867377b34ac4570e04",
   "recipe_sha256": {
     "scripts/train_baseline.py": "5fa694e4b230e0b7f4797ef8cf145ce9f5bde1114f77cc0c4b8fc9fa43eae7f3",
-    "src/localdesk/baseline.py": "ed2080b6c8f2797250fa959d4ecaf1e713accb8d61611cffd2bcb9eb4d7a480e",
-    "src/localdesk/core.py": "6fb4ba4639804f8ac6990c9d343039326086d0c72e41eda5563d7de436fd28b5",
-    "src/localdesk/data.py": "3015810b13011906919e3cb64b6180e4f46d0066dc17a11ec13171d4c1fd6904",
-    "src/localdesk/metrics.py": "7fcfc0411993db6c9f893f0d8affcb03b66f07f994b4d9d4d79e5bba222fb68a",
+    "src/localdesk/baseline.py": "7b112a41876a8fdfbc4552f6a28fdeeb993040bb7f5c3cd1c410bf32729d6415",
+    "src/localdesk/core.py": "821fe00298695d726cef3325365cbf275daca1b5cc99459b863b2aa0e4cbe564",
+    "src/localdesk/data.py": "2a591b39488d1f01931f7d9671537eda5482feddd824b5dab274067c8d999e78",
+    "src/localdesk/metrics.py": "7f24b3341ff226da322e9711689c0e578d8a661b2496602f6555d3938a513e9d",
     "src/localdesk/schema.py": "d6824689ffae0b16fbcebc396abf4a1a1cfeaa9d0ccf6715e309da1295285c80"
   },
   "split_counts": {

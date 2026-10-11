@@ -20,7 +20,7 @@ jobs:
         with:
           python-version: ${{ matrix.python }}
       - name: Install project and development tools
-        run: python -m pip install '.[dev]'
+        run: python -m pip install '.[dev,baseline,service]'
       - name: Lint
         run: ruff check .
       - name: Format

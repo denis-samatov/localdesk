@@ -1,0 +1,34 @@
+{
+  "task": "../tasks/it-support.json",
+  "dataset": {
+    "splits": {
+      "train": "../data/zenodo/train.jsonl",
+      "calibration": "../data/zenodo/calibration.jsonl",
+      "test": "../data/zenodo/test.jsonl"
+    },
+    "format": "jsonl",
+    "text_column": "state",
+    "label_column": "gold.category",
+    "id_column": "id",
+    "group_column": "group",
+    "provenance": "public_real_it_tickets_zenodo_7648117",
+    "sha256": {
+      "train": "6ff23f10b38f2bb592889927f459a5b0f9d272a90ecde63156362231e097cd5a",
+      "calibration": "7f70da4bdc380a9598bb7f73b33561e958628863a1850b9ffed2beab26ff768f",
+      "test": "9f3030027499102ded838f00a6ff9091aca6ec5418a0597c4b01650f24eaea80"
+    }
+  },
+  "registry": "../artifacts/registry",
+  "training": {
+    "backend": "baseline",
+    "C": 4.0,
+    "max_iter": 1000
+  },
+  "gates": {
+    "min_accuracy": 0.6,
+    "min_macro_f1": 0.5,
+    "max_ece": 0.1,
+    "min_accepted_accuracy": 0.85,
+    "min_coverage": 0.2
+  }
+}

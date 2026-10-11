@@ -1,53 +1,62 @@
-# Validation evidence — 2026-10-11
+# Validation evidence — configurable service v0.2
 
-The published result is a **CPU logistic-regression baseline trained on real
-public IT tickets**. It is not a Qwen model or a GPU training result.
+## Real configuration reuse
 
-## Executed locally
+The same pipeline/CLI executed two configurations with different files and labels:
 
-- Source download: four CSVs from Zenodo 7648117. Fixed SHA-256 hashes match.
-  The record's metadata license is CC BY 4.0.
-- `python scripts/prepare_data.py`: 690 train / 170 calibration / 524 test / 2 OOD.
-  Source IDs join correctly; there are 33 raw normalized cross-split groups,
-  43 cross-split groups under actual baseline preprocessing, and two groups
-  with contradictory labels. Prepared groups do not cross any split.
-- `python scripts/train_baseline.py`: weights fitted on training only; temperature
-  0.60 fitted on calibration only. Exported stdlib logits match scikit-learn
-  calibration logits at `atol=1e-10, rtol=1e-10`.
-- Cleaned test: 69.4656% category accuracy; 231/524 route proposals (44.0840%
-  coverage); 211/231 correct proposals (91.3420%). Per-class support/recall,
-  NLL, Brier and ECE are recorded in `reports/baseline.json`.
-- `pytest -q`: 57 passed on Python 3.11.15. Tests cover text validation,
-  distributions, policy boundaries, duplicate/conflicting-label handling,
-  feature equivalence, dataset tampering, model/recipe hashes, saved-model
-  adapter errors, loopback HTTP requests and notebook Python syntax.
-- `ruff check .`: passed. `ruff format --check .`: passed.
-- `python -m build`: wheel and sdist built successfully.
-- Browser interaction: local UI produced a Fileservice route for the shared-folder
-  example and a review decision for a low-confidence password example. The
-  full-page screenshot is `docs/demo.png`.
-- Separate review reproduced and helped resolve preprocessing leakage and a GPU
-  import-order bug. Reviewer then independently confirmed zero feature-vector
-  overlap between all pairs of splits and the final baseline coverage/accuracy.
+| Version | Task / labels | Train / cal / test | Accuracy | Macro F1 |
+| --- | --- | --- | --- | --- |
+| it-v2 | IT support, 6 source labels | 690 / 170 / 524 | 0.694656 | 0.649195 |
+| sms-v1 | SMS, ham/spam | 3334 / 768 / 1024 | 0.974609 | 0.938196 |
 
-The local commands ran from the repository checkout with its development
-virtual environment. CPU fitting used Python 3.13.5, scikit-learn 1.6.0,
-NumPy 2.2.6 and SciPy 1.14.1. Model/data/recipe hashes bind the baseline report
-to the shipped artifact and source; raw ticket text is not published in Git.
+Both are actually fitted CPU logistic models. Temperature was fitted on calibration
+only; class mapping/export logits and uncalibrated probabilities matched sklearn.
+The same importer, fitter, evaluator and registry handled both tasks. Configured
+gates passed; no task-specific core branches or invented gold labels were added.
 
-## Not established
+`verify_service_reuse.py` then loaded/promoted each real exported artifact and
+called the actual ASGI application with a held-out source request, confirming
+readiness, returned option keys, version and report agreement. It restored the
+previous pointer. Proof/report: `reports/service-reuse.json`. This is a functional
+contract check, not load testing or a field accuracy trial.
 
-- Qwen GPU training, CUDA dependency installation, GPU memory consumption,
-  throughput, convergence and real saved-Qwen checkpoint reloading.
-  The optional Linux/CUDA dependency-resolution attempt was interrupted during
-  upstream Git fetching; it is not a successful resolver check. Direct revisions
-  are inspected and pinned, but the GPU recipe remains experimental.
-- Fake `FastDecisionModel` boundary tests establish adapter/orchestration
-  contracts only. Notebook syntax checks are not executed notebook cells.
-- Russian accuracy, general out-of-domain detection, robustness to arbitrary
-  prompt injection, temporal generalization or field performance in an organization.
-- The two EOL challenge texts receive review; two templates are insufficient to
-  qualify an OOD detector.
+## Executed software checks
 
-Hosted CI status belongs to the exact GitHub commit and must be read from
-GitHub Actions. The workflow definition itself is not evidence that hosted jobs ran.
+- Full pytest suite on the locked Python 3.11 environment: 94 tests. Tests cover arbitrary
+  labels, binary/multiclass export parity, strict config/types, group transitivity,
+  mixed conversations, conflicting/equivalent inputs, split leakage, corrupted
+  artifact hashes, model/data/report identity, failed/ungated candidates, partial
+  Qwen checkpoint rejection and active-pointer preservation, smoke exclusion,
+  streamed hashing, API/auth/origin/body/batch/readiness/metrics and legacy paths.
+- Ruff lint and format checks passed. Wheel/sdist builds passed.
+- Both original public source adapters verify pinned SHA-256 source bytes.
+- CPU Docker image built; an unprivileged container with read-only filesystem and
+  model mount reached healthy/ready and returned actual predictions on loopback.
+  No other user's containers were changed. The operator dashboard displayed
+  active labels, measured per-class quality/gates and the concrete training plan.
+- Independent review identified and helped resolve mixed-group allocation,
+  report/model dataset identity, anonymous host/origin protection, and completeness
+  of pinned Qwen head/adapter/tokenizer/serving-config files. The same regressions
+  guard against recurrence.
+
+Raw corpora, checkpoints, registry/private paths and secrets are excluded from Git.
+The packaged legacy CPU baseline was regenerated after its source changed and its
+report remains bound to model/data/recipe hashes.
+
+## Boundaries
+
+GPU training, Qwen checkpoint runtime reload, GPU memory/latency and CUDA dependency
+installation remain unexecuted. Fake/structural checkpoint tests do not establish
+GPU correctness. The pinned CUDA recipe and notebook remain experimental; notebook
+Python syntax is checked, not a completed Colab run. The provided Docker image
+qualifies only CPU inference, not Qwen serving.
+
+No claim of Russian accuracy, broad OOD detection, prompt-injection immunity,
+current spam coverage, multi-tenant isolation or production field performance.
+Exact-feature grouping is not semantic/temporal/organization holdout independence.
+Registry hashes are integrity checks, not signatures against a writer controlling
+all files. Repeated test-set use for human experiment selection needs a fresh final
+holdout before consequential accuracy claims.
+
+Hosted CI is attached to a concrete GitHub commit and is verified separately after
+publication; having a workflow file alone is not a successful hosted execution.

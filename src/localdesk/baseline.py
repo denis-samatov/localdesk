@@ -9,6 +9,7 @@ import unicodedata
 from collections import Counter
 from importlib.resources import files
 
+from localdesk.config import TaskSpec
 from localdesk.core import validate_text
 from localdesk.schema import CATEGORIES, schema_hash
 
@@ -46,18 +47,29 @@ class BaselineBackend:
         if bundle is None:
             payload = files("localdesk").joinpath("assets/baseline.json.gz").read_bytes()
             bundle = json.loads(gzip.decompress(payload))
-        if bundle.get("schema_sha256") != schema_hash():
-            raise ValueError("baseline schema mismatch")
-        if set(bundle["classes"]) != set(CATEGORIES) or len(bundle["classes"]) != len(CATEGORIES):
+        self.task = TaskSpec.from_dict(bundle["task"]) if "task" in bundle else None
+        if self.task:
+            if bundle.get("task_sha256") != self.task.digest:
+                raise ValueError("baseline task hash mismatch")
+            labels = self.task.labels
+        else:
+            if bundle.get("schema_sha256") != schema_hash():
+                raise ValueError("baseline schema mismatch")
+            labels = tuple(CATEGORIES)
+        if set(bundle["classes"]) != set(labels) or len(bundle["classes"]) != len(labels):
             raise ValueError("baseline class keys mismatch")
-        if bundle["n_features"] != N_FEATURES or len(bundle["coef"]) != len(CATEGORIES):
+        if bundle["n_features"] != N_FEATURES or len(bundle["coef"]) != len(labels):
             raise ValueError("baseline dimensions mismatch")
         if any(len(row) != N_FEATURES for row in bundle["coef"]) or len(bundle["intercept"]) != len(
-            CATEGORIES
+            labels
         ):
             raise ValueError("baseline coefficient shape mismatch")
         if not math.isfinite(bundle["temperature"]) or bundle["temperature"] <= 0:
             raise ValueError("invalid calibration temperature")
+        if any(not math.isfinite(value) for row in bundle["coef"] for value in row):
+            raise ValueError("non-finite model coefficient")
+        if any(not math.isfinite(value) for value in bundle["intercept"]):
+            raise ValueError("non-finite model intercept")
         self.bundle = bundle
 
     def logits(self, text: str) -> list[float]:

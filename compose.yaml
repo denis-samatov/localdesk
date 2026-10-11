@@ -1,0 +1,18 @@
+services:
+  decision-api:
+    build: .
+    ports:
+      - "127.0.0.1:8765:8765"
+    environment:
+      LOCALDESK_API_KEY: ${LOCALDESK_API_KEY:?Set LOCALDESK_API_KEY before starting}
+      LOCALDESK_REGISTRY: /models
+    volumes:
+      - ./artifacts/registry:/models:ro
+    read_only: true
+    tmpfs:
+      - /tmp
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    restart: unless-stopped

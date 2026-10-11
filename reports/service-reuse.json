@@ -1,0 +1,260 @@
+[
+  {
+    "run_id": "it-v2",
+    "task_id": "it-support",
+    "label_count": 6,
+    "api_prediction_status": 200,
+    "task_sha256": "7e0328fe1ba3923301cc4c63ce1b4f29765db32d94390aa6955cb85a1c8970be",
+    "dataset_split_sha256": {
+      "train": "0f20ff538704cb118a163527852c583e27d522bd77e5d681e3e456e4608a85e5",
+      "calibration": "eb2af5dc7d97f718164fb6d83127b91a1831f4aa2c4a77d7868c395f5e1519a7",
+      "test": "0d1fe15e7937ba5be656d20b0a2db2cc6446ea859cbb39eb8ff2daffbc987a60"
+    },
+    "classification": {
+      "accuracy": 0.6946564885496184,
+      "brier": 0.40929384271929575,
+      "confusion_matrix": {
+        "Active Directory": {
+          "Active Directory": 15,
+          "Computer-Services": 1,
+          "Fileservice": 2,
+          "O365": 3,
+          "Software": 3,
+          "Support general": 21
+        },
+        "Computer-Services": {
+          "Active Directory": 1,
+          "Computer-Services": 25,
+          "Fileservice": 1,
+          "O365": 6,
+          "Software": 2,
+          "Support general": 6
+        },
+        "Fileservice": {
+          "Active Directory": 3,
+          "Computer-Services": 1,
+          "Fileservice": 98,
+          "O365": 3,
+          "Software": 2,
+          "Support general": 3
+        },
+        "O365": {
+          "Active Directory": 1,
+          "Computer-Services": 2,
+          "Fileservice": 1,
+          "O365": 63,
+          "Software": 4,
+          "Support general": 17
+        },
+        "Software": {
+          "Active Directory": 3,
+          "Computer-Services": 2,
+          "Fileservice": 1,
+          "O365": 8,
+          "Software": 36,
+          "Support general": 8
+        },
+        "Support general": {
+          "Active Directory": 8,
+          "Computer-Services": 4,
+          "Fileservice": 1,
+          "O365": 22,
+          "Software": 20,
+          "Support general": 127
+        }
+      },
+      "count": 524,
+      "ece": 0.0367866592992982,
+      "macro_f1": 0.6491952280249165,
+      "macro_recall": 0.6447332442811837,
+      "nll": 0.8241721564120533,
+      "per_class": {
+        "Active Directory": {
+          "f1": 0.39473684210526316,
+          "precision": 0.4838709677419355,
+          "recall": 0.3333333333333333,
+          "support": 45
+        },
+        "Computer-Services": {
+          "f1": 0.6578947368421052,
+          "precision": 0.7142857142857143,
+          "recall": 0.6097560975609756,
+          "support": 41
+        },
+        "Fileservice": {
+          "f1": 0.9158878504672897,
+          "precision": 0.9423076923076923,
+          "recall": 0.8909090909090909,
+          "support": 110
+        },
+        "O365": {
+          "f1": 0.6528497409326425,
+          "precision": 0.6,
+          "recall": 0.7159090909090909,
+          "support": 88
+        },
+        "Software": {
+          "f1": 0.576,
+          "precision": 0.5373134328358209,
+          "recall": 0.6206896551724138,
+          "support": 58
+        },
+        "Support general": {
+          "f1": 0.6978021978021978,
+          "precision": 0.6978021978021978,
+          "recall": 0.6978021978021978,
+          "support": 182
+        }
+      },
+      "per_class_recall": {
+        "Active Directory": 0.3333333333333333,
+        "Computer-Services": 0.6097560975609756,
+        "Fileservice": 0.8909090909090909,
+        "O365": 0.7159090909090909,
+        "Software": 0.6206896551724138,
+        "Support general": 0.6978021978021978
+      },
+      "per_class_support": {
+        "Active Directory": 45,
+        "Computer-Services": 41,
+        "Fileservice": 110,
+        "O365": 88,
+        "Software": 58,
+        "Support general": 182
+      },
+      "weighted_f1": 0.6934032115624762
+    },
+    "quality": {
+      "gates": {
+        "max_ece": {
+          "actual": 0.0367866592992982,
+          "passed": true,
+          "threshold": 0.1
+        },
+        "min_accepted_accuracy": {
+          "actual": 0.9134199134199135,
+          "passed": true,
+          "threshold": 0.85
+        },
+        "min_accuracy": {
+          "actual": 0.6946564885496184,
+          "passed": true,
+          "threshold": 0.6
+        },
+        "min_coverage": {
+          "actual": 0.44083969465648853,
+          "passed": true,
+          "threshold": 0.2
+        },
+        "min_macro_f1": {
+          "actual": 0.6491952280249165,
+          "passed": true,
+          "threshold": 0.5
+        }
+      },
+      "qualified": true,
+      "requirements": {
+        "max_ece": 0.1,
+        "min_accepted_accuracy": 0.85,
+        "min_accuracy": 0.6,
+        "min_coverage": 0.2,
+        "min_macro_f1": 0.5
+      }
+    },
+    "evidence": "real_exported_model_asgi_requests",
+    "limitation": "One API contract request per domain, not a load or field test."
+  },
+  {
+    "run_id": "sms-v1",
+    "task_id": "sms-filter",
+    "label_count": 2,
+    "api_prediction_status": 200,
+    "task_sha256": "a08f55729b7775454ff2372e2dd3e4eacacf79c904d75d1f88fb2eb2ebaa2822",
+    "dataset_split_sha256": {
+      "train": "ef4eca9e21f74268aa24c930608c4adcbf16742deab86bfad4d8eb6456bd8c3e",
+      "calibration": "da19bc1ec8798f84b4793b4de3dd6e54a3f64f766a6426de79f31b0ae0c72a2a",
+      "test": "181395a0f3dee00a5178802d0876d151c273d87458867f0f043987cd5cb5479c"
+    },
+    "classification": {
+      "accuracy": 0.974609375,
+      "brier": 0.03768459284481322,
+      "confusion_matrix": {
+        "ham": {
+          "ham": 892,
+          "spam": 7
+        },
+        "spam": {
+          "ham": 19,
+          "spam": 106
+        }
+      },
+      "count": 1024,
+      "ece": 0.005501054947005197,
+      "macro_f1": 0.9381958308185153,
+      "macro_recall": 0.9201067853170188,
+      "nll": 0.07804844209713661,
+      "per_class": {
+        "ham": {
+          "f1": 0.9856353591160222,
+          "precision": 0.9791437980241493,
+          "recall": 0.9922135706340378,
+          "support": 899
+        },
+        "spam": {
+          "f1": 0.8907563025210085,
+          "precision": 0.9380530973451328,
+          "recall": 0.848,
+          "support": 125
+        }
+      },
+      "per_class_recall": {
+        "ham": 0.9922135706340378,
+        "spam": 0.848
+      },
+      "per_class_support": {
+        "ham": 899,
+        "spam": 125
+      },
+      "weighted_f1": 0.9740534430277636
+    },
+    "quality": {
+      "gates": {
+        "max_ece": {
+          "actual": 0.005501054947005197,
+          "passed": true,
+          "threshold": 0.1
+        },
+        "min_accepted_accuracy": {
+          "actual": 0.9907502569373073,
+          "passed": true,
+          "threshold": 0.95
+        },
+        "min_accuracy": {
+          "actual": 0.974609375,
+          "passed": true,
+          "threshold": 0.9
+        },
+        "min_coverage": {
+          "actual": 0.9501953125,
+          "passed": true,
+          "threshold": 0.5
+        },
+        "min_macro_f1": {
+          "actual": 0.9381958308185153,
+          "passed": true,
+          "threshold": 0.85
+        }
+      },
+      "qualified": true,
+      "requirements": {
+        "max_ece": 0.1,
+        "min_accepted_accuracy": 0.95,
+        "min_accuracy": 0.9,
+        "min_coverage": 0.5,
+        "min_macro_f1": 0.85
+      }
+    },
+    "evidence": "real_exported_model_asgi_requests",
+    "limitation": "One API contract request per domain, not a load or field test."
+  }
+]

@@ -13,6 +13,13 @@ reserved as an unsupported-category challenge; conversion to Unsloth choice rows
 The published linear baseline was trained on this adapted data. Keep this attribution
 with the baseline. Ticket texts are downloaded on demand and excluded from this Git repository.
 
+The second configured domain uses **SMS Spam Collection**, Tiago Almeida and
+Jos Hidalgo, UCI Machine Learning Repository, 2011.
+Source: https://doi.org/10.24432/C5CC84 — CC BY 4.0.
+Changes: verified archive extraction and conversion to id/text/label CSV;
+conservative equivalent-input deduplication and deterministic grouped splits.
+Original labels are retained. Raw SMS content is excluded from Git and serving logs.
+
 Optional Unsloth / Unsloth Zoo dependencies and the Qwen model retain their own
 licenses. No Unsloth implementation code or notebook content is copied into this
 repository. API integration does not relicense the upstream software. Consult the

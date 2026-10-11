@@ -18,6 +18,87 @@ UPSTREAM = {
 }
 
 
+def fit_qwen(experiment, prepared, output: Path):
+    """Same prepared TaskSpec/splits as CPU fitting. Requires actual CUDA execution."""
+    from localdesk.model import ModelBackend
+    from localdesk.registry import atomic_json
+
+    verify_upstream_revisions()
+    os.environ["HF_HUB_DISABLE_TELEMETRY"] = "1"
+    # isort: off
+    from unsloth import DecisionTrainer, FastDecisionModel, is_bfloat16_supported
+    import torch
+    from transformers import TrainingArguments
+
+    # isort: on
+    if not torch.cuda.is_available():
+        raise RuntimeError("Qwen training requires an NVIDIA CUDA GPU")
+    parameters = experiment.training
+    bf16 = is_bfloat16_supported()
+    model, tokenizer = FastDecisionModel.from_pretrained(
+        model_name=BASE_MODEL,
+        revision=BASE_REVISION,
+        max_seq_length=2048,
+        load_in_4bit=True,
+        dtype=torch.bfloat16 if bf16 else torch.float32,
+    )
+    model = FastDecisionModel.get_peft_model(
+        model,
+        r=parameters.get("rank", 16),
+        lora_alpha=parameters.get("rank", 16),
+        lora_dropout=0,
+        use_gradient_checkpointing="unsloth",
+        random_state=experiment.seed,
+    )
+    items, reports = build_training_items(FastDecisionModel, model, tokenizer, prepared.rows)
+    trainer = DecisionTrainer(
+        model=model,
+        processing_class=tokenizer,
+        train_dataset=items["train"],
+        args=TrainingArguments(
+            per_device_train_batch_size=parameters.get("batch_size", 2),
+            gradient_accumulation_steps=parameters.get("gradient_accumulation", 4),
+            num_train_epochs=parameters.get("epochs", 2),
+            max_steps=parameters.get("max_steps", -1),
+            learning_rate=parameters.get("learning_rate", 2e-4),
+            warmup_ratio=0.1,
+            weight_decay=0.01,
+            lr_scheduler_type="cosine",
+            bf16=bf16,
+            fp16=False,
+            eval_strategy="no",
+            save_strategy="no",
+            logging_steps=10,
+            output_dir=str(output.parent / "trainer-state"),
+            report_to="none",
+            seed=experiment.seed,
+        ),
+    )
+    stats = trainer.train()
+    calibration = FastDecisionModel.calibrate(model, tokenizer, items["calibration"])
+    model.save_pretrained(str(output), tokenizer)
+    manifest = {
+        "task": experiment.task.to_dict(),
+        "task_sha256": experiment.task.digest,
+        "base_model": BASE_MODEL,
+        "base_revision": BASE_REVISION,
+        "dataset_sha256": prepared.manifest["split_sha256"],
+        "upstream": UPSTREAM,
+        "calibration": calibration,
+        "build_reports": reports,
+        "training": stats.metrics,
+        "smoke_run": "max_steps" in parameters,
+        "gpu": torch.cuda.get_device_name(0),
+        "versions": {
+            name: importlib.metadata.version(name)
+            for name in ("torch", "transformers", "unsloth", "unsloth_zoo")
+        },
+    }
+    atomic_json(output / "localdesk_manifest.json", manifest)
+    backend = ModelBackend.from_loaded(FastDecisionModel, model, tokenizer, manifest)
+    return backend, manifest
+
+
 def build_training_items(api, model, tokenizer, splits: dict) -> tuple[dict, dict]:
     items, reports = {}, {}
     for split in ("train", "calibration", "test"):

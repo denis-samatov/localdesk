@@ -17,9 +17,22 @@ The experimental Linux/CUDA recipe in `requirements-gpu.txt` also specifies
 PyTorch 2.8.0, torchvision 0.23.0 and Transformers 5.2.0. Source packages are
 installed directly from the pinned upstream Git revisions. The trainer checks
 installed `direct_url.json` metadata and refuses mismatched revisions.
-This is not a complete transitive dependency lock; every actual training run
-records its installed package versions and `pip freeze`. Do not substitute the
+This is not a complete transitive dependency lock; each configurable training run records its relevant package versions and pinned
+source revisions. The legacy standalone trainer also records `pip freeze`. Do not substitute the
 CPU `uv.lock` for a CUDA environment lock.
+
+## Configurable service backend
+
+Use the same Experiment and TaskSpec as the CPU baseline; set `training.backend`
+to `unsloth` and declare `epochs`, `rank`, `batch_size`, `gradient_accumulation`
+and `learning_rate`. Run `localdesk train experiments/it-qwen.json --run-id qwen-v1`.
+The version contains checkpoint/, task/data/plan/report and checksummed manifest.
+Changing labels or text files requires configuration only. Smoke max_steps runs
+remain unqualified even if their measured gates pass. Promotion validates the
+pinned adapter/head/tokenizer layout without loading GPU weights. Serving loads
+GPU weights separately and requires the pinned base model cached locally.
+
+The original notebook now creates this experiment and runs the shared pipeline.
 
 ## Colab
 
