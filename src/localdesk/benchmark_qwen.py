@@ -111,7 +111,9 @@ def _release(torch):
     torch.cuda.empty_cache()
 
 
-def run_qwen_stages(experiment, prepared, calibration, output, report, save_method):
+def run_qwen_stages(
+    experiment, prepared, calibration, output, report, save_method, *, checkpoint=None
+):
     try:
         api, torch, bf16_supported = gpu_stack()
     except (ImportError, RuntimeError, OSError, importlib.metadata.PackageNotFoundError) as error:
@@ -160,17 +162,23 @@ def run_qwen_stages(experiment, prepared, calibration, output, report, save_meth
                     experiment, training={"backend": "unsloth", **parameters}
                 )
                 subset = Prepared({**prepared.rows, "calibration": calibration}, prepared.manifest)
-                checkpoint = output / "qwen-checkpoint"
-                trained, manifest = fit_qwen(configured, subset, checkpoint, calibrate=False)
-                del trained
-                _release(torch)
+                model_path = checkpoint or output / "qwen-checkpoint"
+                if checkpoint is None:
+                    trained, manifest = fit_qwen(configured, subset, model_path, calibrate=False)
+                    del trained
+                    _release(torch)
+                else:
+                    manifest = json.loads(
+                        (model_path / "localdesk_manifest.json").read_text(encoding="utf-8")
+                    )
                 # Score the saved/reloaded head with T=1, then use common heldout calibration.
-                backend = ModelBackend(checkpoint)
+                backend = ModelBackend(model_path)
                 backend.synchronize = torch.cuda.synchronize
                 info.update(
                     {
                         "training": manifest["training"],
                         "checkpoint_reloaded": True,
+                        "checkpoint_reused": checkpoint is not None,
                         "calibration": "shared benchmark temperature; head saved at T=1",
                         "parameters": configured.training,
                     }

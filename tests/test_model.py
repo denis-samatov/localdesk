@@ -63,3 +63,67 @@ def test_adapter_uses_explicit_probability_keys_and_never_falls_back(tmp_path, m
     assert calls[0]["local_files_only"] is True
     assert backend.predict("A request")["category"]["Fileservice"] == 1 / 6
     assert backend.name == "unsloth"
+
+
+def test_pinned_four_decimal_unsloth_output_is_normalized_at_adapter_boundary():
+    from localdesk.core import validate_distribution
+    from localdesk.schema import CATEGORIES
+
+    values = dict(zip(CATEGORIES, [0.3, 0.25, 0.2, 0.15, 0.08, 0.0201], strict=True))
+    with pytest.raises(ValueError, match="sum to one"):
+        validate_distribution(values, list(CATEGORIES))
+
+    class API:
+        @staticmethod
+        def for_inference(model):
+            pass
+
+        @staticmethod
+        def predict(*args):
+            return {"category": {"probabilities": values}}
+
+    manifest = {
+        "schema_sha256": schema_hash(),
+        "calibration": {"temperature": 1},
+        "base_model": "fixture",
+        "dataset_sha256": {},
+        "upstream": {},
+    }
+    backend = ModelBackend.from_loaded(API, object(), object(), manifest)
+    actual = backend.predict("request")["category"]
+    assert sum(actual.values()) == pytest.approx(1.0, abs=1e-12)
+    assert actual == pytest.approx(
+        {key: value / sum(values.values()) for key, value in values.items()}
+    )
+
+
+@pytest.mark.parametrize(
+    "values",
+    [
+        [0.3, 0.25, 0.2, 0.05, 0, 0],
+        [0.3, 0.25, 0.2, 0.15, 0.08, 0.020123],
+        [True, 0, 0, 0, 0, 0],
+    ],
+)
+def test_adapter_does_not_accept_missing_mass_arbitrary_precision_or_booleans(values):
+    from localdesk.schema import CATEGORIES
+
+    class API:
+        @staticmethod
+        def for_inference(model):
+            pass
+
+        @staticmethod
+        def predict(*args):
+            return {"category": {"probabilities": dict(zip(CATEGORIES, values, strict=True))}}
+
+    manifest = {
+        "schema_sha256": schema_hash(),
+        "calibration": {"temperature": 1},
+        "base_model": "fixture",
+        "dataset_sha256": {},
+        "upstream": {},
+    }
+    backend = ModelBackend.from_loaded(API, object(), object(), manifest)
+    with pytest.raises(ValueError):
+        backend.predict("request")

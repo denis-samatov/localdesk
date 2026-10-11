@@ -34,7 +34,7 @@
   },
   "memory": {
     "gpu_scope": "per-stage peak VRAM includes loading/training/inference",
-    "process_peak_rss_bytes": 219463680,
+    "process_peak_rss_bytes": 200048640,
     "scope": "cumulative whole benchmark process; not per-model resident size"
   },
   "methods": {
@@ -165,9 +165,9 @@
         "min_margin": 0.2
       },
       "latency_ms": {
-        "mean": 0.054660511717648165,
-        "p50": 0.02862501423805952,
-        "p95": 0.1452893571695312,
+        "mean": 0.05150392359630951,
+        "p50": 0.0288540031760931,
+        "p95": 0.14666067872894928,
         "requests": 524,
         "scope": "warmed sequential batch=1 local backend+validation; no HTTP"
       },
@@ -286,7 +286,7 @@
         },
         "weighted_f1": 0.6934032115624762
       },
-      "stage_seconds": 0.19883370801107958,
+      "stage_seconds": 0.1880366670084186,
       "status": "complete",
       "target_policy": {
         "calibration_accepted": 0,
@@ -435,9 +435,9 @@
         "min_margin": 0.2
       },
       "latency_ms": {
-        "mean": 0.0017231762611826186,
+        "mean": 0.0017317724440829786,
         "p50": 0.0016249832697212696,
-        "p95": 0.0017920057871378958,
+        "p95": 0.0017919810488820076,
         "requests": 524,
         "scope": "warmed sequential batch=1 local backend+validation; no HTTP"
       },
@@ -556,7 +556,7 @@
         },
         "weighted_f1": 0.179075752005709
       },
-      "stage_seconds": 0.024480541003867984,
+      "stage_seconds": 0.01914033299544826,
       "status": "complete",
       "target_policy": {
         "calibration_accepted": 0,
@@ -725,7 +725,7 @@
           "char": 21054,
           "word": 6705
         },
-        "fit_seconds": 2.648457957984647,
+        "fit_seconds": 2.1437351659988053,
         "raw_score_kind": "logistic_probabilities",
         "selected_C": 4.0,
         "selection_split": "tuning",
@@ -739,9 +739,9 @@
         "min_margin": 0.2
       },
       "latency_ms": {
-        "mean": 0.6908982042298751,
-        "p50": 0.5835000047227368,
-        "p95": 1.0740874437033192,
+        "mean": 0.6859639744724872,
+        "p50": 0.6066045025363564,
+        "p95": 1.072939348523505,
         "requests": 524,
         "scope": "warmed sequential batch=1 local backend+validation; no HTTP"
       },
@@ -860,7 +860,7 @@
         },
         "weighted_f1": 0.7730221922869684
       },
-      "stage_seconds": 0.4530045000137761,
+      "stage_seconds": 0.4491240000061225,
       "status": "complete",
       "target_policy": {
         "calibration_accepted": 0,
@@ -1021,7 +1021,7 @@
           "char": 21054,
           "word": 6705
         },
-        "fit_seconds": 0.5081391659914516,
+        "fit_seconds": 0.4476768749882467,
         "raw_score_kind": "softmax_of_svm_margins_not_calibrated_probabilities",
         "selected_C": 0.25,
         "selection_split": "tuning",
@@ -1035,9 +1035,9 @@
         "min_margin": 0.2
       },
       "latency_ms": {
-        "mean": 0.6973619888517082,
-        "p50": 0.5063959979452193,
-        "p95": 1.3034598567173816,
+        "mean": 0.5315779824407935,
+        "p50": 0.4606875008903444,
+        "p95": 0.8956061850767582,
         "requests": 524,
         "scope": "warmed sequential batch=1 local backend+validation; no HTTP"
       },
@@ -1156,7 +1156,7 @@
         },
         "weighted_f1": 0.7673113687992952
       },
-      "stage_seconds": 0.4432596669939812,
+      "stage_seconds": 0.3574945000000298,
       "status": "complete",
       "target_policy": {
         "calibration_accepted": 0,
@@ -1226,8 +1226,9 @@
       ],
       "zero_shot_scoring": "conditional symbolic next-token likelihood; no thinking"
     },
+    "resumed_checkpoint": null,
     "seed": 3407,
-    "source_code_sha256": "174adc94df3a7311947f0694709858b35b7b0e1e4f23729c49b1ceb4a61bcdcc",
+    "source_code_sha256": "192ee8140a91f321e2ce6e612d4b69562857ea2ad539eb709e92db5d91535058",
     "source_sha256": {
       "calibration": "7f70da4bdc380a9598bb7f73b33561e958628863a1850b9ffed2beab26ff768f",
       "test": "9f3030027499102ded838f00a6ff9091aca6ec5418a0597c4b01650f24eaea80",
@@ -1322,7 +1323,7 @@
     "tuning_count": 85,
     "tuning_sha256": "b4f76d011fea4508abf5147b572e096330f76005a6eb5507e0080a372b92b63c"
   },
-  "protocol_sha256": "d7555be5ccfd154221122c30a036b3c307b86596f65b7d8f754701e7805c9108",
+  "protocol_sha256": "917b5d8649738683cb1b44b504d09bf2075b55dcd91762ae18e8ea5ce1f22d90",
   "reference": "tfidf_svm",
   "versions": {
     "numpy": "2.2.6",

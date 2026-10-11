@@ -42,6 +42,7 @@ def main():
     command.add_argument("config", type=Path)
     command.add_argument("--out", type=Path, required=True)
     command.add_argument("--qwen", action="store_true")
+    command.add_argument("--checkpoint", type=Path)
     command.add_argument("--target-error", type=float, default=0.05)
     command.add_argument("--bootstrap-samples", type=int, default=2000)
     command = subparsers.add_parser("api")
@@ -61,6 +62,7 @@ def main():
                     qwen=args.qwen,
                     target_error=args.target_error,
                     bootstrap_samples=args.bootstrap_samples,
+                    checkpoint=args.checkpoint,
                 )
                 print(
                     json.dumps(

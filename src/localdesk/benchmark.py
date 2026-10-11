@@ -12,10 +12,12 @@ from collections import Counter, defaultdict
 from pathlib import Path
 
 from localdesk.baseline import softmax
-from localdesk.config import Experiment, TaskSpec, digest
+from localdesk.config import Experiment, TaskSpec, digest, read_json
 from localdesk.core import validate_distribution
+from localdesk.data import file_hash
 from localdesk.dataset import Prepared, prepare
 from localdesk.metrics import classification_metrics
+from localdesk.model import validate_manifest
 from localdesk.pipeline import fit_baseline
 from localdesk.registry import atomic_json
 from localdesk.training import BASE_MODEL, BASE_REVISION, UPSTREAM, resolve_qwen_training
@@ -391,14 +393,83 @@ def _peak_rss():
         return None
 
 
+def checkpoint_provenance(experiment, prepared, checkpoint):
+    manifest = read_json(checkpoint / "localdesk_manifest.json")
+    validate_manifest(manifest)
+    origin = read_json(checkpoint.parent / "protocol.json")
+    parameters = resolve_qwen_training(experiment.training)
+    epoch = manifest.get("training", {}).get("epoch")
+    if (
+        isinstance(epoch, bool)
+        or not isinstance(epoch, (int, float))
+        or not math.isfinite(epoch)
+        or epoch + 1e-6 < parameters["epochs"]
+    ):
+        raise ValueError("resume requires evidence of full training epochs")
+    if manifest.get("smoke_run") is not False or manifest["calibration"].get("method") != (
+        "identity_for_benchmark"
+    ):
+        raise ValueError(
+            "resume requires a full benchmark checkpoint; smoke/calibrated heads refused"
+        )
+    if type(manifest["calibration"].get("temperature")) not in (int, float) or (
+        manifest["calibration"]["temperature"] != 1.0
+    ):
+        raise ValueError("resume requires identity temperature")
+    serving = read_json(checkpoint / "unsloth_decision_config.json")
+    temperatures = serving.get("temperature", [1, 1, 1])
+    if (
+        not isinstance(temperatures, list)
+        or len(temperatures) != 3
+        or any(type(v) not in (int, float) or v != 1 for v in temperatures)
+        or any(
+            type(serving.get(k, 1)) not in (int, float) or serving.get(k, 1) != 1
+            for k in ("head_temperature", "folded_temperature")
+        )
+        or serving.get("temperature_by_options")
+    ):
+        raise ValueError("resume requires identity serving temperatures without folded calibration")
+    if (
+        manifest.get("task_sha256") != experiment.task.digest
+        or manifest.get("dataset_sha256") != prepared.manifest["split_sha256"]
+        or manifest.get("base_model") != BASE_MODEL
+        or manifest.get("base_revision") != BASE_REVISION
+        or manifest.get("upstream") != UPSTREAM
+        or origin.get("task_sha256") != experiment.task.digest
+        or origin.get("split_sha256") != prepared.manifest["split_sha256"]
+        or origin.get("seed") != experiment.seed
+        or origin.get("qwen", {}).get("training") != resolve_qwen_training(experiment.training)
+    ):
+        raise ValueError("checkpoint task/data/training identity mismatch")
+    paths = sorted(checkpoint.rglob("*"))
+    if any(path.is_symlink() for path in paths):
+        raise ValueError("checkpoint symlinks are forbidden")
+    return {
+        "training_source_sha256": origin["source_code_sha256"],
+        "origin_protocol_sha256": digest(origin),
+        "files_sha256": {
+            p.relative_to(checkpoint).as_posix(): file_hash(p) for p in paths if p.is_file()
+        },
+    }
+
+
 def run_benchmark(
-    experiment: Experiment, output: Path, *, qwen=False, target_error=0.05, bootstrap_samples=2000
+    experiment: Experiment,
+    output: Path,
+    *,
+    qwen=False,
+    target_error=0.05,
+    bootstrap_samples=2000,
+    checkpoint: Path | None = None,
 ):
     if output.exists():
         raise ValueError("benchmark output exists; choose a fresh directory")
     if not 0 < target_error < 1 or type(bootstrap_samples) is not int or bootstrap_samples < 20:
         raise ValueError("invalid error target or bootstrap count")
     prepared = prepare(experiment)
+    if checkpoint is not None and not qwen:
+        raise ValueError("checkpoint resumption requires --qwen")
+    resumed = checkpoint_provenance(experiment, prepared, checkpoint) if checkpoint else None
     tuning, calibration = partition_calibration(
         prepared.rows["calibration"], experiment.task, experiment.seed
     )
@@ -408,6 +479,7 @@ def run_benchmark(
         "split_sha256": prepared.manifest["split_sha256"],
         "source_sha256": prepared.manifest["source_sha256"],
         "source_code_sha256": _source_fingerprint(),
+        "resumed_checkpoint": resumed,
         "qwen": {
             "base_model": BASE_MODEL,
             "base_revision": BASE_REVISION,
@@ -509,7 +581,9 @@ def run_benchmark(
     if qwen:
         from localdesk.benchmark_qwen import run_qwen_stages
 
-        run_qwen_stages(experiment, prepared, calibration, output, report, save_method)
+        run_qwen_stages(
+            experiment, prepared, calibration, output, report, save_method, checkpoint=checkpoint
+        )
     for name in ("hashed_logistic", "qwen_zero_shot", "qwen_decision"):
         if name in predictions:
             report["comparisons"][name + "_vs_" + reference] = paired_comparison(

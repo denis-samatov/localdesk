@@ -179,3 +179,58 @@ def test_gpu_parameters_are_frozen_in_protocol_before_scoring(tmp_path):
     assert first["protocol"]["qwen"]["training"]["rank"] == 16
     assert second["protocol"]["qwen"]["training"]["rank"] == 32
     assert first["protocol_sha256"] != second["protocol_sha256"]
+
+
+def test_resume_checkpoint_requires_matching_data_parameters_and_full_training(tmp_path):
+    import json
+
+    from localdesk.benchmark import checkpoint_provenance
+    from localdesk.training import BASE_MODEL, BASE_REVISION, UPSTREAM, resolve_qwen_training
+
+    experiment = write_config(tmp_path)
+    prepared = prepare(experiment)
+    checkpoint = tmp_path / "old" / "qwen-checkpoint"
+    checkpoint.mkdir(parents=True)
+    metadata = {
+        "task": experiment.task.to_dict(),
+        "task_sha256": experiment.task.digest,
+        "dataset_sha256": prepared.manifest["split_sha256"],
+        "base_model": BASE_MODEL,
+        "base_revision": BASE_REVISION,
+        "upstream": UPSTREAM,
+        "training": {"epoch": 2.0},
+        "smoke_run": False,
+        "calibration": {"method": "identity_for_benchmark", "temperature": 1.0},
+    }
+    (checkpoint / "unsloth_decision_config.json").write_text(json.dumps({"temperature": [1, 1, 1]}))
+    origin = {
+        "task_sha256": experiment.task.digest,
+        "split_sha256": prepared.manifest["split_sha256"],
+        "seed": experiment.seed,
+        "qwen": {"training": resolve_qwen_training(experiment.training)},
+        "source_code_sha256": "1" * 64,
+    }
+    (checkpoint / "localdesk_manifest.json").write_text(json.dumps(metadata))
+    (checkpoint.parent / "protocol.json").write_text(json.dumps(origin))
+    result = checkpoint_provenance(experiment, prepared, checkpoint)
+    assert result["training_source_sha256"] == "1" * 64
+    assert "localdesk_manifest.json" in result["files_sha256"]
+    metadata["calibration"]["temperature"] = 0.5
+    (checkpoint / "localdesk_manifest.json").write_text(json.dumps(metadata))
+    with pytest.raises(ValueError, match="identity|temperature"):
+        checkpoint_provenance(experiment, prepared, checkpoint)
+    metadata["calibration"]["temperature"] = 1.0
+    (checkpoint / "localdesk_manifest.json").write_text(json.dumps(metadata))
+    (checkpoint / "unsloth_decision_config.json").write_text(json.dumps({"folded_temperature": 2}))
+    with pytest.raises(ValueError, match="identity|temperature"):
+        checkpoint_provenance(experiment, prepared, checkpoint)
+    (checkpoint / "unsloth_decision_config.json").write_text(json.dumps({"temperature": [1, 1, 1]}))
+    metadata["smoke_run"] = True
+    (checkpoint / "localdesk_manifest.json").write_text(json.dumps(metadata))
+    with pytest.raises(ValueError, match="smoke|full"):
+        checkpoint_provenance(experiment, prepared, checkpoint)
+    metadata["smoke_run"] = False
+    metadata["dataset_sha256"]["test"] = "0" * 64
+    (checkpoint / "localdesk_manifest.json").write_text(json.dumps(metadata))
+    with pytest.raises(ValueError, match="data|identity"):
+        checkpoint_provenance(experiment, prepared, checkpoint)

@@ -1,12 +1,36 @@
 """Explicit local Unsloth checkpoint backend; errors never trigger a baseline fallback."""
 
 import json
+import math
 import os
 from pathlib import Path
 
 from localdesk.config import TaskSpec
 from localdesk.core import validate_distribution, validate_text
 from localdesk.schema import CATEGORIES, QUESTIONS, schema_hash
+
+
+def _unsloth_distribution(values, labels):
+    """Pinned Decision API rounds each probability to four decimal places."""
+    try:
+        return validate_distribution(values, labels)
+    except ValueError:
+        # Normalize only the documented rounding envelope; keep the core contract strict.
+        if not isinstance(values, dict) or set(values) != set(labels):
+            raise
+        if any(
+            isinstance(v, bool)
+            or not isinstance(v, (int, float))
+            or not math.isfinite(v)
+            or not 0 <= v <= 1
+            or abs(v - round(v, 4)) > 1e-12
+            for v in values.values()
+        ):
+            raise
+        total = sum(values.values())
+        if total <= 0 or abs(total - 1) > len(labels) * 0.00005 + 1e-7:
+            raise
+        return validate_distribution({key: value / total for key, value in values.items()}, labels)
 
 
 def validate_manifest(manifest: dict) -> None:
@@ -76,4 +100,4 @@ class ModelBackend:
             raise ValueError("Unsloth returned an invalid question set")
         if not isinstance(raw["category"], dict) or "probabilities" not in raw["category"]:
             raise ValueError("Unsloth did not return category probabilities")
-        return {"category": validate_distribution(raw["category"]["probabilities"], list(labels))}
+        return {"category": _unsloth_distribution(raw["category"]["probabilities"], list(labels))}

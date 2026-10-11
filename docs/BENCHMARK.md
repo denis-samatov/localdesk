@@ -28,6 +28,20 @@ Exit 2 means at least one GPU stage is missing/blocked/failed. CPU-only executio
 exits 0 while explicitly retaining an incomplete Qwen conclusion. Setup/CPU data
 errors stop execution. GPU diagnostics are local; never commit them unreviewed.
 
+Resume evaluation after a runtime/integration failure using a completed benchmark
+checkpoint, without repeating training:
+
+```bash
+localdesk benchmark experiments/it-support.json --out artifacts/benchmarks/recovered \
+  --qwen --checkpoint artifacts/benchmarks/original/qwen-checkpoint
+```
+
+This repeats the CPU and ordinary-LM evaluations and reloads the existing trained
+head. Task/data/seed/resolved parameters/pinned base and upstream identities must
+match its original protocol. Full epoch completion, non-smoke status and identity
+serving temperatures are required. The new protocol records origin and checkpoint
+file hashes separately from the evaluation source fingerprint.
+
 ## Frozen protocol and data separation
 
 1. Validate the configured data using the service's existing intake. Keep the
@@ -72,6 +86,13 @@ One prefill scores all options; it does not generate a rationale. These conditio
 answer probabilities are not unconditional confidence. Fixed option ordering and
 prompt choice may influence quality; no prompt tuning uses test labels.
 
+The pinned Unsloth Decision API formats probabilities to four decimals. The model
+adapter normalizes finite, correctly keyed four-decimal outputs only within the
+per-option rounding error envelope (0.00005 per option). Other invalid masses,
+booleans, malformed keys and non-finite values remain errors; core/API distribution
+validation stays strict. Probability metrics therefore include presentation
+quantization as well as model uncertainty.
+
 `qwen_decision` uses the existing Unsloth LoRA/decision-head trainer on train only,
 with default two epochs/rank 16/batch 2/accumulation 4/learning rate 2e-4. CPU-only
 training fields are excluded. Benchmark parameters are frozen before evaluation.
@@ -93,6 +114,10 @@ resample entire test groups with identical paired indices, fixed class vocabular
 and F1=0 for absent classes. Default 2000 replicates, fixed seed. Other comparisons
 are secondary and exploratory; no familywise multiple-testing claim is made.
 Missing Qwen results leave the primary conclusion incomplete.
+Intervals condition on the fitted models and one training seed; they do not
+estimate variation across training seeds or new organizations. Benchmark Qwen
+checkpoints are raw T=1 experimental heads, not qualified registry service
+versions; calibrated probability metrics use the temperature stored in the report.
 
 Timing is warmed, sequential batch=1, local backend inference and distribution
 validation. CUDA work is synchronized. It includes tokenization/vectorization,
