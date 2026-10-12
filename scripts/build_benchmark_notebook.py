@@ -1,6 +1,8 @@
 """Regenerate the clean comparative Colab notebook; no cell outputs are committed."""
 
 import json
+import subprocess
+import sys
 from pathlib import Path
 
 
@@ -33,7 +35,7 @@ and free Colab only; no paid GPU, Drive mount, model upload or credentials are r
 GPU quota and runtime availability are controlled by Google. Full training can take time.
 """),
         code("""import os, pathlib, subprocess, sys
-REPO_REF = 'main'  # Set a reviewed commit SHA to freeze the source.
+REPO_REF = '4ac77a0309bab8e35cda9cb1abdf0c3bd254f87e'  # Reviewed benchmark source.
 EXPERIMENT = 'experiments/it-support.json'  # Or experiments/sms-filter.json.
 OUT = 'artifacts/benchmarks/colab-comparison'
 os.environ['OPENBLAS_NUM_THREADS'] = '1'
@@ -92,6 +94,8 @@ from google.colab import files
 out = pathlib.Path(OUT)
 report = json.loads((out / 'report.json').read_text())
 print('Conclusion:', report['conclusion'])
+# Retain complete aggregates in saved notebook output before a download can fail.
+print('FULL_REPORT_JSON', json.dumps(report, separators=(',', ':')))
 for name, method in report['methods'].items():
     if method['status'] == 'complete':
         metric = method['classification']
@@ -119,6 +123,8 @@ files.download(str(archive))
         "cells": cells,
     }
     path.write_text(json.dumps(document, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
+    subprocess.run([sys.executable, "-m", "ruff", "check", "--fix", str(path)], check=True)
+    subprocess.run([sys.executable, "-m", "ruff", "format", str(path)], check=True)
 
 
 if __name__ == "__main__":

@@ -204,8 +204,29 @@ review coverage at a declared error target, latency and scoped memory measuremen
 
 See [the frozen protocol](docs/BENCHMARK.md),
 [executed IT comparison](reports/comparison-it.md) and
-[executed SMS comparison](reports/comparison-sms.md).
-An incomplete GPU comparison cannot establish Qwen superiority. Failed error
+[executed SMS comparison](reports/comparison-sms.md) and
+[complete Colab GPU comparison](reports/comparison-colab-it.md).
+The complete IT run trained Qwen on a free Tesla T4, saved/reloaded the head and
+measured **82.82% accuracy / 80.59% macro F1** on the same 524 test rows.
+The tuning-selected TF-IDF SVM measured **77.10% / 73.54%**; ordinary zero-shot
+Qwen measured **55.34% / 54.13%**. The primary accuracy gain is **+5.73 pp**,
+paired 95% interval **[+2.48, +9.16] pp**; macro-F1 gain is **+7.06 pp**,
+interval **[+3.31, +11.10] pp**. The TF-IDF logistic method measured 77.67%
+accuracy on test; the reference was selected on tuning, not test results.
+
+The quality gain costs latency: warmed batch=1 median on the same Colab machine
+was **388.6 ms for decision Qwen**, **251.0 ms for zero-shot Qwen** and **1.76 ms
+for SVM**. None of the methods qualified the strict calibration-selected 5% error
+policy; all abstained under that policy. At the separately fixed task policy,
+Qwen proposed routes for 64.31% of cases with 93.18% accepted accuracy. This does
+not establish a 5% operational error guarantee or a field deployment benefit.
+
+An earlier completed run observed 81.11% Qwen accuracy; its temporary files were
+lost during a failed export. The retained console summary is explicitly marked
+as incomplete in [reports/observed-colab-it.json](reports/observed-colab-it.json).
+The fresh reproduction above has complete metrics and a verified source/data
+fingerprint. These runs do not establish deterministic training or seed robustness.
+Incomplete GPU comparisons cannot establish Qwen superiority. Failed error
 targets and zero coverage remain visible. These are reused public corpus
 holdouts, not a new independent blind test or a field trial.
 
@@ -220,9 +241,10 @@ fixed IT choices are inserted. Unsloth imports before PyTorch/Transformers,
 source revisions are pinned, and skipped/truncated examples stop training.
 
 [docs/TRAINING.md](docs/TRAINING.md) and the original Colab notebook explain
-setup. **GPU training and saved-Qwen reload remain unexecuted here**. CPU results,
-fake upstream-boundary tests and notebook syntax checks do not establish Qwen
-quality, latency or VRAM requirements. The CPU Docker image does not include
+setup. **Full GPU training, saved-Qwen reload and benchmark scoring were executed**
+for the documented IT experiment; see the complete Colab report above. Production
+Unsloth calibration/registry activation and CUDA API deployment were not executed.
+CPU/fake-boundary tests and notebook syntax alone do not establish GPU quality. The CPU Docker image does not include
 the optional GPU stack.
 
 ## Development and validation
@@ -244,8 +266,8 @@ See [docs/VALIDATION.md](docs/VALIDATION.md) for executed evidence and remaining
 Это сервис с общим циклом обучения и оценки. Меняются JSON-описание задачи,
 метки и датасет; код ядра остаётся прежним. Есть проверка данных, обучение,
 калибровка, отчёт качества, реестр версий, приёмка модели, API, панель и Docker.
-Замена домена проверена на реальных IT-заявках и SMS. GPU-обучение Qwen и
-качество на новых языках требуют отдельного прогона.
+Замена домена проверена на реальных IT-заявках и SMS. GPU-обучение Qwen проверено на IT-выборке вместе с сильными baseline.
+Качество на новых языках и организациях требует отдельного прогона.
 
 ## License
 

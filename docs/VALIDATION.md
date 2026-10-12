@@ -22,7 +22,7 @@ contract check, not load testing or a field accuracy trial.
 
 ## Executed software checks
 
-- Full pytest suite on the locked Python 3.11 environment: 95 tests. Tests cover arbitrary
+- Full pytest suite on the locked Python 3.11 environment: 117 tests. Tests cover arbitrary
   labels, binary/multiclass export parity, strict config/types, group transitivity,
   mixed conversations, conflicting/equivalent inputs, split leakage, corrupted
   artifact hashes, model/data/report identity, failed/ungated candidates, partial
@@ -45,10 +45,30 @@ report remains bound to model/data/recipe hashes.
 
 ## Boundaries
 
-GPU training, Qwen checkpoint runtime reload, GPU memory/latency and CUDA dependency
-installation remain unexecuted. Fake/structural checkpoint tests do not establish
-GPU correctness. The pinned CUDA recipe and notebook remain experimental; notebook
-Python syntax is checked, not a completed Colab run. The provided Docker image
+The comparative CUDA recipe installed and ran on a fresh free Colab Tesla T4.
+It trained for two full epochs, saved/reloaded the checkpoint, scored all six
+methods on 524 identical test rows and returned exit 0. Complete aggregate report
+and protocol/source fingerprints were captured and verified locally:
+`reports/comparison-colab-it.json`. The source of the fully retained run is
+`4ac77a0309bab8e35cda9cb1abdf0c3bd254f87e`.
+
+The complete aggregate report is durable in this repository. The experimental
+checkpoint was saved/reloaded and a 214,143,248-byte archive was built in Colab,
+but its browser download failed when the connection disappeared. No durable local
+checkpoint or downloadable trained-model release is claimed. Reproduce the pinned
+notebook and export its `qwen-checkpoint` directory before the temporary runtime ends.
+
+Real execution found a pinned Unsloth API integration issue: returned probabilities
+are rounded to four decimals and can sum to 0.9999. The adapter now normalizes only
+the documented per-option rounding envelope. Tests reject invalid mass, arbitrary
+precision, booleans and nonidentity/incomplete checkpoint resumption. Core validators
+remain strict. The original successful GPU console run is separately retained as
+an incomplete observation after the transient runtime lost its unexported files.
+
+These results condition on this recipe and reused holdout. CUDA API deployment,
+production Unsloth calibration/registry activation, other GPUs and seed/language/
+organization robustness remain unqualified. Fake/structural tests do not establish
+GPU correctness by themselves. The provided Docker image
 qualifies only CPU inference, not Qwen serving.
 
 No claim of Russian accuracy, broad OOD detection, prompt-injection immunity,

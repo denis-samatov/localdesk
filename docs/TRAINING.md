@@ -1,9 +1,12 @@
 # Qwen training path
 
 This path uses the real dataset documented in `data/README.md` and the public
-Unsloth API inspected at the revisions below. It has **not been executed on a
-GPU by this project**. Notebook syntax and data-adapter tests cannot qualify
-CUDA kernels, GPU memory, training convergence, or checkpoint reload behavior.
+Unsloth API inspected at the revisions below. The full comparative IT recipe **was executed on a free Colab Tesla T4**:
+two epochs, saved/reloaded checkpoint, shared heldout temperature calibration and
+all 524 test rows. See [the complete report](../reports/comparison-colab-it.md).
+The original production-calibration/registry-serving path remains experimental;
+it was not deployed as a CUDA API. Notebook syntax and fake tests alone cannot
+qualify a new GPU configuration, dataset or language.
 
 ## Pinned direct sources
 

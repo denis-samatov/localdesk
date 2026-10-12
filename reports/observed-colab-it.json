@@ -1,0 +1,30 @@
+{
+  "format": "localdesk-observed-console-v1",
+  "evidence": "Persisted stdout of a completed real Colab run; detailed export was lost when the ephemeral runtime disconnected.",
+  "observed_at_utc": "2026-10-11T11:14:48.850049",
+  "training_source_commit": "e2253167949c3b8472d4329ea2a48f891d7995cb",
+  "evaluation_source_commit": "4ac77a0309bab8e35cda9cb1abdf0c3bd254f87e",
+  "dataset": "public_real_it_tickets_zenodo_7648117",
+  "test_count": 524,
+  "accuracy": {
+    "majority": 0.3473282442748092,
+    "hashed_logistic": 0.6946564885496184,
+    "tfidf_logistic": 0.7767175572519084,
+    "tfidf_svm": 0.7709923664122137,
+    "qwen_zero_shot": 0.5534351145038168,
+    "qwen_decision": 0.8110687022900763
+  },
+  "training": {
+    "epoch": 2.0,
+    "train_loss": 0.8766473243976461,
+    "train_runtime": 1859.7976
+  },
+  "observed_conclusion": {
+    "status": "quality_gain_on_this_holdout",
+    "scope": "this reused public holdout only; no field or cost proof"
+  },
+  "missing_details": [
+    "Exact macro F1, CI bounds, calibration, latency and memory values were not exported and are not reconstructed."
+  ],
+  "artifact_status": "Console summary retained; complete durable report/checkpoint recovery requires reproduction."
+}
