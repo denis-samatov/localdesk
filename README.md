@@ -19,16 +19,18 @@ wrong answer costs more than asking a human.
 - **Every version is reproducible and tamper-evident.** Each version is immutable
   and pins the task, the data fingerprints, the report and the training plan with
   SHA-256 checksums.
-- **CPU first, LLM when it pays off.** The default model trains in seconds and needs
-  only the Python standard library for inference. An optional Qwen + Unsloth LoRA
-  recipe gave **+5.7 pp accuracy** over a tuned TF-IDF SVM on real IT tickets.
+- **CPU first, LLM when it pays off.** The default TF-IDF model trains in seconds,
+  reaches **91–99% accuracy on three of four public benchmarks**, and needs only the
+  Python standard library for inference. An optional Qwen + Unsloth LoRA recipe
+  gave a further **+5.7 pp accuracy** on the hardest one, real IT tickets.
 
 ![LocalDesk operator dashboard](docs/service-demo.png)
 
 ## Try it in 10 seconds
 
-The package ships with a small model trained on real IT tickets. Running a
-prediction has no runtime dependencies:
+The package ships with the TF-IDF demo model trained on real IT tickets
+(76.5% accuracy on the 524-ticket holdout, [report](reports/demo.json)).
+Running a prediction has no runtime dependencies:
 
 ```bash
 pip install "git+https://github.com/denis-samatov/localdesk.git"
@@ -40,8 +42,8 @@ A clear request is routed. An ambiguous one goes to a human with the reason
 attached (output abbreviated):
 
 ```jsonc
-{"category": "Fileservice",     "action": "route",  "probabilities": {"Fileservice": 0.999, ...}, "review_reasons": []}
-{"category": "Support general", "action": "review", "probabilities": {"Support general": 0.38, "Fileservice": 0.22, ...},
+{"category": "Fileservice", "action": "route",  "probabilities": {"Fileservice": 0.999, ...}, "review_reasons": []}
+{"category": "Fileservice", "action": "review", "probabilities": {"Fileservice": 0.43, "Support general": 0.24, ...},
  "review_reasons": ["low_confidence", "small_margin"]}
 ```
 
@@ -79,7 +81,7 @@ Run `localdesk serve` to open the same model in a local web page at `http://127.
     "id_column": "id"
   },
   "registry": "my-registry",
-  "training": {"backend": "baseline"},
+  "training": {"backend": "tfidf"},
   "gates": {"min_accuracy": 0.7, "min_macro_f1": 0.6, "max_ece": 0.1}
 }
 ```
@@ -104,21 +106,39 @@ configuration fail early with a clear message.
 
 ## Results on real public data
 
-The commands and code are the same for both datasets. Only the configuration changes.
+The same pipeline and commands on four public datasets. Only the configuration changes.
+Default `tfidf` backend, test sets never used for fitting or calibration:
 
 | Dataset | Labels | Test rows | Accuracy | Macro F1 | Auto-routed | Accuracy when routed |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
-| [IT Support Tickets](https://zenodo.org/records/7648117) | 6 | 524 | 69.5% | 64.9% | 44.1% | **91.3%** |
-| [UCI SMS Spam](https://archive.ics.uci.edu/dataset/228/sms+spam+collection) | 2 | 1024 | 97.5% | 93.8% | 95.0% | **99.1%** |
+| [IT Support Tickets](https://zenodo.org/records/7648117) | 6 | 524 | 76.5% | 72.9% | 60.5% | **92.4%** |
+| [UCI SMS Spam](https://archive.ics.uci.edu/dataset/228/sms+spam+collection) | 2 | 1,024 | 98.9% | 97.4% | 97.7% | **99.3%** |
+| [Banking77](https://github.com/PolyAI-LDN/task-specific-datasets) | 77 | 3,071 | 91.2% | 91.3% | 86.9% | **96.8%** |
+| [CLINC150](https://github.com/clinc/oos-eval) | 150 | 4,486 | 92.3% | 92.2% | 88.9% | **97.0%** |
 
-Both rows use the CPU baseline: hashed n-grams, logistic regression and temperature
-calibration. "Accuracy when routed" covers only the requests the model handled
-without asking a human. Training the IT model takes about 2 seconds on a laptop CPU.
+"Auto-routed" is the share of requests the model handled without a human under
+the task's fixed review policy, and "Accuracy when routed" is measured on those
+requests only. Compared with the legacy hashed baseline, TF-IDF adds 1.5–7.1 pp
+accuracy on every dataset and routes 2.6–16.4 pp more requests automatically
+([full comparison](reports/cpu-suite.md)). Training takes 1–40 seconds on a laptop CPU.
+
+![Accuracy versus share of requests handled automatically](docs/risk-coverage.svg)
+
+The fewer requests the model takes, the more accurate it gets. On Banking77,
+TF-IDF keeps 95% accuracy on its most confident 93% of queries; the old baseline
+holds that accuracy on only 84%. These curves are read off the test sets: use them
+to choose a policy, then confirm it on your own data.
+
+**Queries outside every label.** CLINC150 includes 1,000 test queries that match
+none of its 150 intents and are never seen in training. Under the default policy,
+**85% of them go to human review** instead of receiving a wrong intent.
+
 To reproduce (the scripts download and checksum the public data):
 
 ```bash
-python scripts/prepare_data.py && localdesk train experiments/it-support.json --run-id it-v1
-python scripts/prepare_sms.py  && localdesk train experiments/sms-filter.json --run-id sms-v1
+python scripts/prepare_data.py && python scripts/prepare_sms.py
+python scripts/prepare_banking77.py && python scripts/prepare_clinc150.py
+python scripts/publish_cpu_suite.py   # both CPU backends on all four datasets
 ```
 
 **Fine-tuned Qwen vs classic baselines** (same 524 IT test rows, free Colab T4):
@@ -146,7 +166,7 @@ exactly what was and wasn't verified.
 flowchart LR
   C[Task + experiment JSON] --> D[CSV / JSONL intake]
   D --> V[Validate labels, group duplicates, isolate splits]
-  V --> T[Train: CPU baseline or Qwen LoRA]
+  V --> T[Train: CPU TF-IDF or Qwen LoRA]
   T --> K[Calibrate on a separate split]
   K --> E[Evaluate on untouched test]
   E --> G{Quality gates}
@@ -239,7 +259,9 @@ LocalDesk превращает CSV/JSONL и список меток в кали�
 «на ручной разбор», если не уверена. Ядро не привязано к домену: меняются только
 JSON-описание задачи и датасет. Обучение на CPU занимает секунды. Дообучение
 Qwen через Unsloth дало +5,7 п.п. точности к сильному TF-IDF baseline на реальных
-IT-заявках. Качество на других языках и в других организациях нужно измерять
+IT-заявках. На четырёх публичных датасетах (IT-заявки, SMS, Banking77, CLINC150)
+CPU-модель по умолчанию даёт от 76,5% до 98,9% точности, а 85% запросов вне всех
+категорий отправляет на ручной разбор. Качество на других языках и в других организациях нужно измерять
 отдельно.
 
 ## License

@@ -20,6 +20,23 @@ Changes: verified archive extraction and conversion to id/text/label CSV;
 conservative equivalent-input deduplication and deterministic grouped splits.
 Original labels are retained. Raw SMS content is excluded from Git and serving logs.
 
+The third and fourth domains are downloaded on demand and excluded from Git:
+
+**Banking77**, Iñigo Casanueva, Tadas Temčinas, Daniela Gerz, Matthew Henderson
+and Ivan Vulić, "Efficient Intent Detection with Dual Sentence Encoders", 2020.
+Source: https://github.com/PolyAI-LDN/task-specific-datasets — CC BY 4.0.
+
+**CLINC150**, Stefan Larson, Anish Mahendran, Joseph J. Peper, Christopher Clarke,
+Andrew Lee, Parker Hill, Jonathan K. Kummerfeld, Kevin Leach, Michael A. Laurenzano,
+Lingjia Tang and Jason Mars, "An Evaluation Dataset for Intent Classification and
+Out-of-Scope Prediction", EMNLP 2019. Source: https://github.com/clinc/oos-eval —
+CC BY 3.0 (https://creativecommons.org/licenses/by/3.0/).
+
+Changes to both: verified extraction to id/text/label JSONL; collapsing of
+model-equivalent duplicates so no group crosses splits; dropping of conflicting
+labels; a deterministic calibration split from Banking77 training data; CLINC150
+out-of-scope test queries kept in a separate file. Original labels are retained.
+
 Optional Unsloth / Unsloth Zoo dependencies and the Qwen model retain their own
 licenses. No Unsloth implementation code or notebook content is copied into this
 repository. API integration does not relicense the upstream software. Consult the

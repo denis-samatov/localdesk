@@ -4,9 +4,10 @@ import argparse
 import csv
 import hashlib
 import io
-import urllib.request
 import zipfile
 from pathlib import Path
+
+from localdesk.sources import read_bounded
 
 URL = "https://archive.ics.uci.edu/static/public/228/sms+spam+collection.zip"
 ZIP_SHA = "1587ea43e58e82b14ff1f5425c88e17f8496bfcdb67a583dbff9eefaf9963ce3"
@@ -18,11 +19,7 @@ def main():
     parser.add_argument("--source", type=Path, help="use this cached ZIP without network")
     parser.add_argument("--out", type=Path, default=Path("data/sms/rows.csv"))
     args = parser.parse_args()
-    if args.source:
-        payload = args.source.read_bytes()
-    else:
-        with urllib.request.urlopen(URL, timeout=60) as response:
-            payload = response.read(1_000_001)
+    payload = args.source.read_bytes() if args.source else read_bounded(URL, 1_000_000)
     if hashlib.sha256(payload).hexdigest() != ZIP_SHA:
         raise ValueError("UCI archive checksum mismatch")
     with zipfile.ZipFile(io.BytesIO(payload)) as archive:

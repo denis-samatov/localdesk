@@ -2,7 +2,6 @@
 
 import argparse
 import json
-import urllib.request
 from pathlib import Path
 
 from localdesk.data import (
@@ -13,6 +12,7 @@ from localdesk.data import (
     read_source,
     write_dataset,
 )
+from localdesk.sources import read_bounded
 
 
 def main():
@@ -27,13 +27,7 @@ def main():
         if not target.exists():
             if args.offline:
                 parser.error(f"missing cached file: {name}")
-            with urllib.request.urlopen(
-                f"{SOURCE}/files/{name}?download=1", timeout=60
-            ) as response:
-                payload = response.read(2_000_001)
-            if len(payload) > 2_000_000:
-                raise ValueError("unexpected source file size")
-            target.write_bytes(payload)
+            target.write_bytes(read_bounded(f"{SOURCE}/files/{name}?download=1", 2_000_000))
     rows, audit = build_splits(read_source(args.source))
     write_dataset(args.out, rows, audit, SOURCE_HASHES)
     load_splits(args.out)

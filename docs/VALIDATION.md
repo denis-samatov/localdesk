@@ -20,15 +20,29 @@ readiness, returned option keys, version and report agreement. It restored the
 previous pointer. Proof/report: `reports/service-reuse.json`. This is a functional
 contract check, not load testing or a field accuracy trial.
 
+## CPU backends on four datasets
+
+`scripts/publish_cpu_suite.py` trained the legacy hashed baseline and the TF-IDF
+backend on IT tickets, SMS, Banking77 and CLINC150 with the same pipeline, C=4
+(chosen on tuning data in the earlier benchmark), seed 3407 and fixed task policies.
+Two consecutive runs produced identical metrics. Results, risk-coverage curves and
+CLINC150 out-of-scope behaviour: `reports/cpu-suite.md`. These are single-seed
+results on reused public holdouts; risk-coverage thresholds read off test sets are
+descriptive, not a validated operating policy. The online Zenodo download path of
+`prepare_data.py` could not be re-run after its download change (Zenodo returned
+HTTP 504); the committed IT splits were used and their SHA-256 values verified.
+
 ## Executed software checks
 
-- Full pytest suite on the locked environment: 125 tests. Tests cover arbitrary
+- Full pytest suite on the locked environment: 144 tests. Tests cover arbitrary
   labels, binary/multiclass export parity, strict config/types, group transitivity,
   mixed conversations, conflicting/equivalent inputs, split leakage, corrupted
   artifact hashes, model/data/report identity, failed/ungated candidates, partial
   Qwen checkpoint rejection and active-pointer preservation, smoke exclusion,
   streamed hashing, API/auth/origin/body/batch/readiness/metrics and legacy paths,
-  queued concurrent inference, failed-run retry and damaged-registry listing.
+  queued concurrent inference, failed-run retry and damaged-registry listing,
+  TF-IDF export parity/tamper rejection, char-gram parity with sklearn, risk-coverage,
+  out-of-scope AUROC, duplicate isolation and truncated-download retries.
 - Ruff lint and format checks passed. Wheel/sdist builds passed.
 - Both original public source adapters verify pinned SHA-256 source bytes.
 - CPU Docker image built; an unprivileged container with read-only filesystem and
@@ -41,6 +55,12 @@ contract check, not load testing or a field accuracy trial.
   guard against recurrence.
 
 Raw corpora, checkpoints, registry/private paths and secrets are excluded from Git.
+`localdesk predict` without `--model` uses the packaged TF-IDF demo
+(`src/localdesk/assets/demo.json.gz`), built by `scripts/train_demo.py` through the
+standard pipeline and registry checks. Two builds produced byte-identical files; its
+report (`reports/demo.json`) is bound to the model hash, task, data splits and recipe
+files, and a test fails if any of them change without a rebuild.
+`--backend baseline` still selects the legacy model.
 The packaged legacy CPU baseline was regenerated after its source changed and its
 report remains bound to model/data/recipe hashes.
 

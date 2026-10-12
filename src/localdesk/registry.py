@@ -128,11 +128,16 @@ class Registry:
         directory, manifest, task = self.metadata(run_id)
         if require_qualified and not manifest["quality"]["qualified"]:
             raise ValueError("artifact has not passed declared quality gates")
-        if manifest["backend"] == "baseline":
+        if manifest["backend"] in {"baseline", "tfidf"}:
             if "model.json.gz" not in manifest["files_sha256"]:
                 raise ValueError("artifact model is missing")
             bundle = json.loads(gzip.decompress((directory / "model.json.gz").read_bytes()))
-            payload = BaselineBackend(bundle=bundle)
+            if manifest["backend"] == "baseline":
+                payload = BaselineBackend(bundle=bundle)
+            else:
+                from localdesk.tfidf import TfidfBackend
+
+                payload = TfidfBackend(bundle=bundle)
             model_task = payload.task
             training_data = payload.bundle["dataset_sha256"]
         elif manifest["backend"] == "unsloth":
@@ -172,7 +177,7 @@ class Registry:
 
     def load(self, run_id: str, *, require_qualified: bool = True):
         directory, manifest, payload = self.verify(run_id, require_qualified=require_qualified)
-        if manifest["backend"] == "baseline":
+        if manifest["backend"] in {"baseline", "tfidf"}:
             backend = payload
         else:
             from localdesk.model import ModelBackend

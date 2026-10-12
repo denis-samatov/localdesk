@@ -12,6 +12,7 @@ from localdesk.data import load_splits
 from localdesk.dataset import prepare
 from localdesk.metrics import evaluate_rows
 from localdesk.registry import Registry
+from localdesk.tfidf import demo_backend
 
 
 def main():
@@ -19,7 +20,7 @@ def main():
     subparsers = parser.add_subparsers(dest="command", required=True)
     for name in ("predict", "serve", "evaluate"):
         command = subparsers.add_parser(name)
-        command.add_argument("--backend", choices=("baseline", "unsloth"), default=None)
+        command.add_argument("--backend", choices=("tfidf", "baseline", "unsloth"), default=None)
         command.add_argument("--model", type=Path)
         command.add_argument("--config", type=Path)
         if name == "predict":
@@ -114,10 +115,11 @@ def main():
             )
             if args.backend and backend.name != args.backend:
                 parser.error("backend flag differs from artifact backend")
-        elif args.backend in {None, "baseline"}:
+        elif args.backend in {None, "tfidf", "baseline"}:
             if args.model:
                 parser.error("model path must be a completed registry artifact")
-            backend = BaselineBackend()
+            # Packaged demo models; the legacy v0.1 baseline stays selectable.
+            backend = BaselineBackend() if args.backend == "baseline" else demo_backend()
         else:
             from localdesk.model import ModelBackend
 

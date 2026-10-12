@@ -214,13 +214,17 @@ class Experiment:
                 "batch_size",
                 "gradient_accumulation",
                 "learning_rate",
+                "max_features",
             },
         )
-        if training.get("backend", "baseline") not in {"baseline", "unsloth"}:
+        if training.get("backend", "baseline") not in {"baseline", "tfidf", "unsloth"}:
             raise ValueError("unsupported training backend")
+        backend = training.get("backend", "baseline")
         used = (
             {"backend", "C", "max_iter"}
-            if training.get("backend", "baseline") == "baseline"
+            if backend == "baseline"
+            else {"backend", "C", "max_iter", "max_features"}
+            if backend == "tfidf"
             else {
                 "backend",
                 "epochs",
@@ -248,6 +252,11 @@ class Experiment:
                 type(training[name]) is not int or not 1 <= training[name] <= 10000
             ):
                 raise ValueError(f"{name} must be a positive bounded integer")
+        if "max_features" in training and (
+            type(training["max_features"]) is not int
+            or not 100 <= training["max_features"] <= 1_000_000
+        ):
+            raise ValueError("max_features must be an integer between 100 and 1000000")
         gates = raw.get("gates", {})
         fields(
             gates,

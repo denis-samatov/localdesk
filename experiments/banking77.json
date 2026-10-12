@@ -1,0 +1,31 @@
+{
+  "task": "../tasks/banking77.json",
+  "dataset": {
+    "splits": {
+      "train": "../data/banking77/train.jsonl",
+      "calibration": "../data/banking77/calibration.jsonl",
+      "test": "../data/banking77/test.jsonl"
+    },
+    "format": "jsonl",
+    "text_column": "text",
+    "label_column": "label",
+    "id_column": "id",
+    "provenance": "public_real_banking77_57ec275",
+    "sha256": {
+      "train": "5bea7016c10a15800982b84de65fa3182224232a40d8e7aebf7203ba3f9b2c9b",
+      "calibration": "d638caeb32e410bacb4b7ff4d73c7fc8b8f605bf895c10c0894278406ecd5dbe",
+      "test": "b886aefc925eb8f7b8afdbd183f07d38c6f2eec68f566d86f0e35fc91edcced6"
+    }
+  },
+  "registry": "../artifacts/registry",
+  "training": {
+    "backend": "tfidf",
+    "C": 4.0,
+    "max_features": 40000
+  },
+  "gates": {
+    "min_accuracy": 0.8,
+    "min_macro_f1": 0.8,
+    "max_ece": 0.1
+  }
+}
