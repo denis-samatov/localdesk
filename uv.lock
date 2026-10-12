@@ -174,8 +174,8 @@ wheels = [
 ]
 
 [[package]]
-name = "localdesk-decisions"
-version = "0.2.0"
+name = "localdesk"
+version = "0.3.0"
 source = { editable = "." }
 
 [package.optional-dependencies]
@@ -198,14 +198,14 @@ service = [
 [package.metadata]
 requires-dist = [
     { name = "build", marker = "extra == 'dev'", specifier = "==1.3.0" },
-    { name = "fastapi", marker = "extra == 'service'", specifier = "==0.143.0" },
+    { name = "fastapi", marker = "extra == 'service'", specifier = ">=0.115,<1" },
     { name = "httpx2", marker = "extra == 'dev'", specifier = "==2.13.1" },
-    { name = "numpy", marker = "extra == 'baseline'", specifier = "==2.2.6" },
+    { name = "numpy", marker = "extra == 'baseline'", specifier = ">=1.26,<3" },
     { name = "pytest", marker = "extra == 'dev'", specifier = "==8.4.2" },
     { name = "ruff", marker = "extra == 'dev'", specifier = "==0.13.3" },
-    { name = "scikit-learn", marker = "extra == 'baseline'", specifier = "==1.6.0" },
-    { name = "scipy", marker = "extra == 'baseline'", specifier = "==1.14.1" },
-    { name = "uvicorn", marker = "extra == 'service'", specifier = "==0.54.0" },
+    { name = "scikit-learn", marker = "extra == 'baseline'", specifier = ">=1.6,<2" },
+    { name = "scipy", marker = "extra == 'baseline'", specifier = ">=1.13,<2" },
+    { name = "uvicorn", marker = "extra == 'service'", specifier = ">=0.30,<1" },
 ]
 provides-extras = ["dev", "baseline", "service"]
 

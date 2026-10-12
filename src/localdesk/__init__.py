@@ -1,3 +1,3 @@
-"""LocalDesk: local decision support for routine IT requests."""
+"""LocalDesk: calibrated text classification that abstains when unsure."""
 
-__version__ = "0.2.0"
+__version__ = "0.3.0"

@@ -19,6 +19,7 @@ from pydantic import BaseModel, ConfigDict, Field, StringConstraints
 from starlette.concurrency import run_in_threadpool
 from starlette.exceptions import HTTPException
 
+from localdesk import __version__
 from localdesk.core import decide
 from localdesk.registry import Registry
 
@@ -186,7 +187,7 @@ def create_app(*, registry: Path, api_key: str | None = None, anonymous_local: b
 
     app = FastAPI(
         title="LocalDesk Decision Service",
-        version="0.2.0",
+        version=__version__,
         lifespan=lifespan,
         docs_url=None,
         redoc_url=None,
