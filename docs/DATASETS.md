@@ -28,6 +28,34 @@ conversion. Generic intake collapses 448 equivalent representations, leaving
 No invented messages, translations or labels enter fitting/evaluation.
 The corpus is historical; it does not represent all contemporary spam or languages.
 
+## Banking77
+
+Iñigo Casanueva et al., *Efficient Intent Detection with Dual Sentence Encoders*,
+2020. https://github.com/PolyAI-LDN/task-specific-datasets — CC BY 4.0.
+Online banking queries with 77 fine-grained intents; 10,003 train and 3,080 test rows.
+
+`prepare_banking77.py` downloads the CSVs at a pinned commit and verifies their
+SHA-256. Calibration is a deterministic, label-stratified 15% of the official
+training rows (seed 3407); the official test set is kept. Model-equivalent
+duplicates are collapsed so no group crosses splits (a test copy wins) and
+conflicting labels are dropped: 8,434 train / 1,493 calibration / 3,071 test.
+Label descriptions are derived from the source intent names; no texts or labels
+are invented.
+
+## CLINC150
+
+Stefan Larson et al., *An Evaluation Dataset for Intent Classification and
+Out-of-Scope Prediction*, EMNLP 2019. https://github.com/clinc/oos-eval — CC BY 3.0.
+Virtual-assistant queries for 150 intents across ten domains, plus queries that
+match none of them.
+
+`prepare_clinc150.py` uses the pinned `data_full.json`: official train, validation
+(as calibration) and test splits for the 150 in-scope intents, after the same
+duplicate isolation: 14,877 train / 2,983 calibration / 4,486 test. The 1,000
+official out-of-scope test queries are written to `ood.jsonl`; they never enter
+training, calibration or in-scope metrics and are only used to measure how often
+the model sends them to review.
+
 ## New data
 
 Choose CSV or JSONL and map text/label/id/conversation columns in Experiment JSON.

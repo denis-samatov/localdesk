@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 330" font-family="system-ui, -apple-system, Segoe UI, sans-serif" role="img" aria-labelledby="title desc">
+<title id="title">Accuracy versus share of requests handled automatically</title>
+<desc id="desc">For each dataset, accuracy of the most confident predictions as coverage grows, for the hashed baseline and the TF-IDF backend.</desc>
+<rect width="960" height="330" fill="#ffffff"/>
+<text x="20" y="26" font-size="16" font-weight="600" fill="#1f2328">Accuracy when the model handles only its most confident requests</text>
+<line x1="20" y1="48" x2="44" y2="48" stroke="#0072B2" stroke-width="2.5" stroke-dasharray=""/><text x="50" y="52" font-size="12" fill="#1f2328">TF-IDF (new default)</text>
+<line x1="210" y1="48" x2="234" y2="48" stroke="#E69F00" stroke-width="2.5" stroke-dasharray="6 4"/><text x="240" y="52" font-size="12" fill="#1f2328">hashed baseline</text>
+<text x="64" y="72" font-size="13" font-weight="600" fill="#1f2328">IT Support Tickets</text>
+<line x1="64" y1="254.0" x2="242" y2="254.0" stroke="#d0d7de" stroke-width="1"/><text x="58" y="258.0" font-size="11" fill="#59636e" text-anchor="end">60%</text>
+<line x1="64" y1="169.0" x2="242" y2="169.0" stroke="#d0d7de" stroke-width="1"/><text x="58" y="173.0" font-size="11" fill="#59636e" text-anchor="end">80%</text>
+<line x1="64" y1="84.0" x2="242" y2="84.0" stroke="#d0d7de" stroke-width="1"/><text x="58" y="88.0" font-size="11" fill="#59636e" text-anchor="end">100%</text>
+<text x="64.0" y="270" font-size="11" fill="#59636e" text-anchor="middle">0%</text>
+<text x="153.0" y="270" font-size="11" fill="#59636e" text-anchor="middle">50%</text>
+<text x="242.0" y="270" font-size="11" fill="#59636e" text-anchor="middle">100%</text>
+<polyline points="73.2,84.0 82.0,84.0 90.8,84.0 99.7,84.0 108.5,84.0 117.7,92.1 126.5,90.9 135.3,108.3 144.2,123.6 153.0,127.8 162.2,128.1 171.0,133.9 179.8,148.8 188.7,155.8 197.5,165.1 206.7,178.1 215.5,186.9 224.3,196.6 233.2,204.3 242.0,213.8" fill="none" stroke="#E69F00" stroke-width="2.5" stroke-dasharray="6 4" stroke-linejoin="round"/>
+<polyline points="73.2,84.0 82.0,84.0 90.8,84.0 99.7,84.0 108.5,84.0 117.7,84.0 126.5,86.3 135.3,90.1 144.2,94.8 153.0,98.6 162.2,110.5 171.0,115.0 179.8,120.1 188.7,129.2 197.5,138.1 206.7,143.7 215.5,154.5 224.3,164.1 233.2,173.6 242.0,183.8" fill="none" stroke="#0072B2" stroke-width="2.5" stroke-dasharray="" stroke-linejoin="round"/>
+<text x="298" y="72" font-size="13" font-weight="600" fill="#1f2328">UCI SMS Spam</text>
+<line x1="298" y1="254.0" x2="476" y2="254.0" stroke="#d0d7de" stroke-width="1"/><text x="292" y="258.0" font-size="11" fill="#59636e" text-anchor="end">90%</text>
+<line x1="298" y1="169.0" x2="476" y2="169.0" stroke="#d0d7de" stroke-width="1"/><text x="292" y="173.0" font-size="11" fill="#59636e" text-anchor="end">95%</text>
+<line x1="298" y1="84.0" x2="476" y2="84.0" stroke="#d0d7de" stroke-width="1"/><text x="292" y="88.0" font-size="11" fill="#59636e" text-anchor="end">100%</text>
+<text x="298.0" y="270" font-size="11" fill="#59636e" text-anchor="middle">0%</text>
+<text x="387.0" y="270" font-size="11" fill="#59636e" text-anchor="middle">50%</text>
+<text x="476.0" y="270" font-size="11" fill="#59636e" text-anchor="middle">100%</text>
+<polyline points="307.0,84.0 315.9,84.0 324.8,84.0 333.6,84.0 342.5,84.0 351.5,84.0 360.4,84.0 369.3,84.0 378.1,87.7 387.0,87.3 396.0,87.0 404.9,95.1 413.8,96.8 422.6,95.9 431.5,95.1 440.5,94.4 449.4,95.7 458.3,96.9 467.1,99.7 476.0,127.2" fill="none" stroke="#E69F00" stroke-width="2.5" stroke-dasharray="6 4" stroke-linejoin="round"/>
+<polyline points="307.0,84.0 315.9,84.0 324.8,84.0 333.6,84.0 342.5,84.0 351.5,84.0 360.4,84.0 369.3,84.0 378.1,87.7 387.0,87.3 396.0,87.0 404.9,89.5 413.8,89.1 422.6,88.7 431.5,88.4 440.5,88.1 449.4,87.9 458.3,89.5 467.1,94.5 476.0,102.3" fill="none" stroke="#0072B2" stroke-width="2.5" stroke-dasharray="" stroke-linejoin="round"/>
+<text x="532" y="72" font-size="13" font-weight="600" fill="#1f2328">Banking77</text>
+<line x1="532" y1="254.0" x2="710" y2="254.0" stroke="#d0d7de" stroke-width="1"/><text x="526" y="258.0" font-size="11" fill="#59636e" text-anchor="end">80%</text>
+<line x1="532" y1="169.0" x2="710" y2="169.0" stroke="#d0d7de" stroke-width="1"/><text x="526" y="173.0" font-size="11" fill="#59636e" text-anchor="end">90%</text>
+<line x1="532" y1="84.0" x2="710" y2="84.0" stroke="#d0d7de" stroke-width="1"/><text x="526" y="88.0" font-size="11" fill="#59636e" text-anchor="end">100%</text>
+<text x="532.0" y="270" font-size="11" fill="#59636e" text-anchor="middle">0%</text>
+<text x="621.0" y="270" font-size="11" fill="#59636e" text-anchor="middle">50%</text>
+<text x="710.0" y="270" font-size="11" fill="#59636e" text-anchor="middle">100%</text>
+<polyline points="540.9,89.5 549.9,86.8 558.7,87.7 567.6,86.8 576.5,86.2 585.4,85.8 594.3,86.4 603.2,86.8 612.1,90.8 621.0,91.2 630.0,93.6 638.8,96.0 647.7,98.9 656.6,105.3 665.5,109.1 674.4,117.2 683.3,129.3 692.2,145.8 701.1,168.5 710.0,191.4" fill="none" stroke="#E69F00" stroke-width="2.5" stroke-dasharray="6 4" stroke-linejoin="round"/>
+<polyline points="540.9,84.0 549.9,84.0 558.7,87.7 567.6,86.8 576.5,86.2 585.4,85.8 594.3,86.4 603.2,87.5 612.1,88.3 621.0,89.0 630.0,88.5 638.8,89.5 647.7,91.2 656.6,91.9 665.5,95.8 674.4,101.6 683.3,108.4 692.2,118.4 701.1,135.3 710.0,158.5" fill="none" stroke="#0072B2" stroke-width="2.5" stroke-dasharray="" stroke-linejoin="round"/>
+<text x="766" y="72" font-size="13" font-weight="600" fill="#1f2328">CLINC150</text>
+<line x1="766" y1="254.0" x2="944" y2="254.0" stroke="#d0d7de" stroke-width="1"/><text x="760" y="258.0" font-size="11" fill="#59636e" text-anchor="end">80%</text>
+<line x1="766" y1="169.0" x2="944" y2="169.0" stroke="#d0d7de" stroke-width="1"/><text x="760" y="173.0" font-size="11" fill="#59636e" text-anchor="end">90%</text>
+<line x1="766" y1="84.0" x2="944" y2="84.0" stroke="#d0d7de" stroke-width="1"/><text x="760" y="88.0" font-size="11" fill="#59636e" text-anchor="end">100%</text>
+<text x="766.0" y="270" font-size="11" fill="#59636e" text-anchor="middle">0%</text>
+<text x="855.0" y="270" font-size="11" fill="#59636e" text-anchor="middle">50%</text>
+<text x="944.0" y="270" font-size="11" fill="#59636e" text-anchor="middle">100%</text>
+<polyline points="774.9,84.0 783.8,87.8 792.7,86.5 801.6,85.9 810.5,87.0 819.4,87.2 828.3,88.3 837.2,88.3 846.1,89.1 855.0,89.3 863.9,90.2 872.8,92.2 881.7,95.4 890.6,99.4 899.5,101.9 908.4,108.2 917.3,118.8 926.2,134.1 935.1,154.4 944.0,180.8" fill="none" stroke="#E69F00" stroke-width="2.5" stroke-dasharray="6 4" stroke-linejoin="round"/>
+<polyline points="774.9,84.0 783.8,84.0 792.7,84.0 801.6,84.0 810.5,84.0 819.4,85.3 828.3,85.6 837.2,86.8 846.1,88.2 855.0,87.8 863.9,87.8 872.8,88.4 881.7,89.2 890.6,90.0 899.5,92.6 908.4,95.1 917.3,102.7 926.2,112.0 935.1,126.3 944.0,149.7" fill="none" stroke="#0072B2" stroke-width="2.5" stroke-dasharray="" stroke-linejoin="round"/>
+<text x="480.0" y="316" font-size="12" fill="#59636e" text-anchor="middle">Share of requests routed automatically (most confident first)</text>
+<text x="16" y="169.0" font-size="12" fill="#59636e" text-anchor="middle" transform="rotate(-90 16 169.0)">Accuracy</text>
+</svg>

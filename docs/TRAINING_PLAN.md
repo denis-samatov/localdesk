@@ -8,9 +8,12 @@
 3. **Validate and split.** Check types, unknown/conflicting labels, duplicates,
    conversation links and equivalent inputs. Freeze train/calibration/test with
    observed class support. Preserve whole groups; fail on insufficient data.
-4. **Fit the baseline.** Word/bigram hashed features, balanced logistic regression,
-   configured C/max iterations. Binary and multiclass exported scoring must match
-   sklearn on calibration data. This establishes a cheap measured reference.
+4. **Fit a CPU model.** The recommended `tfidf` backend hashes word 1–2 grams and
+   within-word character 3–5 grams into 2^18 buckets, keeps the most frequent
+   buckets (`max_features` per block), applies sublinear TF-IDF and balanced
+   logistic regression. The legacy `baseline` uses 4,096 hashed word buckets.
+   Exported scoring must match sklearn on calibration data (float32 tolerance
+   for `tfidf`). This establishes a cheap measured reference.
 5. **Train Qwen if needed.** In a separate CUDA environment change backend to
    `unsloth`. LoRA rank, epochs, batches and learning rate are explicit; TaskSpec
    labels enter the decision head. Stop on skipped/truncated rows. Record GPU and
@@ -18,7 +21,7 @@
 6. **Calibrate.** Fit temperature on the separate calibration split. No test
    labels participate in parameters, temperature or policy selection.
 7. **Evaluate once.** Accuracy, macro/weighted F1, confusion, per-class metrics,
-   NLL/Brier/ECE and coverage/accepted accuracy. Measure OOD/language robustness
+   NLL/Brier/ECE, coverage/accepted accuracy and a descriptive risk-coverage curve. Measure OOD/language robustness
    separately with independently labelled data, not confidence alone.
 8. **Apply declared gates.** Failed/ungated versions are candidates. Keep metric
    values and failure reasons; do not hide failures or invent samples to pass.

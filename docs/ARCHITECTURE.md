@@ -17,6 +17,9 @@ a database/broker. Add those only with an actual multi-host/multi-tenant require
 | `dataset.py` | Format/column adaptation, transitive groups, split invariants |
 | `data.py` | Original Zenodo adapter and shared feature-group signatures |
 | `pipeline.py` | Train/calibrate/test lifecycle and portable CPU export |
+| `tfidf.py` | Default CPU backend: hashed word+char TF-IDF, stdlib-only inference |
+| `analysis.py` | Risk-coverage curves and out-of-scope behaviour |
+| `sources.py` | Pinned public downloads and cross-split duplicate isolation |
 | `training.py` | Optional Qwen backend using the same prepared TaskSpec/splits |
 | `metrics.py` | Classification, calibration and abstention metrics |
 | `registry.py` | Immutable artifacts, integrity, qualification and active pointer |
