@@ -8,11 +8,14 @@ data, so treat trained artifacts with the same care as the data they were fitted
 
 import array
 import base64
+import gzip
 import hashlib
+import json
 import math
 import re
 import unicodedata
 from collections import Counter
+from importlib.resources import files
 
 from localdesk.baseline import softmax
 from localdesk.config import TaskSpec
@@ -121,6 +124,12 @@ class TfidfBackend:
     def predict(self, text: str) -> dict[str, dict[str, float]]:
         probabilities = softmax(self.logits(text), self.bundle["temperature"])
         return {"category": dict(zip(self.classes, probabilities, strict=True))}
+
+
+def demo_backend() -> TfidfBackend:
+    """Packaged demo: the shipped IT Support Tickets experiment, built by scripts/train_demo.py."""
+    payload = files("localdesk").joinpath("assets/demo.json.gz").read_bytes()
+    return TfidfBackend(bundle=json.loads(gzip.decompress(payload)))
 
 
 def fit_tfidf(experiment, prepared):

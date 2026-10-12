@@ -28,8 +28,9 @@ wrong answer costs more than asking a human.
 
 ## Try it in 10 seconds
 
-The package ships with a small model trained on real IT tickets. Running a
-prediction has no runtime dependencies:
+The package ships with the TF-IDF demo model trained on real IT tickets
+(76.5% accuracy on the 524-ticket holdout, [report](reports/demo.json)).
+Running a prediction has no runtime dependencies:
 
 ```bash
 pip install "git+https://github.com/denis-samatov/localdesk.git"
@@ -41,8 +42,8 @@ A clear request is routed. An ambiguous one goes to a human with the reason
 attached (output abbreviated):
 
 ```jsonc
-{"category": "Fileservice",     "action": "route",  "probabilities": {"Fileservice": 0.999, ...}, "review_reasons": []}
-{"category": "Support general", "action": "review", "probabilities": {"Support general": 0.38, "Fileservice": 0.22, ...},
+{"category": "Fileservice", "action": "route",  "probabilities": {"Fileservice": 0.999, ...}, "review_reasons": []}
+{"category": "Fileservice", "action": "review", "probabilities": {"Fileservice": 0.43, "Support general": 0.24, ...},
  "review_reasons": ["low_confidence", "small_margin"]}
 ```
 

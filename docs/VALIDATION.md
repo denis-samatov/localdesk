@@ -34,7 +34,7 @@ HTTP 504); the committed IT splits were used and their SHA-256 values verified.
 
 ## Executed software checks
 
-- Full pytest suite on the locked environment: 140 tests. Tests cover arbitrary
+- Full pytest suite on the locked environment: 144 tests. Tests cover arbitrary
   labels, binary/multiclass export parity, strict config/types, group transitivity,
   mixed conversations, conflicting/equivalent inputs, split leakage, corrupted
   artifact hashes, model/data/report identity, failed/ungated candidates, partial
@@ -55,6 +55,12 @@ HTTP 504); the committed IT splits were used and their SHA-256 values verified.
   guard against recurrence.
 
 Raw corpora, checkpoints, registry/private paths and secrets are excluded from Git.
+`localdesk predict` without `--model` uses the packaged TF-IDF demo
+(`src/localdesk/assets/demo.json.gz`), built by `scripts/train_demo.py` through the
+standard pipeline and registry checks. Two builds produced byte-identical files; its
+report (`reports/demo.json`) is bound to the model hash, task, data splits and recipe
+files, and a test fails if any of them change without a rebuild.
+`--backend baseline` still selects the legacy model.
 The packaged legacy CPU baseline was regenerated after its source changed and its
 report remains bound to model/data/recipe hashes.
 
