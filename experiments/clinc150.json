@@ -1,0 +1,31 @@
+{
+  "task": "../tasks/clinc150.json",
+  "dataset": {
+    "splits": {
+      "train": "../data/clinc150/train.jsonl",
+      "calibration": "../data/clinc150/calibration.jsonl",
+      "test": "../data/clinc150/test.jsonl"
+    },
+    "format": "jsonl",
+    "text_column": "text",
+    "label_column": "label",
+    "id_column": "id",
+    "provenance": "public_real_clinc150_828f809",
+    "sha256": {
+      "train": "b0c41e407bb93c778a69421de48bdb72d80707f2670b9e5073a1629cdff6ab02",
+      "calibration": "6a98127613a3724c8d28b5680a84e2265a019480e4812d209e4513f45273ca40",
+      "test": "97643ea3cb8f885e56f7e36b4756d8ef3eae393f7582c996dec480803ba852e5"
+    }
+  },
+  "registry": "../artifacts/registry",
+  "training": {
+    "backend": "tfidf",
+    "C": 4.0,
+    "max_features": 40000
+  },
+  "gates": {
+    "min_accuracy": 0.8,
+    "min_macro_f1": 0.8,
+    "max_ece": 0.1
+  }
+}

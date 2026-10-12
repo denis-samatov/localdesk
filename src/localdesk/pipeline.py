@@ -10,6 +10,7 @@ import uuid
 import warnings
 from datetime import UTC, datetime
 
+from localdesk.analysis import selective_report
 from localdesk.baseline import N_FEATURES, BaselineBackend, features, softmax
 from localdesk.config import Experiment
 from localdesk.data import file_hash
@@ -98,8 +99,13 @@ def run_experiment(experiment: Experiment, *, run_id: str | None = None) -> dict
     started = time.monotonic()
     try:
         kind = experiment.training.get("backend", "baseline")
-        if kind == "baseline":
-            backend, bundle = fit_baseline(experiment, prepared)
+        if kind in {"baseline", "tfidf"}:
+            if kind == "baseline":
+                backend, bundle = fit_baseline(experiment, prepared)
+            else:
+                from localdesk.tfidf import fit_tfidf
+
+                backend, bundle = fit_tfidf(experiment, prepared)
             (pending / "model.json.gz").write_bytes(
                 gzip.compress(json.dumps(bundle, sort_keys=True, allow_nan=False).encode(), mtime=0)
             )
@@ -115,6 +121,7 @@ def run_experiment(experiment: Experiment, *, run_id: str | None = None) -> dict
         report = evaluate_rows(prepared.rows["test"], backend)
         report.update(
             {
+                "risk_coverage": selective_report(prepared.rows["test"], backend),
                 "task_sha256": experiment.task.digest,
                 "dataset_split_sha256": prepared.manifest["split_sha256"],
                 "evidence": prepared.manifest["provenance"],
