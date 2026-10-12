@@ -1,83 +1,55 @@
-# LocalDesk Decision Service
+# LocalDesk
 
-**Configure a text dataset and its labels. Validate, train, calibrate, evaluate,
-version and serve it through the same pipeline.**
-
-LocalDesk is a modular decision service with a FastAPI inference boundary,
-immutable model registry, quality gates, an operator dashboard and a training CLI.
-Task definitions and column mappings live in JSON. IT ticket categories are an
-example configuration, not the service's class vocabulary.
+**Train a text classifier that knows when it isn't sure, and ship it with receipts.**
 
 [![CI](https://github.com/denis-samatov/localdesk/actions/workflows/ci.yml/badge.svg)](https://github.com/denis-samatov/localdesk/actions/workflows/ci.yml)
-[![Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/denis-samatov/localdesk/blob/main/notebooks/train_qwen.ipynb)
+![Python](https://img.shields.io/badge/python-3.11%20%7C%203.13-blue)
+[![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
+[![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/denis-samatov/localdesk/blob/main/notebooks/benchmark_qwen.ipynb)
 
-## Architecture
+LocalDesk turns a CSV or JSONL file and a JSON list of labels into a versioned,
+calibrated classification service that runs locally. It is built for routing:
+support tickets, intents, spam, triage queues. In those settings a confident
+wrong answer costs more than asking a human.
 
-```mermaid
-flowchart LR
-  C[Experiment + TaskSpec] --> D[CSV / JSONL intake]
-  D --> V[Validate labels + isolate groups]
-  V --> T[CPU or Qwen trainer]
-  T --> K[Calibration split]
-  K --> E[Untouched test + metrics]
-  E --> G[Declared quality gates]
-  G --> R[Immutable version registry]
-  R --> P[Explicit promotion / rollback]
-  P --> A[ASGI API + operator dashboard]
-```
+- **Abstains instead of guessing.** Every prediction is either `route` or `review`,
+  based on calibrated confidence and the margin between the top two labels.
+- **Quality gates before deploy.** A version that misses your accuracy, macro-F1,
+  calibration or coverage thresholds cannot be promoted or served.
+- **Every version is reproducible and tamper-evident.** Each version is immutable
+  and pins the task, the data fingerprints, the report and the training plan with
+  SHA-256 checksums.
+- **CPU first, LLM when it pays off.** The default model trains in seconds and needs
+  only the Python standard library for inference. An optional Qwen + Unsloth LoRA
+  recipe gave **+5.7 pp accuracy** over a tuned TF-IDF SVM on real IT tickets.
 
-Training and serving are separate processes. Model weights carry their own
-label schema; every response identifies its task hash and model version.
-Failed training cannot publish a completed artifact. Ungated or failed-gate
-candidates remain inspectable but cannot be activated or served. Model, report
-and dataset fingerprints must agree on load. Activation updates an atomic
-pointer; workers load a verified immutable snapshot at startup and restart to
-adopt a new active version.
+![LocalDesk operator dashboard](docs/service-demo.png)
 
-See [architecture and contracts](docs/ARCHITECTURE.md),
-[training plan](docs/TRAINING_PLAN.md), [API/runbook](docs/RUNBOOK.md) and
-[validation evidence](docs/VALIDATION.md).
+## Try it in 10 seconds
 
-## Run the complete lifecycle
-
-Python 3.11 or 3.13:
+The package ships with a small model trained on real IT tickets. Running a
+prediction has no runtime dependencies:
 
 ```bash
-git clone https://github.com/denis-samatov/localdesk.git
-cd localdesk
-python -m venv .venv
-# macOS/Linux: source .venv/bin/activate
-# Windows PowerShell: .venv\Scripts\Activate.ps1
-python -m pip install '.[baseline,service]'
-
-python scripts/prepare_data.py
-localdesk validate experiments/it-support.json
-localdesk train experiments/it-support.json --run-id it-v2
-localdesk promote it-v2
-localdesk api --anonymous-local
+pip install "git+https://github.com/denis-samatov/localdesk.git"
+localdesk predict "File share access request"
+localdesk predict "I can't open the shared finance folder"
 ```
 
-Open `http://127.0.0.1:8765` and click **Подключиться**. The dashboard displays
-the active task, its actual labels, measured quality, gates and training plan.
-It accepts requests and renders the corresponding probability distribution.
-Anonymous mode is explicitly restricted to loopback peers, hosts and origins.
+A clear request is routed. An ambiguous one goes to a human with the reason
+attached (output abbreviated):
 
-For authenticated serving, set `LOCALDESK_API_KEY` in the environment and omit
-`--anonymous-local`. The direct ASGI factory requires a key independently of CLI:
-
-```bash
-uvicorn localdesk.api:application --factory --host 127.0.0.1 --port 8765 --no-access-log
+```jsonc
+{"category": "Fileservice",     "action": "route",  "probabilities": {"Fileservice": 0.999, ...}, "review_reasons": []}
+{"category": "Support general", "action": "review", "probabilities": {"Support general": 0.38, "Fileservice": 0.22, ...},
+ "review_reasons": ["low_confidence", "small_margin"]}
 ```
 
-This starts only an inference service: it cannot upload datasets, execute code,
-train models or promote versions through HTTP. Operator actions use the CLI.
-Use [the runbook](docs/RUNBOOK.md) for Docker, remote exposure and rollback.
+Run `localdesk serve` to open the same model in a local web page at `http://127.0.0.1:8765`.
 
-![Task-aware operator dashboard](docs/service-demo.png)
+## Train on your own data (5 minutes)
 
-## Replace the dataset and label set
-
-A task file defines the new vocabulary:
+**1. Describe the task.** The labels are yours; nothing in the core is IT-specific.
 
 ```json
 {
@@ -94,7 +66,7 @@ A task file defines the new vocabulary:
 }
 ```
 
-An experiment maps your data to that task:
+**2. Point an experiment at your file and set the bar a model must clear.**
 
 ```json
 {
@@ -107,186 +79,171 @@ An experiment maps your data to that task:
     "id_column": "id"
   },
   "registry": "my-registry",
-  "seed": 3407,
-  "training": {"backend": "baseline", "C": 4.0, "max_iter": 1000},
+  "training": {"backend": "baseline"},
   "gates": {"min_accuracy": 0.7, "min_macro_f1": 0.6, "max_ece": 0.1}
 }
 ```
 
-Paths are relative to the experiment file. Use the same commands:
+**3. Validate, train, promote, serve.**
 
 ```bash
-localdesk validate my-experiment.json
-localdesk train my-experiment.json --run-id my-v1
-localdesk promote my-v1 --registry my-registry
+git clone https://github.com/denis-samatov/localdesk.git && cd localdesk
+pip install '.[baseline,service]'
+
+localdesk validate my-experiment.json            # checks labels, leakage, class support
+localdesk train my-experiment.json --run-id v1   # fit, calibrate, evaluate, gate
+localdesk runs --registry my-registry            # list versions and gate results
+localdesk promote v1 --registry my-registry      # refuses versions that failed gates
 localdesk api --registry my-registry --anonymous-local
 ```
 
-No Python changes are needed for new text files, column names or 2–200 label
-keys. JSONL supports dotted field paths such as `gold.category`. You may provide
-explicit train/calibration/test files instead of one automatically split file.
-Unknown labels, conflicting equivalent texts, overlapping groups, misspelled
-configuration fields and insufficient class support fail with diagnostics.
-New image modalities, regression outputs or multi-label targets require a
-separate adapter; this release's contract is single-label text classification.
+Paths are relative to the experiment file. JSONL supports dotted fields such as
+`gold.category`, and you can supply explicit train/calibration/test files.
+Unknown labels, conflicting duplicates, groups that cross splits and typos in the
+configuration fail early with a clear message.
 
-## Measured reuse on two real datasets
+## Results on real public data
 
-The same `localdesk train CONFIG` command was executed on both domains, followed
-by exported-artifact loading and actual ASGI prediction requests. No fictional
-training examples or invented metric labels were introduced.
+The commands and code are the same for both datasets. Only the configuration changes.
 
-| Real dataset | Labels | Train / calibration / test | Accuracy | Macro F1 | Route coverage | Accepted-route accuracy |
-| --- | ---: | --- | ---: | ---: | ---: | ---: |
-| IT Support Tickets | 6 | 690 / 170 / 524 | 69.47% | 64.92% | 44.08% | 91.34% |
-| UCI SMS Spam Collection | 2 | 3334 / 768 / 1024 | 97.46% | 93.82% | 95.02% | 99.08% |
+| Dataset | Labels | Test rows | Accuracy | Macro F1 | Auto-routed | Accuracy when routed |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| [IT Support Tickets](https://zenodo.org/records/7648117) | 6 | 524 | 69.5% | 64.9% | 44.1% | **91.3%** |
+| [UCI SMS Spam](https://archive.ics.uci.edu/dataset/228/sms+spam+collection) | 2 | 1024 | 97.5% | 93.8% | 95.0% | **99.1%** |
 
-These are **CPU logistic-regression results** with separately fitted temperature
-calibration. Coverage is the share receiving a route proposal; accepted accuracy
-does not describe all requests. The corpus age, organization/language coverage,
-exact-feature grouping and random/source splits limit real-world generalization.
-A measured benchmark does not qualify a new organization's deployment.
-
-Reports include accuracy, macro/weighted F1, confusion matrix, per-class
-precision/recall/F1/support, NLL, Brier, ECE, acceptance coverage/accuracy,
-data fingerprints and passed/failed gates. See [reports/service-reuse.json](reports/service-reuse.json)
-and [data provenance](docs/DATASETS.md).
-
-Reproduce the second domain by changing configuration only:
+Both rows use the CPU baseline: hashed n-grams, logistic regression and temperature
+calibration. "Accuracy when routed" covers only the requests the model handled
+without asking a human. Training the IT model takes about 2 seconds on a laptop CPU.
+To reproduce (the scripts download and checksum the public data):
 
 ```bash
-python scripts/prepare_sms.py
-localdesk validate experiments/sms-filter.json
-localdesk train experiments/sms-filter.json --run-id sms-v1
-localdesk promote sms-v1
-localdesk api --anonymous-local
+python scripts/prepare_data.py && localdesk train experiments/it-support.json --run-id it-v1
+python scripts/prepare_sms.py  && localdesk train experiments/sms-filter.json --run-id sms-v1
 ```
 
-Original UCI texts are not committed or stored by the inference server.
-The preparation adapter verifies the archive and text SHA-256 checksums.
-Both data sources are CC BY 4.0; attribution and changes are in [NOTICE.md](NOTICE.md).
+**Fine-tuned Qwen vs classic baselines** (same 524 IT test rows, free Colab T4):
 
-## Artifacts and serving
+| Method | Accuracy | Macro F1 | p50 latency |
+| --- | ---: | ---: | ---: |
+| Qwen 3.5 4B + LoRA (LocalDesk recipe) | **82.8%** | **80.6%** | 389 ms |
+| TF-IDF + SVM (tuned) | 77.1% | 73.5% | 1.8 ms |
+| TF-IDF + logistic regression | 77.7% | 74.0% | 2.1 ms |
+| Qwen 3.5 4B zero-shot | 55.3% | 54.1% | 251 ms |
 
-Each completed version has `task.json`, `dataset.json`, `training-plan.json`,
-`report.json`, model payload and a checksummed `manifest.json`. Checkpoints
-are created under a reserved staging directory. Failures keep a private failure
-status without exception text or ticket content; completed versions are never
-rewritten. The default registry is `artifacts/registry/`, ignored by Git.
+The accuracy gain over the SVM is +5.73 pp, with a paired-bootstrap 95% CI of
+[+2.48, +9.16] pp. Macro-F1 gain is +7.06 pp, with a 95% CI of [+3.31, +11.10] pp.
+Full protocol: [docs/BENCHMARK.md](docs/BENCHMARK.md) · report:
+[reports/comparison-colab-it.md](reports/comparison-colab-it.md) ·
+run it yourself: [Colab notebook](https://colab.research.google.com/github/denis-samatov/localdesk/blob/main/notebooks/benchmark_qwen.ipynb).
+
+These are reused public holdouts, not a field trial. Measure on your own data
+before relying on the numbers. [docs/VALIDATION.md](docs/VALIDATION.md) lists
+exactly what was and wasn't verified.
+
+## How it works
+
+```mermaid
+flowchart LR
+  C[Task + experiment JSON] --> D[CSV / JSONL intake]
+  D --> V[Validate labels, group duplicates, isolate splits]
+  V --> T[Train: CPU baseline or Qwen LoRA]
+  T --> K[Calibrate on a separate split]
+  K --> E[Evaluate on untouched test]
+  E --> G{Quality gates}
+  G -->|pass| R[Immutable version in registry]
+  G -->|fail| X[Kept for inspection, never served]
+  R --> P[promote / rollback]
+  P --> A[HTTP API + dashboard]
+```
+
+- **No leakage by construction.** Records that share a conversation or produce
+  identical model features are grouped together, and a group never spans
+  train/calibration/test.
+- **Training and serving are separate processes.** The HTTP API cannot upload
+  data, train or promote; it only answers predictions. Operators use the CLI.
+- **Promotion is an atomic pointer swap.** Rollback is `localdesk promote <older-run>`.
+  Workers verify every checksum on startup.
+
+More detail: [architecture and contracts](docs/ARCHITECTURE.md) ·
+[training plan](docs/TRAINING_PLAN.md).
+
+## HTTP API
 
 ```bash
-localdesk runs
-localdesk predict --model artifacts/registry/it-v2 "File share access request"
-localdesk evaluate --model artifacts/registry/it-v2 --config experiments/it-support.json
-localdesk promote it-v2  # Also the rollback operation to an earlier qualified version.
+export LOCALDESK_API_KEY=change-me
+localdesk api --registry my-registry          # or: docker compose up --build -d
+
+curl http://127.0.0.1:8765/v1/predictions \
+  -H "X-API-Key: $LOCALDESK_API_KEY" -H 'Content-Type: application/json' \
+  -d '{"text": "Where is my parcel?"}'
 ```
 
-The shipped v0.1 CPU baseline remains available for backward compatibility via
-`localdesk predict "File share access request"` and `localdesk serve`. The new
-service uses explicitly trained, qualified registry versions. Existing local
-HTTP aliases `/api/decide` and `/api/info` are retained.
+| Endpoint | Purpose |
+| --- | --- |
+| `POST /v1/predictions`, `POST /v1/predictions/batch` | Decision, probabilities, model version and task hash |
+| `GET /v1/model`, `/v1/model/report`, `/v1/model/plan` | Active labels, measured quality, gates and training plan |
+| `GET /health/live`, `/health/ready` | Liveness; readiness only when a qualified model is loaded |
+| `GET /metrics` | Prometheus counters (no request bodies are logged) |
 
-## Comparative quality experiment
+Inference requests are queued and run one at a time, so a single process can
+safely hold a GPU model. The API key is compared in constant time, bodies are
+size- and time-limited, and anonymous mode accepts only loopback hosts and
+origins. The Docker setup runs as a non-root user with a read-only filesystem
+and models mounted read-only. See the [runbook](docs/RUNBOOK.md).
 
-The service also has an offline comparison command:
+## Fine-tune Qwen with Unsloth (optional, CUDA)
+
+Swap the `training` block and keep the rest of the pipeline:
+
+```json
+"training": {"backend": "unsloth", "epochs": 2, "rank": 16, "batch_size": 2,
+             "gradient_accumulation": 4, "learning_rate": 0.0002}
+```
+
+The classification head is built from your label descriptions. Upstream
+revisions are pinned in `requirements-gpu.txt`. Training stops on skipped or
+truncated examples instead of silently degrading. Setup: [docs/TRAINING.md](docs/TRAINING.md).
+GPU serving details: [docs/GPU_HTTP.md](docs/GPU_HTTP.md).
+
+## Status
+
+LocalDesk is **v0.2, early but tested**. CI runs lint, formatting, the test suite,
+package build and a CLI smoke test on Linux, macOS and Windows with Python 3.11
+and 3.13.
+
+Current scope is single-label text classification on a single node. Not included
+yet: multi-label targets, a hosted Qwen checkpoint you can download, multi-tenant
+isolation, and hot-swapping models without a restart.
+
+## Development
 
 ```bash
-localdesk benchmark experiments/it-support.json --out artifacts/benchmarks/my-comparison
+uv sync --frozen --extra dev --extra baseline --extra service
+uv run pytest -q
+uv run ruff check . && uv run ruff format --check .
 ```
 
-It compares a training-majority reference, hashed logistic regression and tuned
-word+character TF-IDF logistic regression/SVM on the same heldout rows. Append
-`--qwen` in the CUDA environment to include ordinary zero-shot Qwen and a saved,
-reloaded fine-tuned decision Qwen. Tuning, probability calibration and test are
-group-isolated; the CPU reference is selected on tuning before test scoring.
-Reports include paired group-bootstrap intervals, raw/calibrated probabilities,
-review coverage at a declared error target, latency and scoped memory measurements.
+Issues and pull requests are welcome. Please include a test for any change in behaviour.
 
-See [the frozen protocol](docs/BENCHMARK.md),
-[executed IT comparison](reports/comparison-it.md) and
-[executed SMS comparison](reports/comparison-sms.md) and
-[complete Colab GPU comparison](reports/comparison-colab-it.md).
-The complete IT run trained Qwen on a free Tesla T4, saved/reloaded the head and
-measured **82.82% accuracy / 80.59% macro F1** on the same 524 test rows.
-The tuning-selected TF-IDF SVM measured **77.10% / 73.54%**; ordinary zero-shot
-Qwen measured **55.34% / 54.13%**. The primary accuracy gain is **+5.73 pp**,
-paired 95% interval **[+2.48, +9.16] pp**; macro-F1 gain is **+7.06 pp**,
-interval **[+3.31, +11.10] pp**. The TF-IDF logistic method measured 77.67%
-accuracy on test; the reference was selected on tuning, not test results.
+## Documentation
 
-The quality gain costs latency: warmed batch=1 median on the same Colab machine
-was **388.6 ms for decision Qwen**, **251.0 ms for zero-shot Qwen** and **1.76 ms
-for SVM**. None of the methods qualified the strict calibration-selected 5% error
-policy; all abstained under that policy. At the separately fixed task policy,
-Qwen proposed routes for 64.31% of cases with 93.18% accepted accuracy. This does
-not establish a 5% operational error guarantee or a field deployment benefit.
-
-An earlier completed run observed 81.11% Qwen accuracy; its temporary files were
-lost during a failed export. The retained console summary is explicitly marked
-as incomplete in [reports/observed-colab-it.json](reports/observed-colab-it.json).
-The fresh reproduction above has complete metrics and a verified source/data
-fingerprint. These runs do not establish deterministic training or seed robustness.
-Incomplete GPU comparisons cannot establish Qwen superiority. Failed error
-targets and zero coverage remain visible. These are reused public corpus
-holdouts, not a new independent blind test or a field trial.
-
-[Run the comparative notebook in Colab](https://colab.research.google.com/github/denis-samatov/localdesk/blob/main/notebooks/benchmark_qwen.ipynb).
-
-## Qwen / Unsloth training
-
-Replace the `training` block with Unsloth parameters (`backend: unsloth`,
-`epochs`, `rank`, `batch_size`, `gradient_accumulation`, `learning_rate`) and
-use the same task/data pipeline in a CUDA environment. Remove CPU-only `C`/`max_iter`. The head receives the configured label descriptions; no
-fixed IT choices are inserted. Unsloth imports before PyTorch/Transformers,
-source revisions are pinned, and skipped/truncated examples stop training.
-
-[docs/TRAINING.md](docs/TRAINING.md) and the original Colab notebook explain
-setup. **Full GPU training, saved-Qwen reload and benchmark scoring were executed**
-for the documented IT experiment; see the complete Colab report above. Production
-Unsloth calibration, registry activation and loopback CUDA HTTP verification were
-executed in a separate run; see docs/GPU_HTTP.md. A lasting CUDA deployment was not executed.
-CPU/fake-boundary tests and notebook syntax alone do not establish GPU quality. The CPU Docker image does not include
-the optional GPU stack.
-
-## Saved-model HTTP qualification and durable recovery
-
-The production-calibrated IT head was saved/reloaded and tested through real
-Uvicorn HTTP requests on all 524 holdout rows: **83.78% accuracy / 81.44% macro F1**.
-Auth, validation, batch and three-case offline parity checks passed; all original
-quality gates passed on the HTTP outputs. See [the evidence and precision limits](docs/GPU_HTTP.md).
-
-**Complete model recovery is still pending.** Colab exhausted GPU quota after 80%
-of the archive had transferred. A complete LoRA adapter was recovered locally,
-but the classification head is incomplete and cannot be served. The complete
-HTTP/training reports are retained. The new [Drive recovery notebook](notebooks/train_qwen_drive.ipynb)
-writes the registry directly to persistent Drive storage before API checks. It
-requires a new free GPU allocation and has not yet completed a GPU run; notebook
-syntax/regeneration checks do not establish Drive/CUDA execution. The user chose
-manual return, so no automatic retraining or quota monitor runs.
-
-## Development and validation
-
-```bash
-python -m pip install '.[dev,baseline,service]'
-pytest -q
-ruff check .
-ruff format --check .
-python -m build
-```
-
-With uv: `uv sync --frozen --extra dev --extra baseline --extra service`.
-CI checks Linux, Windows and macOS with Python 3.11 and 3.13.
-See [docs/VALIDATION.md](docs/VALIDATION.md) for executed evidence and remaining boundaries.
+[Architecture](docs/ARCHITECTURE.md) · [Runbook & API](docs/RUNBOOK.md) ·
+[Datasets & provenance](docs/DATASETS.md) · [Training](docs/TRAINING.md) ·
+[Benchmark protocol](docs/BENCHMARK.md) · [GPU HTTP check](docs/GPU_HTTP.md) ·
+[Validation evidence](docs/VALIDATION.md)
 
 ## По-русски
 
-Это сервис с общим циклом обучения и оценки. Меняются JSON-описание задачи,
-метки и датасет; код ядра остаётся прежним. Есть проверка данных, обучение,
-калибровка, отчёт качества, реестр версий, приёмка модели, API, панель и Docker.
-Замена домена проверена на реальных IT-заявках и SMS. GPU-обучение Qwen проверено на IT-выборке вместе с сильными baseline.
-Качество на новых языках и организациях требует отдельного прогона.
+LocalDesk превращает CSV/JSONL и список меток в калиброванный сервис классификации
+текста с версиями и порогами качества. Модель отвечает «маршрутизировать» или
+«на ручной разбор», если не уверена. Ядро не привязано к домену: меняются только
+JSON-описание задачи и датасет. Обучение на CPU занимает секунды. Дообучение
+Qwen через Unsloth дало +5,7 п.п. точности к сильному TF-IDF baseline на реальных
+IT-заявках. Качество на других языках и в других организациях нужно измерять
+отдельно.
 
 ## License
 
-Project code and original notebook: MIT. Public datasets: CC BY 4.0.
-Optional dependencies and model weights retain their respective licenses.
+Code and notebooks: [MIT](LICENSE). The bundled demo model and benchmarks use
+public datasets under CC BY 4.0; attribution is in [NOTICE.md](NOTICE.md).
+Optional dependencies and model weights keep their own licenses.
