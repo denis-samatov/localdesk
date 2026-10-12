@@ -3,8 +3,9 @@
 **Train a text classifier that knows when it isn't sure, and ship it with receipts.**
 
 [![CI](https://github.com/denis-samatov/localdesk/actions/workflows/ci.yml/badge.svg)](https://github.com/denis-samatov/localdesk/actions/workflows/ci.yml)
-![Python](https://img.shields.io/badge/python-3.11%20%7C%203.13-blue)
-[![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
+[![PyPI](https://img.shields.io/pypi/v/localdesk)](https://pypi.org/project/localdesk/)
+![Python](https://img.shields.io/badge/python-3.11%20%7C%203.12%20%7C%203.13-blue)
+[![License: MIT](https://img.shields.io/badge/license-MIT-green)](https://github.com/denis-samatov/localdesk/blob/main/LICENSE)
 [![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/denis-samatov/localdesk/blob/main/notebooks/benchmark_qwen.ipynb)
 
 LocalDesk turns a CSV or JSONL file and a JSON list of labels into a versioned,
@@ -24,16 +25,16 @@ wrong answer costs more than asking a human.
   Python standard library for inference. An optional Qwen + Unsloth LoRA recipe
   gave a further **+5.7 pp accuracy** on the hardest one, real IT tickets.
 
-![LocalDesk operator dashboard](docs/service-demo.png)
+![LocalDesk operator dashboard](https://raw.githubusercontent.com/denis-samatov/localdesk/main/docs/service-demo.png)
 
 ## Try it in 10 seconds
 
 The package ships with the TF-IDF demo model trained on real IT tickets
-(76.5% accuracy on the 524-ticket holdout, [report](reports/demo.json)).
+(76.5% accuracy on the 524-ticket holdout, [report](https://github.com/denis-samatov/localdesk/blob/main/reports/demo.json)).
 Running a prediction has no runtime dependencies:
 
 ```bash
-pip install "git+https://github.com/denis-samatov/localdesk.git"
+pip install localdesk
 localdesk predict "File share access request"
 localdesk predict "I can't open the shared finance folder"
 ```
@@ -89,8 +90,7 @@ Run `localdesk serve` to open the same model in a local web page at `http://127.
 **3. Validate, train, promote, serve.**
 
 ```bash
-git clone https://github.com/denis-samatov/localdesk.git && cd localdesk
-pip install '.[baseline,service]'
+pip install 'localdesk[baseline,service]'   # training + HTTP API
 
 localdesk validate my-experiment.json            # checks labels, leakage, class support
 localdesk train my-experiment.json --run-id v1   # fit, calibrate, evaluate, gate
@@ -120,9 +120,9 @@ Default `tfidf` backend, test sets never used for fitting or calibration:
 the task's fixed review policy, and "Accuracy when routed" is measured on those
 requests only. Compared with the legacy hashed baseline, TF-IDF adds 1.5–7.1 pp
 accuracy on every dataset and routes 2.6–16.4 pp more requests automatically
-([full comparison](reports/cpu-suite.md)). Training takes 1–40 seconds on a laptop CPU.
+([full comparison](https://github.com/denis-samatov/localdesk/blob/main/reports/cpu-suite.md)). Training takes 1–40 seconds on a laptop CPU.
 
-![Accuracy versus share of requests handled automatically](docs/risk-coverage.svg)
+![Accuracy versus share of requests handled automatically](https://raw.githubusercontent.com/denis-samatov/localdesk/main/docs/risk-coverage.svg)
 
 The fewer requests the model takes, the more accurate it gets. On Banking77,
 TF-IDF keeps 95% accuracy on its most confident 93% of queries; the old baseline
@@ -133,9 +133,11 @@ to choose a policy, then confirm it on your own data.
 none of its 150 intents and are never seen in training. Under the default policy,
 **85% of them go to human review** instead of receiving a wrong intent.
 
-To reproduce (the scripts download and checksum the public data):
+To reproduce from a clone of this repository (the scripts download and checksum
+the public data):
 
 ```bash
+pip install -e '.[baseline]'
 python scripts/prepare_data.py && python scripts/prepare_sms.py
 python scripts/prepare_banking77.py && python scripts/prepare_clinc150.py
 python scripts/publish_cpu_suite.py   # both CPU backends on all four datasets
@@ -152,12 +154,12 @@ python scripts/publish_cpu_suite.py   # both CPU backends on all four datasets
 
 The accuracy gain over the SVM is +5.73 pp, with a paired-bootstrap 95% CI of
 [+2.48, +9.16] pp. Macro-F1 gain is +7.06 pp, with a 95% CI of [+3.31, +11.10] pp.
-Full protocol: [docs/BENCHMARK.md](docs/BENCHMARK.md) · report:
-[reports/comparison-colab-it.md](reports/comparison-colab-it.md) ·
+Full protocol: [docs/BENCHMARK.md](https://github.com/denis-samatov/localdesk/blob/main/docs/BENCHMARK.md) · report:
+[reports/comparison-colab-it.md](https://github.com/denis-samatov/localdesk/blob/main/reports/comparison-colab-it.md) ·
 run it yourself: [Colab notebook](https://colab.research.google.com/github/denis-samatov/localdesk/blob/main/notebooks/benchmark_qwen.ipynb).
 
 These are reused public holdouts, not a field trial. Measure on your own data
-before relying on the numbers. [docs/VALIDATION.md](docs/VALIDATION.md) lists
+before relying on the numbers. [docs/VALIDATION.md](https://github.com/denis-samatov/localdesk/blob/main/docs/VALIDATION.md) lists
 exactly what was and wasn't verified.
 
 ## How it works
@@ -184,8 +186,8 @@ flowchart LR
 - **Promotion is an atomic pointer swap.** Rollback is `localdesk promote <older-run>`.
   Workers verify every checksum on startup.
 
-More detail: [architecture and contracts](docs/ARCHITECTURE.md) ·
-[training plan](docs/TRAINING_PLAN.md).
+More detail: [architecture and contracts](https://github.com/denis-samatov/localdesk/blob/main/docs/ARCHITECTURE.md) ·
+[training plan](https://github.com/denis-samatov/localdesk/blob/main/docs/TRAINING_PLAN.md).
 
 ## HTTP API
 
@@ -209,7 +211,7 @@ Inference requests are queued and run one at a time, so a single process can
 safely hold a GPU model. The API key is compared in constant time, bodies are
 size- and time-limited, and anonymous mode accepts only loopback hosts and
 origins. The Docker setup runs as a non-root user with a read-only filesystem
-and models mounted read-only. See the [runbook](docs/RUNBOOK.md).
+and models mounted read-only. See the [runbook](https://github.com/denis-samatov/localdesk/blob/main/docs/RUNBOOK.md).
 
 ## Fine-tune Qwen with Unsloth (optional, CUDA)
 
@@ -222,14 +224,14 @@ Swap the `training` block and keep the rest of the pipeline:
 
 The classification head is built from your label descriptions. Upstream
 revisions are pinned in `requirements-gpu.txt`. Training stops on skipped or
-truncated examples instead of silently degrading. Setup: [docs/TRAINING.md](docs/TRAINING.md).
-GPU serving details: [docs/GPU_HTTP.md](docs/GPU_HTTP.md).
+truncated examples instead of silently degrading. Setup: [docs/TRAINING.md](https://github.com/denis-samatov/localdesk/blob/main/docs/TRAINING.md).
+GPU serving details: [docs/GPU_HTTP.md](https://github.com/denis-samatov/localdesk/blob/main/docs/GPU_HTTP.md).
 
 ## Status
 
 LocalDesk is **v0.2, early but tested**. CI runs lint, formatting, the test suite,
-package build and a CLI smoke test on Linux, macOS and Windows with Python 3.11
-and 3.13.
+package build and a CLI smoke test on Linux, macOS and Windows with Python 3.11,
+3.12 and 3.13.
 
 Current scope is single-label text classification on a single node. Not included
 yet: multi-label targets, a hosted Qwen checkpoint you can download, multi-tenant
@@ -238,6 +240,7 @@ isolation, and hot-swapping models without a restart.
 ## Development
 
 ```bash
+git clone https://github.com/denis-samatov/localdesk.git && cd localdesk
 uv sync --frozen --extra dev --extra baseline --extra service
 uv run pytest -q
 uv run ruff check . && uv run ruff format --check .
@@ -247,10 +250,10 @@ Issues and pull requests are welcome. Please include a test for any change in be
 
 ## Documentation
 
-[Architecture](docs/ARCHITECTURE.md) · [Runbook & API](docs/RUNBOOK.md) ·
-[Datasets & provenance](docs/DATASETS.md) · [Training](docs/TRAINING.md) ·
-[Benchmark protocol](docs/BENCHMARK.md) · [GPU HTTP check](docs/GPU_HTTP.md) ·
-[Validation evidence](docs/VALIDATION.md)
+[Architecture](https://github.com/denis-samatov/localdesk/blob/main/docs/ARCHITECTURE.md) · [Runbook & API](https://github.com/denis-samatov/localdesk/blob/main/docs/RUNBOOK.md) ·
+[Datasets & provenance](https://github.com/denis-samatov/localdesk/blob/main/docs/DATASETS.md) · [Training](https://github.com/denis-samatov/localdesk/blob/main/docs/TRAINING.md) ·
+[Benchmark protocol](https://github.com/denis-samatov/localdesk/blob/main/docs/BENCHMARK.md) · [GPU HTTP check](https://github.com/denis-samatov/localdesk/blob/main/docs/GPU_HTTP.md) ·
+[Validation evidence](https://github.com/denis-samatov/localdesk/blob/main/docs/VALIDATION.md)
 
 ## По-русски
 
@@ -266,6 +269,6 @@ CPU-модель по умолчанию даёт от 76,5% до 98,9% точн
 
 ## License
 
-Code and notebooks: [MIT](LICENSE). The bundled demo model and benchmarks use
-public datasets under CC BY 4.0; attribution is in [NOTICE.md](NOTICE.md).
+Code and notebooks: [MIT](https://github.com/denis-samatov/localdesk/blob/main/LICENSE). The bundled demo model and benchmarks use
+public datasets under CC BY 4.0; attribution is in [NOTICE.md](https://github.com/denis-samatov/localdesk/blob/main/NOTICE.md).
 Optional dependencies and model weights keep their own licenses.
