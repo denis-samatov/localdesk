@@ -5,6 +5,7 @@ import json
 import os
 import re
 import uuid
+from datetime import UTC, datetime
 from pathlib import Path
 
 from localdesk.baseline import BaselineBackend
@@ -73,9 +74,19 @@ class Registry:
         try:
             pending.mkdir()
         except FileExistsError as error:
-            raise ValueError("run already exists or is in progress") from error
+            raise ValueError(
+                f"run {run_id} is in progress; if no training process is running, "
+                f"remove the stale staging directory {pending}"
+            ) from error
         atomic_json(pending / "status.json", {"run_id": run_id, "state": "running"})
         return pending
+
+    def retire_failed(self, pending: Path, run_id: str) -> Path:
+        """Keep the failure record but release the run id for a retry."""
+        stamp = datetime.now(UTC).strftime("%Y%m%dT%H%M%S")
+        failed = self.root / f".failed-{run_id}-{stamp}-{uuid.uuid4().hex[:8]}"
+        pending.rename(failed)
+        return failed
 
     def metadata(self, run_id: str) -> tuple[Path, dict, TaskSpec]:
         self.validate_id(run_id)
@@ -195,10 +206,16 @@ class Registry:
         entries = []
         for path in sorted(self.root.iterdir()):
             if path.is_dir() and not path.name.startswith("."):
-                _, manifest, task = self.metadata(path.name)
+                # One damaged or foreign directory must not hide every other version.
+                try:
+                    _, manifest, task = self.metadata(path.name)
+                except (ValueError, OSError, KeyError, TypeError) as error:
+                    entries.append({"run_id": path.name, "valid": False, "error": str(error)})
+                    continue
                 entries.append(
                     {
                         "run_id": path.name,
+                        "valid": True,
                         "task_id": task.id,
                         "qualified": manifest["quality"]["qualified"],
                         "backend": manifest["backend"],

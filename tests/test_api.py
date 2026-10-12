@@ -1,7 +1,12 @@
+import threading
+import time
+from concurrent.futures import ThreadPoolExecutor
+
 import pytest
 from fastapi.testclient import TestClient
 from test_configurable import write_config
 
+import localdesk.api
 from localdesk.api import create_app
 from localdesk.pipeline import run_experiment
 from localdesk.registry import Registry
@@ -137,3 +142,60 @@ def test_anonymous_loopback_rejects_rebinding_host_and_origin(artifact, monkeypa
             client.get("/v1/model", headers={"Origin": "http://attacker.invalid"}).status_code
             == 403
         )
+
+
+class BlockingBackend:
+    """Wraps a loaded backend so a test can hold one inference in flight."""
+
+    def __init__(self, backend):
+        self.backend, self.entered, self.release = backend, threading.Event(), threading.Event()
+        self.name, self.probability_kind, self.task = (
+            backend.name,
+            backend.probability_kind,
+            backend.task,
+        )
+
+    def predict(self, text):
+        self.entered.set()
+        assert self.release.wait(10)
+        return self.backend.predict(text)
+
+
+def test_concurrent_requests_queue_instead_of_failing(artifact):
+    with TestClient(create_app(registry=artifact, api_key="test-key")) as client:
+        client.headers["X-API-Key"] = "test-key"
+        blocking = BlockingBackend(client.app.state.backend)
+        client.app.state.backend = blocking
+        with ThreadPoolExecutor(4) as pool:
+            first = pool.submit(client.post, "/v1/predictions", json={"text": "red topic0"})
+            assert blocking.entered.wait(10)
+            queued = [
+                pool.submit(client.post, "/v1/predictions", json={"text": "green topic1"})
+                for _ in range(3)
+            ]
+            time.sleep(0.2)
+            blocking.release.set()
+            responses = [first.result(10), *(future.result(10) for future in queued)]
+        assert [response.status_code for response in responses] == [200] * 4
+
+
+def test_queue_timeout_reports_busy(artifact, monkeypatch):
+    monkeypatch.setattr(localdesk.api, "QUEUE_TIMEOUT", 0.1)
+    with TestClient(create_app(registry=artifact, api_key="test-key")) as client:
+        client.headers["X-API-Key"] = "test-key"
+        blocking = BlockingBackend(client.app.state.backend)
+        client.app.state.backend = blocking
+        with ThreadPoolExecutor(1) as pool:
+            first = pool.submit(client.post, "/v1/predictions", json={"text": "red topic0"})
+            assert blocking.entered.wait(10)
+            waiting = client.post("/v1/predictions", json={"text": "green topic1"})
+            blocking.release.set()
+            assert first.result(10).status_code == 200
+        assert waiting.status_code == 503
+        assert waiting.json()["error"]["code"] == "MODEL_BUSY"
+
+
+def test_metrics_declare_every_counter_type(client):
+    lines = client.get("/metrics").text.splitlines()
+    samples = [line.split()[0] for line in lines if not line.startswith("#")]
+    assert samples and all(f"# TYPE {name} counter" in lines for name in samples)

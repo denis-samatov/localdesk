@@ -22,12 +22,13 @@ contract check, not load testing or a field accuracy trial.
 
 ## Executed software checks
 
-- Full pytest suite on the locked Python 3.11 environment: 118 tests. Tests cover arbitrary
+- Full pytest suite on the locked environment: 125 tests. Tests cover arbitrary
   labels, binary/multiclass export parity, strict config/types, group transitivity,
   mixed conversations, conflicting/equivalent inputs, split leakage, corrupted
   artifact hashes, model/data/report identity, failed/ungated candidates, partial
   Qwen checkpoint rejection and active-pointer preservation, smoke exclusion,
-  streamed hashing, API/auth/origin/body/batch/readiness/metrics and legacy paths.
+  streamed hashing, API/auth/origin/body/batch/readiness/metrics and legacy paths,
+  queued concurrent inference, failed-run retry and damaged-registry listing.
 - Ruff lint and format checks passed. Wheel/sdist builds passed.
 - Both original public source adapters verify pinned SHA-256 source bytes.
 - CPU Docker image built; an unprivileged container with read-only filesystem and

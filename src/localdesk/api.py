@@ -23,6 +23,9 @@ from localdesk.core import decide
 from localdesk.registry import Registry
 
 MAX_BODY = 131072
+# Inference is serialized (one model/GPU); excess requests wait in a bounded queue.
+MAX_QUEUED = 32
+QUEUE_TIMEOUT = 30.0
 Text = Annotated[str, StringConstraints(strip_whitespace=True, min_length=1, max_length=4000)]
 
 
@@ -177,6 +180,7 @@ def create_app(*, registry: Path, api_key: str | None = None, anonymous_local: b
         except (ValueError, OSError, KeyError, ImportError, RuntimeError):
             app.state.backend = None
             app.state.manifest = None
+        app.state.admission = asyncio.Semaphore(1)
         yield
         app.state.backend = None
 
@@ -237,11 +241,16 @@ def create_app(*, registry: Path, api_key: str | None = None, anonymous_local: b
             )
         return {"status": "ready", "model_version": app.state.manifest["run_id"]}
 
+    queued = 0
+
     def predict_many(texts):
+        # The thread lock still guarantees serialized inference if a cancelled request's
+        # worker thread outlives its admission slot.
+        with lock:
+            return run_inference(texts)
+
+    def run_inference(texts):
         started = time.monotonic()
-        # Bound concurrent inference instead of indefinitely accumulating work behind a GPU lock.
-        if not lock.acquire(blocking=False):
-            return None
         try:
             predictions = [
                 dict(
@@ -259,15 +268,30 @@ def create_app(*, registry: Path, api_key: str | None = None, anonymous_local: b
             raise
         finally:
             statistics["seconds"] += time.monotonic() - started
-            lock.release()
+
+    def busy(request):
+        return error(
+            "MODEL_BUSY", "Inference capacity is busy; retry later", 503, request.state.request_id
+        )
 
     async def infer(texts, request):
+        nonlocal queued
         if app.state.backend is None:
             return error(
                 "MODEL_UNAVAILABLE", "No qualified model loaded", 503, request.state.request_id
             )
+        if queued >= MAX_QUEUED:
+            return busy(request)
+        queued += 1
         try:
-            result = await run_in_threadpool(predict_many, texts)
+            async with asyncio.timeout(QUEUE_TIMEOUT):
+                await app.state.admission.acquire()
+        except TimeoutError:
+            return busy(request)
+        finally:
+            queued -= 1
+        try:
+            return await run_in_threadpool(predict_many, texts)
         except Exception:
             return error(
                 "MODEL_FAILURE",
@@ -275,14 +299,8 @@ def create_app(*, registry: Path, api_key: str | None = None, anonymous_local: b
                 503,
                 request.state.request_id,
             )
-        if result is None:
-            return error(
-                "MODEL_BUSY",
-                "Inference capacity is busy; retry later",
-                503,
-                request.state.request_id,
-            )
-        return result
+        finally:
+            app.state.admission.release()
 
     @app.post("/v1/predictions", response_model=Prediction)
     @app.post("/api/decide", response_model=Prediction, include_in_schema=False)
@@ -312,12 +330,14 @@ def create_app(*, registry: Path, api_key: str | None = None, anonymous_local: b
 
     @app.get("/metrics", response_class=PlainTextResponse)
     def metrics():
-        return (
-            "# TYPE localdesk_predictions_total counter\n"
-            f"localdesk_predictions_total {statistics['predictions']}\n"
-            f"localdesk_reviews_total {statistics['reviewed']}\n"
-            f"localdesk_model_failures_total {statistics['failures']}\n"
-            f"localdesk_inference_seconds_total {statistics['seconds']}\n"
+        return "".join(
+            f"# TYPE localdesk_{name}_total counter\nlocaldesk_{name}_total {statistics[key]}\n"
+            for name, key in (
+                ("predictions", "predictions"),
+                ("reviews", "reviewed"),
+                ("model_failures", "failures"),
+                ("inference_seconds", "seconds"),
+            )
         )
 
     @app.get("/v1/model/report")
