@@ -67,6 +67,18 @@ def _mixed_allocation(groups, labels, seed, calibration_fraction, test_fraction)
     raise ValueError("cannot allocate mixed conversation groups; provide explicit isolated splits")
 
 
+_BLANK = object()
+
+
+def _json_line(split: str, number: int, line: str):
+    if not line.strip():
+        return _BLANK
+    try:
+        return json.loads(line)
+    except json.JSONDecodeError as error:
+        raise ValueError(f"{split} line {number}: invalid JSON ({error.msg})") from error
+
+
 def _field(row: dict, path: str):
     if path in row:
         return row[path]
@@ -93,8 +105,9 @@ def prepare(experiment: Experiment) -> Prepared:
             raw_rows = (
                 csv.DictReader(file)
                 if settings["format"] == "csv"
-                else (json.loads(line) for line in file if line.strip())
+                else (_json_line(split, number, line) for number, line in enumerate(file, 1))
             )
+            raw_rows = (raw for raw in raw_rows if raw is not _BLANK)
             for index, raw in enumerate(raw_rows):
                 if not isinstance(raw, dict):
                     raise ValueError(f"{split} row {index + 1}: expected object")

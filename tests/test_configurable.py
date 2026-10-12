@@ -206,3 +206,28 @@ def test_csv_column_names_with_dots_are_literal(tmp_path):
         {row["gold"]["category"] for row in examples} == {"red", "green"}
         for examples in prepared.rows.values()
     )
+
+
+def test_invalid_jsonl_reports_line(tmp_path):
+    write_config(tmp_path)  # Provides task.json beside the experiment.
+    (tmp_path / "broken.jsonl").write_text(
+        '{"message": "a", "intent": "red"}\n\n{broken\n', encoding="utf-8"
+    )
+    config = tmp_path / "broken.json"
+    config.write_text(
+        json.dumps(
+            {
+                "task": "task.json",
+                "dataset": {
+                    "path": "broken.jsonl",
+                    "format": "jsonl",
+                    "text_column": "message",
+                    "label_column": "intent",
+                },
+                "registry": "registry",
+            }
+        ),
+        encoding="utf-8",
+    )
+    with pytest.raises(ValueError, match="all line 3: invalid JSON"):
+        prepare(Experiment.load(config))

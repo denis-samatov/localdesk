@@ -5,7 +5,7 @@ build-backend = "hatchling.build"
 [project]
 name = "localdesk-decisions"
 version = "0.2.0"
-description = "Local IT request routing trained on real tickets, with an optional Unsloth recipe"
+description = "Calibrated text classification service with abstention, quality gates and an immutable model registry; optional Qwen/Unsloth fine-tuning"
 readme = "README.md"
 requires-python = ">=3.11"
 license = "MIT"

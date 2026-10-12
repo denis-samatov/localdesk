@@ -4,9 +4,12 @@
 
 Install `.[baseline,service]`, prepare a licensed source, validate the experiment,
 train into a new ID, inspect the report/gates, then promote. No existing completed
-ID is overwritten. `localdesk runs` lists candidates and qualified versions.
-A failed fit remains under `.pending-RUN/status.json` and cannot be activated.
-Use a new ID after correcting a failure; do not edit completed artifacts.
+ID is overwritten. `localdesk runs` lists candidates and qualified versions;
+a damaged or foreign directory is listed with `"valid": false` and its error.
+A failed fit keeps its failure record under `.failed-RUN-<timestamp>-<id>/status.json`,
+cannot be activated, and releases the run ID so the same ID can be retried.
+A process killed mid-training leaves `.pending-RUN`; remove it once no training
+process is running. Do not edit completed artifacts.
 
 For local use: `localdesk api --anonymous-local` on 127.0.0.1. Open `/` and click
 connect without a key. For authenticated mode export `LOCALDESK_API_KEY` or set
@@ -44,7 +47,9 @@ Input: strict strings, 1–4000 characters after stripping; batches 1–16; JSON
 transport body at most 128 KiB; bounded body deadline. Unknown fields are invalid.
 Errors share `{"error":{"code":"...","message":"...","request_id":"..."}}`.
 401 auth, 403 invalid anonymous origin/host, 413 transport size, 415 content type,
-422 input structure, 503 unavailable/busy/invalid model. Retry busy requests later;
+422 input structure, 503 unavailable/busy/invalid model. Inference runs one request
+at a time; up to 32 further requests wait up to 30 s, beyond that `MODEL_BUSY` is
+returned. Retry busy requests later;
 inference has no externally consequential side effects. No source inputs or
 stack traces are reflected. Each response has X-Request-ID and Cache-Control:no-store.
 

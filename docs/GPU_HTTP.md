@@ -57,11 +57,10 @@ from Git publication.
 ## Durable manual retry
 
 Use [train_qwen_drive.ipynb](../notebooks/train_qwen_drive.ipynb).
-The user approved Drive access, and the notebook's Drive permission prompt was
-accepted. Actual Drive mounting/read-write verification did not complete in the
-interrupted browser session. The new recipe has **not completed a GPU run**.
-Its Python cells and deterministic regeneration were checked locally. No automatic
-quota monitor or scheduled retraining was created; the user chose manual return.
+Drive mounting/read-write verification did not complete in the interrupted
+browser session. The new recipe has **not completed a GPU run**.
+Its Python cells and deterministic regeneration were checked locally. Retraining
+is started manually; no automatic quota monitor or scheduled retraining exists.
 
 1. Connect Drive and complete the write/fsync/rename/read probe before training.
 2. Select free T4 after Google restores availability. CPU cannot train this recipe.

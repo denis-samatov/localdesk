@@ -93,9 +93,49 @@ def test_failed_training_retains_failure_record(tmp_path, monkeypatch):
     )
     with pytest.raises(RuntimeError):
         run_experiment(experiment, run_id="failed")
-    status = json.loads((experiment.registry / ".pending-failed" / "status.json").read_text())
+    [record] = experiment.registry.glob(".failed-failed-*")
+    status = json.loads((record / "status.json").read_text())
     assert status["state"] == "failed"
     assert not (experiment.registry / "failed").exists()
+    assert not (experiment.registry / ".pending-failed").exists()
+
+
+def test_failed_run_id_can_be_retried(tmp_path, monkeypatch):
+    import localdesk.pipeline
+
+    experiment = write_config(tmp_path)
+    with monkeypatch.context() as patch:
+        patch.setattr(
+            localdesk.pipeline,
+            "fit_baseline",
+            lambda *_: (_ for _ in ()).throw(RuntimeError("failed")),
+        )
+        with pytest.raises(RuntimeError):
+            run_experiment(experiment, run_id="retry")
+    assert run_experiment(experiment, run_id="retry")["run_id"] == "retry"
+    assert Registry(experiment.registry).metadata("retry")
+
+
+def test_unverifiable_publish_is_withdrawn(tmp_path, monkeypatch):
+    experiment = write_config(tmp_path)
+    monkeypatch.setattr(
+        Registry, "metadata", lambda *_: (_ for _ in ()).throw(ValueError("corrupt"))
+    )
+    with pytest.raises(ValueError, match="corrupt"):
+        run_experiment(experiment, run_id="withdrawn")
+    assert not (experiment.registry / "withdrawn").exists()
+    [record] = experiment.registry.glob(".failed-withdrawn-*")
+    assert json.loads((record / "status.json").read_text())["state"] == "failed"
+
+
+def test_listing_survives_damaged_entries(tmp_path):
+    experiment = write_config(tmp_path)
+    run_experiment(experiment, run_id="good")
+    (experiment.registry / "stray").mkdir()
+    entries = {entry["run_id"]: entry for entry in Registry(experiment.registry).list_runs()}
+    assert entries["good"]["valid"] is True
+    assert entries["stray"]["valid"] is False
+    assert entries["stray"]["error"]
 
 
 def test_partial_qwen_checkpoint_cannot_replace_active_model(tmp_path):

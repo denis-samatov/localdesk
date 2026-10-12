@@ -1,5 +1,6 @@
 """One fit/calibrate/evaluate/publish lifecycle for every configured text classification task."""
 
+import contextlib
 import gzip
 import importlib.metadata
 import json
@@ -166,8 +167,14 @@ def run_experiment(experiment: Experiment, *, run_id: str | None = None) -> dict
             "created_at": datetime.now(UTC).isoformat(),
         }
         atomic_json(pending / "manifest.json", manifest)
-        pending.rename(registry.root / run_id)
-        registry.metadata(run_id)
+        published = registry.root / run_id
+        pending.rename(published)
+        try:
+            registry.metadata(run_id)
+        except Exception:
+            # Never leave an unverifiable directory under a completed run id.
+            published.rename(pending)
+            raise
         return {"run_id": run_id, "manifest": manifest, "report": report}
     except Exception as error:
         if pending.exists():
@@ -176,4 +183,7 @@ def run_experiment(experiment: Experiment, *, run_id: str | None = None) -> dict
                 pending / "status.json",
                 {"run_id": run_id, "state": "failed", "error_type": type(error).__name__},
             )
+            # If retiring fails, the record stays in staging; never mask the original error.
+            with contextlib.suppress(OSError):
+                registry.retire_failed(pending, run_id)
         raise
