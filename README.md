@@ -243,9 +243,26 @@ source revisions are pinned, and skipped/truncated examples stop training.
 [docs/TRAINING.md](docs/TRAINING.md) and the original Colab notebook explain
 setup. **Full GPU training, saved-Qwen reload and benchmark scoring were executed**
 for the documented IT experiment; see the complete Colab report above. Production
-Unsloth calibration/registry activation and CUDA API deployment were not executed.
+Unsloth calibration, registry activation and loopback CUDA HTTP verification were
+executed in a separate run; see docs/GPU_HTTP.md. A lasting CUDA deployment was not executed.
 CPU/fake-boundary tests and notebook syntax alone do not establish GPU quality. The CPU Docker image does not include
 the optional GPU stack.
+
+## Saved-model HTTP qualification and durable recovery
+
+The production-calibrated IT head was saved/reloaded and tested through real
+Uvicorn HTTP requests on all 524 holdout rows: **83.78% accuracy / 81.44% macro F1**.
+Auth, validation, batch and three-case offline parity checks passed; all original
+quality gates passed on the HTTP outputs. See [the evidence and precision limits](docs/GPU_HTTP.md).
+
+**Complete model recovery is still pending.** Colab exhausted GPU quota after 80%
+of the archive had transferred. A complete LoRA adapter was recovered locally,
+but the classification head is incomplete and cannot be served. The complete
+HTTP/training reports are retained. The new [Drive recovery notebook](notebooks/train_qwen_drive.ipynb)
+writes the registry directly to persistent Drive storage before API checks. It
+requires a new free GPU allocation and has not yet completed a GPU run; notebook
+syntax/regeneration checks do not establish Drive/CUDA execution. The user chose
+manual return, so no automatic retraining or quota monitor runs.
 
 ## Development and validation
 

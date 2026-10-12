@@ -4,8 +4,10 @@ This path uses the real dataset documented in `data/README.md` and the public
 Unsloth API inspected at the revisions below. The full comparative IT recipe **was executed on a free Colab Tesla T4**:
 two epochs, saved/reloaded checkpoint, shared heldout temperature calibration and
 all 524 test rows. See [the complete report](../reports/comparison-colab-it.md).
-The original production-calibration/registry-serving path remains experimental;
-it was not deployed as a CUDA API. Notebook syntax and fake tests alone cannot
+The production-calibration/registry-serving path was tested through an actual
+loopback CUDA HTTP server on all 524 rows; see [GPU_HTTP.md](GPU_HTTP.md). Its model
+export remained incomplete after Colab exhausted GPU quota. A lasting CUDA API
+deployment remains unqualified. Notebook syntax and fake tests alone cannot
 qualify a new GPU configuration, dataset or language.
 
 ## Pinned direct sources
@@ -38,6 +40,11 @@ GPU weights separately and requires the pinned base model cached locally.
 The original notebook now creates this experiment and runs the shared pipeline.
 
 ## Colab
+
+For persistent storage, use `notebooks/train_qwen_drive.ipynb`: it stores the
+registry directly in your private Drive and validates an archive before HTTP
+verification. The recovery recipe is prepared but has not completed a GPU run.
+Drive mounting must pass its filesystem probe; preserve models before leaving Colab.
 
 Open `notebooks/train_qwen.ipynb` using its README Colab link. Choose a fresh GPU
 runtime; availability and free quota are controlled by Google. The notebook:

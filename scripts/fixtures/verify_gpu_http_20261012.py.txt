@@ -1,0 +1,276 @@
+"""Verify a qualified GPU registry version in fresh offline and HTTP processes."""
+
+import argparse
+import hashlib
+import json
+import os
+from pathlib import Path
+import secrets
+import socket
+import subprocess
+import sys
+import time
+import urllib.error
+import urllib.request
+
+from localdesk.config import Experiment, read_json
+from localdesk.dataset import prepare
+from localdesk.registry import Registry, assess_quality, atomic_json
+from localdesk.metrics import classification_metrics
+
+parser = argparse.ArgumentParser(description=__doc__)
+parser.add_argument("--config", type=Path, required=True)
+parser.add_argument("--run-id", required=True)
+parser.add_argument("--out", type=Path, required=True)
+parser.add_argument("--mode", choices=["verify", "offline", "server"], default="verify")
+args = parser.parse_args()
+experiment = Experiment.load(args.config)
+store = Registry(experiment.registry)
+args.out.mkdir(parents=True, exist_ok=True)
+
+if args.mode == "server":
+    import uvicorn
+    from localdesk.api import create_app
+
+    with socket.socket() as listener:
+        listener.bind(("127.0.0.1", 0))
+        listener.listen(128)
+        atomic_json(
+            args.out / "listener.json",
+            {"port": listener.getsockname()[1], "pid": os.getpid()},
+        )
+        uvicorn.Server(
+            uvicorn.Config(
+                create_app(registry=store.root), log_level="warning", access_log=False
+            )
+        ).run(sockets=[listener])
+    raise SystemExit()
+
+prepared = prepare(experiment)
+rows = [
+    next(r for r in prepared.rows["test"] if r["gold"]["category"] == label)
+    for label in ("Fileservice", "Active Directory", "O365")
+]
+if args.mode == "offline":
+    from localdesk.core import decide
+
+    backend, manifest = store.load(args.run_id)
+    assert backend.name == "unsloth"
+    predictions = [decide(row["state"], backend) for row in rows]
+    atomic_json(args.out / "offline.json", {"predictions": predictions})
+    raise SystemExit()
+
+# This is a task-owned registry in Colab, never the operator's existing CPU registry.
+assert store.root.name == "qwen-api-registry", (
+    "Use the dedicated Colab verification registry"
+)
+directory, manifest, _ = store.verify(args.run_id)
+assert manifest["backend"] == "unsloth" and manifest["quality"]["qualified"]
+store.promote(args.run_id)
+common = [
+    sys.executable,
+    str(Path(__file__).resolve()),
+    "--config",
+    str(args.config.resolve()),
+    "--run-id",
+    args.run_id,
+    "--out",
+    str(args.out.resolve()),
+]
+with (args.out / "offline.log").open("w") as log:
+    subprocess.run(
+        common + ["--mode", "offline"], stdout=log, stderr=subprocess.STDOUT, check=True
+    )
+offline = read_json(args.out / "offline.json")["predictions"]
+key = secrets.token_urlsafe(32)
+with (args.out / "server.log").open("w") as log:
+    process = subprocess.Popen(
+        common + ["--mode", "server"],
+        stdout=log,
+        stderr=subprocess.STDOUT,
+        env=dict(os.environ, LOCALDESK_API_KEY=key),
+    )
+    try:
+        deadline = time.monotonic() + 180
+        listener_path = args.out / "listener.json"
+        while not listener_path.exists():
+            if process.poll() is not None or time.monotonic() > deadline:
+                raise RuntimeError("HTTP server did not bind")
+            time.sleep(0.25)
+        listener = read_json(listener_path)
+        assert listener["pid"] == process.pid
+        url = f"http://127.0.0.1:{listener['port']}"
+
+        def request(path, payload=None, authenticated=True):
+            headers = {"X-API-Key": key} if authenticated else {}
+            if payload is not None:
+                headers["Content-Type"] = "application/json"
+            req = urllib.request.Request(
+                url + path,
+                data=None if payload is None else json.dumps(payload).encode(),
+                headers=headers,
+            )
+            started = time.monotonic()
+            try:
+                response = urllib.request.urlopen(req, timeout=40)
+            except urllib.error.HTTPError as error:
+                response = error
+            with response:
+                status, body = response.status, json.loads(response.read())
+                assert len(response.headers["X-Request-ID"]) == 32
+            return status, body, (time.monotonic() - started) * 1000
+
+        while True:
+            try:
+                ready, ready_body, _ = request("/health/ready")
+                if ready == 200:
+                    break
+            except (urllib.error.URLError, TimeoutError):
+                pass
+            if process.poll() is not None or time.monotonic() > deadline:
+                raise RuntimeError("Saved Qwen did not become ready")
+            time.sleep(0.5)
+        assert ready_body["model_version"] == args.run_id
+        status, info, _ = request("/v1/model")
+        assert status == 200 and info["backend"] == "unsloth"
+        assert info["task_sha256"] == experiment.task.digest
+        assert info["quality"] == manifest["quality"]
+        predictions, timings = [], []
+        for row, expected in zip(rows, offline, strict=True):
+            status, actual, ms = request("/v1/predictions", {"text": row["state"]})
+            assert status == 200 and actual["backend"] == "unsloth"
+            assert actual["model_version"] == args.run_id
+            assert actual["task_sha256"] == experiment.task.digest
+            for field in (
+                "category",
+                "action",
+                "review_reasons",
+                "policy",
+                "probabilities",
+            ):
+                assert actual[field] == expected[field], (
+                    f"HTTP/offline mismatch: {field}"
+                )
+            probabilities = actual["probabilities"]["category"]
+            assert set(probabilities) == set(experiment.task.labels)
+            assert abs(sum(probabilities.values()) - 1) < 1e-5
+            predictions.append(
+                {
+                    "gold": row["gold"]["category"],
+                    "prediction": actual,
+                    "input_sha256": hashlib.sha256(row["state"].encode()).hexdigest(),
+                }
+            )
+            timings.append(ms)
+        batch_status, batch, _ = request(
+            "/v1/predictions/batch", {"texts": [r["state"] for r in rows]}
+        )
+        assert batch_status == 200 and len(batch["predictions"]) == len(rows)
+        for actual, expected in zip(batch["predictions"], offline, strict=True):
+            assert actual["probabilities"] == expected["probabilities"]
+        rejection_statuses = {
+            "no_key": request("/v1/model", authenticated=False)[0],
+            "empty_text": request("/v1/predictions", {"text": " "})[0],
+            "extra_field": request(
+                "/v1/predictions", {"text": "public probe", "extra": True}
+            )[0],
+            "oversized_batch": request(
+                "/v1/predictions/batch", {"texts": ["public probe"] * 17}
+            )[0],
+        }
+        assert rejection_statuses == {
+            "no_key": 401,
+            "empty_text": 422,
+            "extra_field": 422,
+            "oversized_batch": 422,
+        }
+        status, api_report, _ = request("/v1/model/report")
+        assert (
+            status == 200
+            and api_report["classification"]
+            == read_json(directory / "report.json")["classification"]
+        )
+        # Score the actual saved/reloaded service through HTTP on every frozen test row.
+        http_predictions = []
+        for start in range(0, len(prepared.rows["test"]), 16):
+            inputs = prepared.rows["test"][start : start + 16]
+            status, body, _ = request(
+                "/v1/predictions/batch", {"texts": [r["state"] for r in inputs]}
+            )
+            assert status == 200 and len(body["predictions"]) == len(inputs)
+            for actual in body["predictions"]:
+                assert (
+                    actual["backend"] == "unsloth"
+                    and actual["model_version"] == args.run_id
+                )
+                assert actual["task_sha256"] == experiment.task.digest
+                assert actual["category"] == max(
+                    actual["probabilities"]["category"],
+                    key=actual["probabilities"]["category"].get,
+                )
+                assert actual["policy"] == {
+                    "min_confidence": experiment.task.min_confidence,
+                    "min_margin": experiment.task.min_margin,
+                }
+            http_predictions.extend(body["predictions"])
+            if len(http_predictions) % 64 == 0:
+                print("HTTP_HOLDOUT_PROGRESS", len(http_predictions), flush=True)
+        gold = [r["gold"]["category"] for r in prepared.rows["test"]]
+        accepted = [
+            (target, result)
+            for target, result in zip(gold, http_predictions, strict=True)
+            if result["action"] == "route"
+        ]
+        http_report = {
+            "classification": classification_metrics(
+                gold,
+                [r["probabilities"]["category"] for r in http_predictions],
+                list(experiment.task.labels),
+            ),
+            "count": len(gold),
+            "accepted_count": len(accepted),
+            "coverage": len(accepted) / len(gold),
+            "accepted_accuracy": sum(target == r["category"] for target, r in accepted)
+            / len(accepted)
+            if accepted
+            else None,
+            "training": read_json(directory / "report.json")["training"],
+        }
+        http_quality = assess_quality(http_report, experiment.gates)
+        assert http_quality["qualified"], (
+            "Saved model through HTTP failed the unchanged IT quality gates"
+        )
+        evidence = {
+            "format": "localdesk-gpu-http-v1",
+            "evidence": "real_saved_qwen_fresh_offline_and_uvicorn_http_processes",
+            "run_id": args.run_id,
+            "task_sha256": experiment.task.digest,
+            "dataset_split_sha256": prepared.manifest["split_sha256"],
+            "manifest_sha256": hashlib.sha256(
+                (directory / "manifest.json").read_bytes()
+            ).hexdigest(),
+            "source_commit": subprocess.check_output(
+                ["git", "rev-parse", "HEAD"], text=True
+            ).strip(),
+            "ready_status": ready,
+            "model_backend": info["backend"],
+            "predictions": predictions,
+            "offline_parity": True,
+            "batch_status": batch_status,
+            "rejections": rejection_statuses,
+            "http_ms": timings,
+            "quality": manifest["quality"],
+            "http_holdout": http_report,
+            "http_quality": http_quality,
+            "verifier_sha256": hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
+            "limitation": "All 524 reused public holdout inputs through HTTP, plus three offline parity and API contract checks; no load or field qualification.",
+        }
+        atomic_json(args.out / "gpu-http.json", evidence)
+        print(json.dumps(evidence), flush=True)
+    finally:
+        process.terminate()
+        try:
+            process.wait(timeout=15)
+        except subprocess.TimeoutExpired:
+            process.kill()
+            process.wait(timeout=10)

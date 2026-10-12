@@ -22,7 +22,7 @@ contract check, not load testing or a field accuracy trial.
 
 ## Executed software checks
 
-- Full pytest suite on the locked Python 3.11 environment: 117 tests. Tests cover arbitrary
+- Full pytest suite on the locked Python 3.11 environment: 118 tests. Tests cover arbitrary
   labels, binary/multiclass export parity, strict config/types, group transitivity,
   mixed conversations, conflicting/equivalent inputs, split leakage, corrupted
   artifact hashes, model/data/report identity, failed/ungated candidates, partial
@@ -65,9 +65,15 @@ precision, booleans and nonidentity/incomplete checkpoint resumption. Core valid
 remain strict. The original successful GPU console run is separately retained as
 an incomplete observation after the transient runtime lost its unexported files.
 
-These results condition on this recipe and reused holdout. CUDA API deployment,
-production Unsloth calibration/registry activation, other GPUs and seed/language/
-organization robustness remain unqualified. Fake/structural tests do not establish
+A separate full production-calibration run saved/reloaded its head and passed real
+Uvicorn HTTP evaluation on all 524 rows, plus batch/auth/input/offline-parity checks.
+Its original quality gates passed on actual HTTP outputs; see `docs/GPU_HTTP.md`.
+The model export was interrupted by GPU quota, leaving only a complete recovered
+LoRA adapter and an incomplete head. The durable Drive notebook is prepared but
+its Drive/GPU execution remains unqualified.
+
+These results condition on these recipes and reused holdout. Lasting CUDA API
+deployment, other GPUs and seed/language/organization robustness remain unqualified. Fake/structural tests do not establish
 GPU correctness by themselves. The provided Docker image
 qualifies only CPU inference, not Qwen serving.
 
