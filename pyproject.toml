@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "localdesk"
-version = "0.3.0"
+version = "0.3.1"
 description = "Calibrated text classification service that abstains when unsure: quality gates, immutable model registry, CPU TF-IDF and optional Qwen/Unsloth fine-tuning"
 readme = "README.md"
 requires-python = ">=3.11"
