@@ -174,7 +174,7 @@
   },
   "recipe_sha256": {
     "experiments/it-support.json": "b9c9cd0005d1910a8d05eb7e52d93545ce2e9eed0145d50d57f15f308ff297a0",
-    "scripts/train_demo.py": "dde8b9669dd0750c039a10f5f83fee71285a9dd586340062878f4f003916f28b",
+    "scripts/train_demo.py": "5b0f757be008ac73b927d97fadfd18a1e7b3cc7d7bc1d05d1a1b8a34b73fcac2",
     "src/localdesk/core.py": "821fe00298695d726cef3325365cbf275daca1b5cc99459b863b2aa0e4cbe564",
     "src/localdesk/tfidf.py": "6391d9d6ae18479080724ca754edf7affcf2b4c0ef4d9b5a516532cac328b943",
     "tasks/it-support.json": "ed5f121978642358c2b60ee189649da24a0fd65cea19e5e25608d3cab1f40279"
@@ -290,7 +290,7 @@
     ],
     "ranking": "max_probability"
   },
-  "runtime_seconds": 1.6509929999883752,
+  "runtime_seconds": 1.840295625035651,
   "split_counts": {
     "calibration": 170,
     "test": 524,

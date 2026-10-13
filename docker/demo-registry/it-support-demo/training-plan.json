@@ -1,0 +1,29 @@
+{
+  "backend": "tfidf",
+  "parameters": {
+    "C": 4.0,
+    "backend": "tfidf",
+    "max_features": 40000
+  },
+  "policy": {
+    "min_confidence": 0.75,
+    "min_margin": 0.2
+  },
+  "quality_gates": {
+    "max_ece": 0.1,
+    "min_accepted_accuracy": 0.85,
+    "min_accuracy": 0.6,
+    "min_coverage": 0.2,
+    "min_macro_f1": 0.5
+  },
+  "seed": 3407,
+  "stages": [
+    "validate groups and labels",
+    "fit on train",
+    "fit temperature on calibration",
+    "evaluate untouched test",
+    "verify gates",
+    "publish immutable version"
+  ],
+  "task_sha256": "7e0328fe1ba3923301cc4c63ce1b4f29765db32d94390aa6955cb85a1c8970be"
+}

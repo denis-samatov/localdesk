@@ -67,7 +67,20 @@ Protect registry writes and mount it read-only in inference containers.
 
 ## Docker
 
-The image supports CPU inference. Train outside it and promote first.
+The image supports CPU inference. A published image for `linux/amd64` and
+`linux/arm64` ships the IT-tickets demo as a verified, promoted registry version
+in `/models`, so it serves immediately:
+
+```bash
+docker run --rm -p 127.0.0.1:8765:8765 -e LOCALDESK_API_KEY=change-me \
+  --read-only --tmpfs /tmp --cap-drop ALL --security-opt no-new-privileges:true \
+  ghcr.io/denis-samatov/localdesk:0.3.1
+```
+
+Mount your own registry over `/models` (read-only) to serve your versions instead;
+the demo is then not visible. Tags: `<version>`, `<major>.<minor>`, `latest` from
+releases, `edge` from manual builds. To build locally with your trained registry,
+train outside the container and promote first.
 Set LOCALDESK_API_KEY in your environment (compose refuses a missing key):
 
 ```bash

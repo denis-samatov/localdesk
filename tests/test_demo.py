@@ -42,3 +42,14 @@ def test_cli_predict_uses_tfidf_demo_by_default(monkeypatch, capsys, flags, expe
     monkeypatch.setattr(sys, "argv", ["localdesk", "predict", *flags, "File share access request"])
     cli.main()
     assert json.loads(capsys.readouterr().out)["backend"] == expected
+
+
+def test_docker_demo_registry_is_a_verified_copy_of_the_packaged_model():
+    from localdesk.registry import Registry
+
+    registry = ROOT / "docker/demo-registry"
+    backend, manifest = Registry(registry).load_active()
+    assert isinstance(backend, TfidfBackend)
+    assert manifest["quality"]["qualified"] is True
+    copy = registry / manifest["run_id"] / "model.json.gz"
+    assert copy.read_bytes() == ASSET.read_bytes(), "run scripts/train_demo.py"

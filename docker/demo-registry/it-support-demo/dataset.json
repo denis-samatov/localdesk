@@ -1,0 +1,49 @@
+{
+  "class_support": {
+    "calibration": {
+      "Active Directory": 15,
+      "Computer-Services": 13,
+      "Fileservice": 33,
+      "O365": 24,
+      "Software": 25,
+      "Support general": 60
+    },
+    "test": {
+      "Active Directory": 45,
+      "Computer-Services": 41,
+      "Fileservice": 110,
+      "O365": 88,
+      "Software": 58,
+      "Support general": 182
+    },
+    "train": {
+      "Active Directory": 63,
+      "Computer-Services": 52,
+      "Fileservice": 133,
+      "O365": 99,
+      "Software": 102,
+      "Support general": 241
+    }
+  },
+  "counts": {
+    "calibration": 170,
+    "test": 524,
+    "train": 690
+  },
+  "duplicate_count": 0,
+  "format": "localdesk-dataset-v1",
+  "provenance": "public_real_it_tickets_zenodo_7648117",
+  "raw_count": 1384,
+  "seed": 3407,
+  "source_sha256": {
+    "calibration": "7f70da4bdc380a9598bb7f73b33561e958628863a1850b9ffed2beab26ff768f",
+    "test": "9f3030027499102ded838f00a6ff9091aca6ec5418a0597c4b01650f24eaea80",
+    "train": "6ff23f10b38f2bb592889927f459a5b0f9d272a90ecde63156362231e097cd5a"
+  },
+  "split_sha256": {
+    "calibration": "eb2af5dc7d97f718164fb6d83127b91a1831f4aa2c4a77d7868c395f5e1519a7",
+    "test": "0d1fe15e7937ba5be656d20b0a2db2cc6446ea859cbb39eb8ff2daffbc987a60",
+    "train": "0f20ff538704cb118a163527852c583e27d522bd77e5d681e3e456e4608a85e5"
+  },
+  "task_sha256": "7e0328fe1ba3923301cc4c63ce1b4f29765db32d94390aa6955cb85a1c8970be"
+}
