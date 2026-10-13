@@ -4,6 +4,7 @@ import json
 import secrets
 import threading
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+from urllib.parse import urlsplit
 
 from localdesk.core import Backend, decide
 
@@ -45,7 +46,8 @@ def make_server(backend: Backend, *, port: int = 8765) -> ThreadingHTTPServer:
         def do_GET(self):
             if not self._valid_host():
                 return self._json(403, {"error": "invalid local host"})
-            if self.path == "/":
+            path = urlsplit(self.path).path  # Ignore query strings such as ?lang=ru.
+            if path == "/":
                 from importlib.resources import files
 
                 nonce = secrets.token_urlsafe(18)
@@ -56,7 +58,7 @@ def make_server(backend: Backend, *, port: int = 8765) -> ThreadingHTTPServer:
                     "text/html; charset=utf-8",
                     nonce,
                 )
-            if self.path == "/api/info":
+            if path == "/api/info":
                 return self._json(
                     200, {"backend": backend.name, "probability_kind": backend.probability_kind}
                 )

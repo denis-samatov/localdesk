@@ -116,6 +116,9 @@ def test_dashboard_does_not_depend_on_system_text_encoding(client, monkeypatch):
     monkeypatch.setattr(Path, "read_text", windows_read)
     response = client.get("/")
     assert response.status_code == 200
+    assert '<html lang="en">' in response.text
+    assert "The data changes. The process stays." in response.text
+    # The Russian translation ships in the same page and must survive decoding.
     assert "Данные меняются" in response.text
 
 
