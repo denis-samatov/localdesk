@@ -1,0 +1,259 @@
+{
+  "accepted_accuracy": 0.9242902208201893,
+  "accepted_count": 317,
+  "backend": "tfidf",
+  "classification": {
+    "accuracy": 0.7652671755725191,
+    "brier": 0.3180688016907271,
+    "confusion_matrix": {
+      "Active Directory": {
+        "Active Directory": 20,
+        "Computer-Services": 0,
+        "Fileservice": 4,
+        "O365": 0,
+        "Software": 4,
+        "Support general": 17
+      },
+      "Computer-Services": {
+        "Active Directory": 1,
+        "Computer-Services": 29,
+        "Fileservice": 0,
+        "O365": 5,
+        "Software": 0,
+        "Support general": 6
+      },
+      "Fileservice": {
+        "Active Directory": 0,
+        "Computer-Services": 0,
+        "Fileservice": 103,
+        "O365": 3,
+        "Software": 1,
+        "Support general": 3
+      },
+      "O365": {
+        "Active Directory": 3,
+        "Computer-Services": 1,
+        "Fileservice": 3,
+        "O365": 66,
+        "Software": 2,
+        "Support general": 13
+      },
+      "Software": {
+        "Active Directory": 2,
+        "Computer-Services": 0,
+        "Fileservice": 0,
+        "O365": 7,
+        "Software": 36,
+        "Support general": 13
+      },
+      "Support general": {
+        "Active Directory": 8,
+        "Computer-Services": 1,
+        "Fileservice": 2,
+        "O365": 9,
+        "Software": 15,
+        "Support general": 147
+      }
+    },
+    "count": 524,
+    "ece": 0.02981463930387432,
+    "macro_f1": 0.7289548049324832,
+    "macro_recall": 0.7110845194739223,
+    "nll": 0.6433295301808785,
+    "per_class": {
+      "Active Directory": {
+        "f1": 0.5063291139240507,
+        "precision": 0.5882352941176471,
+        "recall": 0.4444444444444444,
+        "support": 45
+      },
+      "Computer-Services": {
+        "f1": 0.8055555555555556,
+        "precision": 0.9354838709677419,
+        "recall": 0.7073170731707317,
+        "support": 41
+      },
+      "Fileservice": {
+        "f1": 0.9279279279279279,
+        "precision": 0.9196428571428571,
+        "recall": 0.9363636363636364,
+        "support": 110
+      },
+      "O365": {
+        "f1": 0.7415730337078651,
+        "precision": 0.7333333333333333,
+        "recall": 0.75,
+        "support": 88
+      },
+      "Software": {
+        "f1": 0.6206896551724138,
+        "precision": 0.6206896551724138,
+        "recall": 0.6206896551724138,
+        "support": 58
+      },
+      "Support general": {
+        "f1": 0.7716535433070866,
+        "precision": 0.7386934673366834,
+        "recall": 0.8076923076923077,
+        "support": 182
+      }
+    },
+    "per_class_recall": {
+      "Active Directory": 0.4444444444444444,
+      "Computer-Services": 0.7073170731707317,
+      "Fileservice": 0.9363636363636364,
+      "O365": 0.75,
+      "Software": 0.6206896551724138,
+      "Support general": 0.8076923076923077
+    },
+    "per_class_support": {
+      "Active Directory": 45,
+      "Computer-Services": 41,
+      "Fileservice": 110,
+      "O365": 88,
+      "Software": 58,
+      "Support general": 182
+    },
+    "weighted_f1": 0.7625649462301795
+  },
+  "count": 524,
+  "coverage": 0.6049618320610687,
+  "dataset_split_sha256": {
+    "calibration": "eb2af5dc7d97f718164fb6d83127b91a1831f4aa2c4a77d7868c395f5e1519a7",
+    "test": "0d1fe15e7937ba5be656d20b0a2db2cc6446ea859cbb39eb8ff2daffbc987a60",
+    "train": "0f20ff538704cb118a163527852c583e27d522bd77e5d681e3e456e4608a85e5"
+  },
+  "evidence": "public_real_it_tickets_zenodo_7648117",
+  "policy": {
+    "min_confidence": 0.75,
+    "min_margin": 0.2
+  },
+  "probability_kind": "softmax_temperature_fitted_on_calibration",
+  "risk_coverage": {
+    "aurc": 0.06745002926458439,
+    "coverage_at_accuracy": {
+      "0.90": 0.6889312977099237,
+      "0.95": 0.5381679389312977,
+      "0.99": 0.3816793893129771
+    },
+    "points": [
+      {
+        "accuracy": 1.0,
+        "coverage": 0.05152671755725191,
+        "min_confidence": 0.9997726808865471
+      },
+      {
+        "accuracy": 1.0,
+        "coverage": 0.10114503816793893,
+        "min_confidence": 0.9992270238410785
+      },
+      {
+        "accuracy": 1.0,
+        "coverage": 0.15076335877862596,
+        "min_confidence": 0.9970813127393101
+      },
+      {
+        "accuracy": 1.0,
+        "coverage": 0.20038167938931298,
+        "min_confidence": 0.9931511540387167
+      },
+      {
+        "accuracy": 1.0,
+        "coverage": 0.25,
+        "min_confidence": 0.9725080229588736
+      },
+      {
+        "accuracy": 1.0,
+        "coverage": 0.3015267175572519,
+        "min_confidence": 0.950947381617996
+      },
+      {
+        "accuracy": 0.9945652173913043,
+        "coverage": 0.3511450381679389,
+        "min_confidence": 0.9337392270038702
+      },
+      {
+        "accuracy": 0.9857142857142858,
+        "coverage": 0.40076335877862596,
+        "min_confidence": 0.9164083603332873
+      },
+      {
+        "accuracy": 0.9745762711864406,
+        "coverage": 0.45038167938931295,
+        "min_confidence": 0.8896417815510246
+      },
+      {
+        "accuracy": 0.9656488549618321,
+        "coverage": 0.5,
+        "min_confidence": 0.8499096961440152
+      },
+      {
+        "accuracy": 0.9377162629757786,
+        "coverage": 0.5515267175572519,
+        "min_confidence": 0.8057927232606852
+      },
+      {
+        "accuracy": 0.926984126984127,
+        "coverage": 0.601145038167939,
+        "min_confidence": 0.7549560587429092
+      },
+      {
+        "accuracy": 0.9149560117302052,
+        "coverage": 0.6507633587786259,
+        "min_confidence": 0.7047542246565556
+      },
+      {
+        "accuracy": 0.8937329700272479,
+        "coverage": 0.700381679389313,
+        "min_confidence": 0.656060214120854
+      },
+      {
+        "accuracy": 0.8727735368956743,
+        "coverage": 0.75,
+        "min_confidence": 0.6013414034046093
+      },
+      {
+        "accuracy": 0.8595238095238096,
+        "coverage": 0.8015267175572519,
+        "min_confidence": 0.5476499654645525
+      },
+      {
+        "accuracy": 0.8340807174887892,
+        "coverage": 0.851145038167939,
+        "min_confidence": 0.5006222427945968
+      },
+      {
+        "accuracy": 0.8114406779661016,
+        "coverage": 0.9007633587786259,
+        "min_confidence": 0.4449562355450835
+      },
+      {
+        "accuracy": 0.7891566265060241,
+        "coverage": 0.950381679389313,
+        "min_confidence": 0.39613586346475754
+      },
+      {
+        "accuracy": 0.7652671755725191,
+        "coverage": 1.0,
+        "min_confidence": 0.2676863419813498
+      }
+    ],
+    "ranking": "max_probability"
+  },
+  "runtime_seconds": 1.840295625035651,
+  "split_counts": {
+    "calibration": 170,
+    "test": 524,
+    "train": 690
+  },
+  "task_sha256": "7e0328fe1ba3923301cc4c63ce1b4f29765db32d94390aa6955cb85a1c8970be",
+  "training": {
+    "calibration_nll": 0.7437563554412108,
+    "temperature": 0.6969348055416144,
+    "versions": {
+      "numpy": "2.2.6",
+      "scikit-learn": "1.6.0",
+      "scipy": "1.14.1"
+    }
+  }
+}

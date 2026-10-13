@@ -1,7 +1,9 @@
 name: Release
 
 # Publishes with PyPI Trusted Publishing (OIDC): no API tokens are stored in GitHub.
-# A `v*` tag publishes to PyPI; a manual run publishes to TestPyPI for a dry run.
+# A `v*` tag publishes to PyPI. A manual run is a dry run: it builds a unique
+# `<version>.devN` (indexes never accept the same version twice), uploads it to
+# TestPyPI, then installs it back from TestPyPI and runs the CLI.
 on:
   push:
     tags: ['v*']
@@ -13,6 +15,8 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.version }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -20,15 +24,32 @@ jobs:
           python-version: '3.13'
       - name: Install build tools
         run: python -m pip install build==1.3.0 twine==7.0.0
-      - name: Tag must match the package version
-        if: startsWith(github.ref, 'refs/tags/v')
+      - name: Resolve the version to publish
+        id: version
+        env:
+          DRY_RUN: ${{ github.event_name == 'workflow_dispatch' }}
+          SERIAL: ${{ github.run_number }}${{ github.run_attempt }}
         run: |
           python - <<'EOF'
-          import os, tomllib
+          import os, re, tomllib
+          from pathlib import Path
           version = tomllib.load(open("pyproject.toml", "rb"))["project"]["version"]
-          tag = os.environ["GITHUB_REF_NAME"].removeprefix("v")
-          if tag != version:
-              raise SystemExit(f"tag v{tag} does not match pyproject version {version}")
+          if os.environ["DRY_RUN"] == "true":
+              version = f"{version}.dev{os.environ['SERIAL']}"
+              for path, key in (
+                  ("pyproject.toml", "version"),
+                  ("src/localdesk/__init__.py", "__version__"),
+              ):
+                  text = Path(path).read_text()
+                  text, count = re.subn(rf'(?m)^{key} = "[^"]+"', f'{key} = "{version}"', text, count=1)
+                  if count != 1:
+                      raise SystemExit(f"{path}: version line not found")
+                  Path(path).write_text(text)
+          elif os.environ["GITHUB_REF_NAME"].removeprefix("v") != version:
+              raise SystemExit(f"tag {os.environ['GITHUB_REF_NAME']} does not match {version}")
+          with open(os.environ["GITHUB_OUTPUT"], "a") as output:
+              output.write(f"version={version}\n")
+          print(f"Publishing {version}")
           EOF
       - name: Build wheel and sdist
         run: python -m build
@@ -39,6 +60,7 @@ jobs:
           python -m venv /tmp/smoke
           /tmp/smoke/bin/pip install dist/*.whl
           /tmp/smoke/bin/localdesk predict 'File share access request'
+          /tmp/smoke/bin/python -c "import localdesk; assert localdesk.__version__ == '${{ steps.version.outputs.version }}'"
       - uses: actions/upload-artifact@v7
         with:
           name: dist
@@ -51,7 +73,7 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: testpypi
-      url: https://test.pypi.org/p/localdesk
+      url: https://test.pypi.org/project/localdesk/${{ needs.build.outputs.version }}/
     permissions:
       id-token: write
     steps:
@@ -63,13 +85,33 @@ jobs:
         with:
           repository-url: https://test.pypi.org/legacy/
 
+  testpypi-install:
+    needs: [build, testpypi]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Install the uploaded version back from TestPyPI
+        env:
+          VERSION: ${{ needs.build.outputs.version }}
+        run: |
+          python -m venv /tmp/check
+          # The index can take a short while to serve a new upload.
+          for attempt in 1 2 3 4 5 6; do
+            /tmp/check/bin/pip install --no-cache-dir --index-url https://test.pypi.org/simple/ \
+              "localdesk==$VERSION" && break
+            sleep 20
+          done
+          /tmp/check/bin/localdesk predict 'File share access request'
+
   pypi:
     if: startsWith(github.ref, 'refs/tags/v')
     needs: build
     runs-on: ubuntu-latest
     environment:
       name: pypi
-      url: https://pypi.org/p/localdesk
+      url: https://pypi.org/project/localdesk/${{ needs.build.outputs.version }}/
     permissions:
       id-token: write
     steps:

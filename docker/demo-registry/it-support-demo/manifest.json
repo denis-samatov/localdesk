@@ -1,0 +1,53 @@
+{
+  "backend": "tfidf",
+  "complete": true,
+  "created_at": "2026-10-13T03:44:40.386573+00:00",
+  "files_sha256": {
+    "dataset.json": "9da9f8968315edf3599d359a191ad9670f200960d7e4109f773c3f45428a7cd1",
+    "model.json.gz": "193bee3ef9dcefdc37585909fb708c635bb37eb600de7e8dfa2a620c15cccac8",
+    "report.json": "3e61b6d7a468147cfa6885b4b1aa4f4925b7b4d153bceb0ee249522f3af50c90",
+    "status.json": "8f8eb36e67b9b17537f8fa3646550c0e6e4c47d7491372613073928786fa4c99",
+    "task.json": "538402ddd6011dd0a54084c16c56527c170597710705c9874b8cfa8467ec5b00",
+    "training-plan.json": "66fe09ab5a25444dd8bcdce28aeb21c2df94c47e7f7110cbde6edf52fde9281d"
+  },
+  "format": "localdesk-run-v1",
+  "quality": {
+    "gates": {
+      "max_ece": {
+        "actual": 0.02981463930387432,
+        "passed": true,
+        "threshold": 0.1
+      },
+      "min_accepted_accuracy": {
+        "actual": 0.9242902208201893,
+        "passed": true,
+        "threshold": 0.85
+      },
+      "min_accuracy": {
+        "actual": 0.7652671755725191,
+        "passed": true,
+        "threshold": 0.6
+      },
+      "min_coverage": {
+        "actual": 0.6049618320610687,
+        "passed": true,
+        "threshold": 0.2
+      },
+      "min_macro_f1": {
+        "actual": 0.7289548049324832,
+        "passed": true,
+        "threshold": 0.5
+      }
+    },
+    "qualified": true,
+    "requirements": {
+      "max_ece": 0.1,
+      "min_accepted_accuracy": 0.85,
+      "min_accuracy": 0.6,
+      "min_coverage": 0.2,
+      "min_macro_f1": 0.5
+    }
+  },
+  "run_id": "it-support-demo",
+  "task_sha256": "7e0328fe1ba3923301cc4c63ce1b4f29765db32d94390aa6955cb85a1c8970be"
+}

@@ -32,9 +32,28 @@ descriptive, not a validated operating policy. The online Zenodo download path o
 `prepare_data.py` could not be re-run after its download change (Zenodo returned
 HTTP 504); the committed IT splits were used and their SHA-256 values verified.
 
+## Seed robustness (CPU)
+
+`scripts/publish_seed_suite.py` repeated both CPU backends on all four datasets for
+seeds 0–4, re-splitting train and calibration by whole groups (stratified, shipped
+proportions) with each test set fixed. TF-IDF beat the baseline on every dataset
+for every seed (accuracy gain +1.0 to +9.0 pp); the standard deviation of TF-IDF
+accuracy was at most 0.9 pp (IT tickets). On CLINC150 out-of-scope queries TF-IDF
+sent 83.6 ± 1.4% to review versus 85.3 ± 0.2% for the baseline, so the single-split
+85% figure was slightly optimistic. Report: `reports/seed-suite.md`. Qwen was not
+repeated (no GPU in this run).
+
+## Docker image
+
+The image built locally from this commit ran with `--read-only`, `--cap-drop ALL`
+and `no-new-privileges` as UID 10001, became ready with the packaged demo registry,
+returned `Fileservice`/`route` for a sample ticket, rejected a request without the
+API key (401) and reported a healthy healthcheck. CI repeats the smoke test before
+pushing to GHCR.
+
 ## Executed software checks
 
-- Full pytest suite on the locked environment: 144 tests. Tests cover arbitrary
+- Full pytest suite on the locked environment: 146 tests. Tests cover arbitrary
   labels, binary/multiclass export parity, strict config/types, group transitivity,
   mixed conversations, conflicting/equivalent inputs, split leakage, corrupted
   artifact hashes, model/data/report identity, failed/ungated candidates, partial

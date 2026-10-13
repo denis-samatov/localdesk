@@ -28,8 +28,15 @@ def request(url, body):
 
 def test_serves_local_ui(server_url):
     with urllib.request.urlopen(server_url) as response:
-        assert b"LocalDesk" in response.read()
+        page = response.read().decode("utf-8")
+        assert "LocalDesk" in page and '<html lang="en">' in page
+        assert "Every ticket finds" in page and "Обращения находят" in page
         assert "default-src" in response.headers["Content-Security-Policy"]
+
+
+def test_dashboard_accepts_language_query(server_url):
+    with urllib.request.urlopen(server_url + "/?lang=ru") as response:
+        assert response.status == 200 and b"LocalDesk" in response.read()
 
 
 def test_json_prediction(server_url):

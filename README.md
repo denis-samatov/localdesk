@@ -122,6 +122,12 @@ requests only. Compared with the legacy hashed baseline, TF-IDF adds 1.5–7.1 p
 accuracy on every dataset and routes 2.6–16.4 pp more requests automatically
 ([full comparison](https://github.com/denis-samatov/localdesk/blob/main/reports/cpu-suite.md)). Training takes 1–40 seconds on a laptop CPU.
 
+The gain holds across seeds: re-splitting train and calibration five times with
+the test sets fixed, TF-IDF beats the baseline on every dataset for every seed,
+by +1.0 to +9.0 pp accuracy; the standard deviation of its accuracy is at most
+0.9 pp
+([seed report](https://github.com/denis-samatov/localdesk/blob/main/reports/seed-suite.md)).
+
 ![Accuracy versus share of requests handled automatically](https://raw.githubusercontent.com/denis-samatov/localdesk/main/docs/risk-coverage.svg)
 
 The fewer requests the model takes, the more accurate it gets. On Banking77,
@@ -131,7 +137,8 @@ to choose a policy, then confirm it on your own data.
 
 **Queries outside every label.** CLINC150 includes 1,000 test queries that match
 none of its 150 intents and are never seen in training. Under the default policy,
-**85% of them go to human review** instead of receiving a wrong intent.
+**about 84% of them go to human review** (83.6 ± 1.4% over five seeds) instead of
+receiving a wrong intent.
 
 To reproduce from a clone of this repository (the scripts download and checksum
 the public data):
@@ -189,6 +196,20 @@ flowchart LR
 More detail: [architecture and contracts](https://github.com/denis-samatov/localdesk/blob/main/docs/ARCHITECTURE.md) ·
 [training plan](https://github.com/denis-samatov/localdesk/blob/main/docs/TRAINING_PLAN.md).
 
+## Run with Docker
+
+A ready image with the IT-tickets demo model is published to GitHub Container Registry
+for `linux/amd64` and `linux/arm64`:
+
+```bash
+docker run --rm -p 127.0.0.1:8765:8765 -e LOCALDESK_API_KEY=change-me \
+  ghcr.io/denis-samatov/localdesk
+```
+
+Open `http://127.0.0.1:8765`, paste the key and click **Connect**. The dashboard is
+in English with a Russian toggle (or `?lang=ru`). To serve your own trained and
+promoted versions, mount a registry over the demo: `-v "$PWD/my-registry:/models:ro"`.
+
 ## HTTP API
 
 ```bash
@@ -229,7 +250,7 @@ GPU serving details: [docs/GPU_HTTP.md](https://github.com/denis-samatov/localde
 
 ## Status
 
-LocalDesk is **v0.2, early but tested**. CI runs lint, formatting, the test suite,
+LocalDesk is **v0.3, early but tested**. CI runs lint, formatting, the test suite,
 package build and a CLI smoke test on Linux, macOS and Windows with Python 3.11,
 3.12 and 3.13.
 
@@ -263,7 +284,7 @@ LocalDesk превращает CSV/JSONL и список меток в кали�
 JSON-описание задачи и датасет. Обучение на CPU занимает секунды. Дообучение
 Qwen через Unsloth дало +5,7 п.п. точности к сильному TF-IDF baseline на реальных
 IT-заявках. На четырёх публичных датасетах (IT-заявки, SMS, Banking77, CLINC150)
-CPU-модель по умолчанию даёт от 76,5% до 98,9% точности, а 85% запросов вне всех
+CPU-модель по умолчанию даёт от 76,5% до 98,9% точности, а около 84% запросов вне всех
 категорий отправляет на ручной разбор. Качество на других языках и в других организациях нужно измерять
 отдельно.
 

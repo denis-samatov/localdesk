@@ -4,6 +4,28 @@ All notable changes to this project are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project uses
 [Semantic Versioning](https://semver.org/).
 
+## [0.3.1] - 2026-10-13
+
+### Added
+- Ready Docker image on GitHub Container Registry (`ghcr.io/denis-samatov/localdesk`,
+  `linux/amd64` + `linux/arm64`) that serves the demo model out of the box; mount
+  your own registry over `/models`. Built and smoke-tested by `.github/workflows/docker.yml`.
+- `scripts/train_demo.py` also exports the demo as a complete, promoted registry
+  version (`docker/demo-registry/`), checked by the test suite.
+- Multi-seed CPU report (`scripts/publish_seed_suite.py`, `reports/seed-suite.md`):
+  five train/calibration re-splits per dataset with fixed test sets.
+- English dashboards with a Russian toggle (button or `?lang=ru`) for both
+  `localdesk api` and `localdesk serve`.
+
+### Changed
+- Release dry runs publish a unique `<version>.devN` to TestPyPI and install it
+  back to verify; the `testpypi` GitHub environment exists.
+- README: Docker quick start, seed robustness, out-of-scope review share corrected
+  to about 84% (83.6 ± 1.4% over five seeds) from the single-split 85%.
+
+### Fixed
+- `localdesk serve` returned 404 for `/` with a query string.
+
 ## [0.3.0] - 2026-10-12
 
 First release on PyPI. The distribution is now named `localdesk`
@@ -46,5 +68,6 @@ Configurable service: task/experiment JSON, immutable registry with quality
 gates, FastAPI inference API, operator dashboard, Qwen/Unsloth recipe and the
 comparative benchmark. Not published to PyPI.
 
+[0.3.1]: https://github.com/denis-samatov/localdesk/compare/v0.3.0...v0.3.1
 [0.3.0]: https://github.com/denis-samatov/localdesk/compare/52a3f7c...v0.3.0
 [0.2.0]: https://github.com/denis-samatov/localdesk/commit/52a3f7c

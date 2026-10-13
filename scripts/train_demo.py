@@ -1,9 +1,10 @@
 """Build the packaged demo model with the standard pipeline and publish its report.
 
 Trains experiments/it-support.json (TF-IDF backend) into a temporary registry, then
-copies the verified model file to src/localdesk/assets/demo.json.gz. The report
-binds that file to its data, task and the recipe files that determine its output.
-Prepare the data first: python scripts/prepare_data.py
+copies the verified model file to src/localdesk/assets/demo.json.gz and the complete,
+promoted registry version to docker/demo-registry/ (served by the Docker image).
+The report binds the model to its data, task and the recipe files that determine
+its output. Prepare the data first: python scripts/prepare_data.py
 """
 
 import argparse
@@ -19,6 +20,7 @@ from localdesk.pipeline import run_experiment
 from localdesk.registry import Registry
 
 ROOT = Path(__file__).resolve().parents[1]
+RUN_ID = "it-support-demo"
 RECIPE = [
     "scripts/train_demo.py",
     "src/localdesk/tfidf.py",
@@ -32,19 +34,25 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--out", type=Path, default=ROOT / "src/localdesk/assets/demo.json.gz")
     parser.add_argument("--report", type=Path, default=ROOT / "reports/demo.json")
+    parser.add_argument("--registry", type=Path, default=ROOT / "docker/demo-registry")
     args = parser.parse_args()
     experiment = Experiment.load(ROOT / "experiments/it-support.json")
     if experiment.training.get("backend") != "tfidf":
         raise ValueError("the demo experiment must use the tfidf backend")
     with tempfile.TemporaryDirectory() as directory:
         experiment = replace(experiment, registry=Path(directory))
-        result = run_experiment(experiment, run_id="demo")
-        # Load through the registry so every checksum and identity check runs.
-        run, manifest, _ = Registry(Path(directory)).verify("demo")
-        if not manifest["quality"]["qualified"]:
-            raise RuntimeError("demo model failed its declared quality gates")
+        result = run_experiment(experiment, run_id=RUN_ID)
+        # Load through the registry so every checksum, identity and gate check runs.
+        registry = Registry(Path(directory))
+        run, manifest, _ = registry.verify(RUN_ID)
+        registry.promote(RUN_ID)
         args.out.parent.mkdir(parents=True, exist_ok=True)
         shutil.copyfile(run / "model.json.gz", args.out)
+        shutil.rmtree(args.registry, ignore_errors=True)
+        args.registry.mkdir(parents=True)
+        shutil.copytree(run, args.registry / RUN_ID)
+        shutil.copyfile(Path(directory) / "active.json", args.registry / "active.json")
+    Registry(args.registry).load_active()
     report = dict(
         result["report"],
         model_sha256=file_hash(args.out),
