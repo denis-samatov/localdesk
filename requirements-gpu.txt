@@ -1,8 +1,8 @@
 # Experimental Linux/CUDA recipe. Direct source revisions are pinned; transitive
 # dependencies are not a fully locked environment. Training records pip freeze.
-torch==2.8.0
-torchvision==0.23.0
-transformers==5.2.0
+torch==2.13.0
+torchvision==0.28.0
+transformers>=5.10.0,<6
 bitsandbytes>=0.46
 unsloth[base] @ git+https://github.com/unslothai/unsloth@62354edbf4fd246cf120ef07272934fb405ec705
 unsloth_zoo[base] @ git+https://github.com/unslothai/unsloth-zoo@ac1410cc766efedd5e4ced1b1d1338138eb7eaa5

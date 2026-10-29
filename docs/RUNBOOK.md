@@ -55,6 +55,20 @@ stack traces are reflected. Each response has X-Request-ID and Cache-Control:no-
 
 ## Promotion and rollback
 
+For a consistent backup, stop writers first, copy the whole registry (completed
+versions and active pointer together) to a fresh location, then verify it by
+loading its active model before restarting inference. Do not copy only the active
+pointer or overwrite the live registry while a training/promotion process runs.
+Restore to a new directory, compare the version/task identity and representative
+predictions, mount read-only and restart. Retain the previous verified registry so
+rollback is another explicit pointer/version selection and restart.
+
+`python -m pytest tests/test_recovery_acceptance.py` performs a synthetic local
+backup/restore/rollback drill and rejects a corrupted model. This is an offline
+artifact-contract check; operators still need a target-machine restore/SLO drill.
+Define domain acceptance thresholds before opening a fresh held-out set. Reused
+public benchmarks are regression evidence, not an independent field estimate.
+
 ```bash
 localdesk promote RUN --registry artifacts/registry
 ```
@@ -103,3 +117,20 @@ independently reviewed outcomes before changing operational policy. Request-body
 logging and telemetry are disabled; raw training data remain outside Git.
 No distributed queue, web training job system, tenant isolation or automatic
 production promotion is included in this single-node service.
+
+## Experimental GPU dependency gate
+
+`requirements-gpu.txt` now excludes the audited torch2.8/transformers5.2
+versions: torch2.13/torchvision0.28 follow the upstream pairing, and transformers
+requires >=5.10. This remains an experimental input recipe, not a qualified
+CUDA environment. The pinned Unsloth sources must still resolve together with
+those versions; do not override conflicts, use `--no-deps`, or silently fall back
+to the vulnerable pins. A clean Linux/CUDA resolution, installed-package audit,
+one short training/inference/checkpoint replay, and recorded GPU/driver
+versions are required before using or advertising this backend. CPU tests
+and CPU release qualification do not cover it.
+
+Relevant upstream version pairs: <https://pytorch.org/get-started/previous-versions/>.
+Audited advisory bounds include GHSA-rrmf-rvhw-rf47 (torch>=2.13) and
+GHSA-xrqw-3rrv-vx5w (transformers>=5.10). These bounds do not replace a new
+whole-environment advisory scan.
