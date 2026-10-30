@@ -36,3 +36,15 @@ def test_restored_snapshot_rejects_corrupted_model(tmp_path):
     (restored / "stable" / "model.json.gz").write_bytes(b"corrupt backup")
     with pytest.raises(ValueError, match="checksum"):
         Registry(restored).load_active()
+
+
+@pytest.mark.parametrize("value", [float("inf"), float("nan"), -0.1, 1.1, True])
+def test_quality_gates_reject_invalid_probability_metrics(value):
+    from localdesk.registry import assess_quality
+
+    report = {
+        "classification": {"accuracy": value, "macro_f1": 0.9, "ece": 0.1},
+        "accepted_accuracy": 0.9,
+        "coverage": 0.8,
+    }
+    assert not assess_quality(report, {"min_accuracy": 0.0})["qualified"]
