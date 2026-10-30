@@ -2,6 +2,7 @@
 
 import gzip
 import json
+import math
 import os
 import re
 import uuid
@@ -42,7 +43,10 @@ def assess_quality(report: dict, gates: dict) -> dict:
         outcomes[name] = {
             "threshold": threshold,
             "actual": value,
-            "passed": value is not None
+            "passed": isinstance(value, (int, float))
+            and not isinstance(value, bool)
+            and math.isfinite(value)
+            and 0 <= value <= 1
             and (value <= threshold if name.startswith("max_") else value >= threshold),
         }
     return {
