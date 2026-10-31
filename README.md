@@ -233,6 +233,8 @@ safely hold a GPU model. The API key is compared in constant time, bodies are
 size- and time-limited, and anonymous mode accepts only loopback hosts and
 origins. The Docker setup runs as a non-root user with a read-only filesystem
 and models mounted read-only. See the [runbook](https://github.com/denis-samatov/localdesk/blob/main/docs/RUNBOOK.md).
+The [local CPU pilot](docs/LOCAL_CPU_PILOT.md) provides a frozen public-data
+HTTP/load/restart/backup/restore/rollback drill with explicit scope and evidence.
 
 ## Fine-tune Qwen with Unsloth (optional, CUDA)
 
