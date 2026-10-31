@@ -1,0 +1,414 @@
+{
+  "started_at_utc": "2026-10-31T09:41:21.419469+00:00",
+  "finished_at_utc": "2026-10-31T09:41:30.695887+00:00",
+  "status": "passed",
+  "scope": "owned local CPU HTTP/public-corpus regression, not field trial or SLO",
+  "machine": "macOS-26.6.2-arm64-arm-64bit-Mach-O",
+  "architecture": "arm64",
+  "logical_cpu_count": 12,
+  "python": "3.13.15 (main, Aug  5 2026, 12:25:43) [Clang 21.0.0 (clang-2100.1.1.101)]",
+  "protocol_sha256": "a328fae89464bd76952b113d55e09c23df438355248650b75025473b0b43c1a2",
+  "versions": {
+    "localdesk": "0.3.1",
+    "fastapi": "0.143.0",
+    "uvicorn": "0.54.0",
+    "numpy": "2.2.6",
+    "scipy": "1.14.1",
+    "scikit-learn": "1.6.0"
+  },
+  "dataset_manifest_sha256": "aebda7cdffcd3065dd3e52eccdfc0993959f9b2bba898d0e83dc39a121ebe92f",
+  "source_split_files_sha256": {
+    "train": "6ff23f10b38f2bb592889927f459a5b0f9d272a90ecde63156362231e097cd5a",
+    "calibration": "7f70da4bdc380a9598bb7f73b33561e958628863a1850b9ffed2beab26ff768f",
+    "test": "9f3030027499102ded838f00a6ff9091aca6ec5418a0597c4b01650f24eaea80",
+    "ood": "35133b6e60bf3bea62256e6a66531f888713782131f10fb4787625c5b9c90c19"
+  },
+  "dataset_split_sha256": {
+    "train": "0f20ff538704cb118a163527852c583e27d522bd77e5d681e3e456e4608a85e5",
+    "calibration": "eb2af5dc7d97f718164fb6d83127b91a1831f4aa2c4a77d7868c395f5e1519a7",
+    "test": "0d1fe15e7937ba5be656d20b0a2db2cc6446ea859cbb39eb8ff2daffbc987a60"
+  },
+  "original_model": "it-support-demo",
+  "task_sha256": "7e0328fe1ba3923301cc4c63ce1b4f29765db32d94390aa6955cb85a1c8970be",
+  "public_http": {
+    "status_counts": {
+      "200": 524
+    },
+    "latency": {
+      "count": 524,
+      "min_ms": 0.5581250006798655,
+      "p50_ms": 0.8828330028336495,
+      "p95_ms": 2.1869589982088655,
+      "p99_ms": 2.754416986135766,
+      "max_ms": 3.8978750235401094
+    },
+    "classification": {
+      "count": 524,
+      "accuracy": 0.7652671755725191,
+      "ece": 0.029814639303874322,
+      "nll": 0.6433295301808788,
+      "brier": 0.3180688016907272,
+      "macro_recall": 0.7110845194739223,
+      "per_class_recall": {
+        "Active Directory": 0.4444444444444444,
+        "Computer-Services": 0.7073170731707317,
+        "Fileservice": 0.9363636363636364,
+        "O365": 0.75,
+        "Software": 0.6206896551724138,
+        "Support general": 0.8076923076923077
+      },
+      "per_class_support": {
+        "Active Directory": 45,
+        "Computer-Services": 41,
+        "Fileservice": 110,
+        "O365": 88,
+        "Software": 58,
+        "Support general": 182
+      },
+      "per_class": {
+        "Active Directory": {
+          "precision": 0.5882352941176471,
+          "recall": 0.4444444444444444,
+          "f1": 0.5063291139240507,
+          "support": 45
+        },
+        "Computer-Services": {
+          "precision": 0.9354838709677419,
+          "recall": 0.7073170731707317,
+          "f1": 0.8055555555555556,
+          "support": 41
+        },
+        "Fileservice": {
+          "precision": 0.9196428571428571,
+          "recall": 0.9363636363636364,
+          "f1": 0.9279279279279279,
+          "support": 110
+        },
+        "O365": {
+          "precision": 0.7333333333333333,
+          "recall": 0.75,
+          "f1": 0.7415730337078651,
+          "support": 88
+        },
+        "Software": {
+          "precision": 0.6206896551724138,
+          "recall": 0.6206896551724138,
+          "f1": 0.6206896551724138,
+          "support": 58
+        },
+        "Support general": {
+          "precision": 0.7386934673366834,
+          "recall": 0.8076923076923077,
+          "f1": 0.7716535433070866,
+          "support": 182
+        }
+      },
+      "confusion_matrix": {
+        "Active Directory": {
+          "Active Directory": 20,
+          "Computer-Services": 0,
+          "Fileservice": 4,
+          "O365": 0,
+          "Software": 4,
+          "Support general": 17
+        },
+        "Computer-Services": {
+          "Active Directory": 1,
+          "Computer-Services": 29,
+          "Fileservice": 0,
+          "O365": 5,
+          "Software": 0,
+          "Support general": 6
+        },
+        "Fileservice": {
+          "Active Directory": 0,
+          "Computer-Services": 0,
+          "Fileservice": 103,
+          "O365": 3,
+          "Software": 1,
+          "Support general": 3
+        },
+        "O365": {
+          "Active Directory": 3,
+          "Computer-Services": 1,
+          "Fileservice": 3,
+          "O365": 66,
+          "Software": 2,
+          "Support general": 13
+        },
+        "Software": {
+          "Active Directory": 2,
+          "Computer-Services": 0,
+          "Fileservice": 0,
+          "O365": 7,
+          "Software": 36,
+          "Support general": 13
+        },
+        "Support general": {
+          "Active Directory": 8,
+          "Computer-Services": 1,
+          "Fileservice": 2,
+          "O365": 9,
+          "Software": 15,
+          "Support general": 147
+        }
+      },
+      "macro_f1": 0.7289548049324832,
+      "weighted_f1": 0.7625649462301793
+    },
+    "accepted": 317,
+    "coverage": 0.6049618320610687,
+    "accepted_accuracy": 0.9242902208201893,
+    "direct_artifact_matches": 524
+  },
+  "load": [
+    {
+      "concurrency": 1,
+      "requests": 256,
+      "status_counts": {
+        "200": 256
+      },
+      "elapsed_seconds": 0.2880766250018496,
+      "requests_per_second": 888.6524548750053,
+      "latency": {
+        "count": 256,
+        "min_ms": 0.6109160021878779,
+        "p50_ms": 0.8485419966746122,
+        "p95_ms": 2.2355419932864606,
+        "p99_ms": 2.689207991352305,
+        "max_ms": 3.8779170135967433
+      },
+      "rss_kib_after_phase": 74192
+    },
+    {
+      "concurrency": 4,
+      "requests": 256,
+      "status_counts": {
+        "200": 256
+      },
+      "elapsed_seconds": 0.20996125001693144,
+      "requests_per_second": 1219.2726037750106,
+      "latency": {
+        "count": 256,
+        "min_ms": 1.61104099242948,
+        "p50_ms": 2.844625007128343,
+        "p95_ms": 5.394958978286013,
+        "p99_ms": 6.216834008228034,
+        "max_ms": 7.171957986429334
+      },
+      "rss_kib_after_phase": 72688
+    },
+    {
+      "concurrency": 16,
+      "requests": 256,
+      "status_counts": {
+        "200": 256
+      },
+      "elapsed_seconds": 0.22799533401848748,
+      "requests_per_second": 1122.8299960701902,
+      "latency": {
+        "count": 256,
+        "min_ms": 3.078416018979624,
+        "p50_ms": 13.01841699751094,
+        "p95_ms": 17.536166997160763,
+        "p99_ms": 18.543458980275318,
+        "max_ms": 19.26400000229478
+      },
+      "rss_kib_after_phase": 65360
+    }
+  ],
+  "negative_controls": {
+    "missing_key": 401,
+    "empty_text": 422,
+    "oversized_batch": 422
+  },
+  "restart_version": "it-support-demo",
+  "restored_version": "it-support-demo",
+  "corruption": {
+    "ready": 503,
+    "prediction": 503
+  },
+  "promoted_version": "cpu-pilot-candidate",
+  "rollback_version": "it-support-demo",
+  "original_registry_unchanged": true,
+  "all_owned_processes_reaped": true,
+  "baseSHA": "50450a331ca3d1e5a33fbd8edbb9f52f7596fe79",
+  "protocol": "docs/LOCAL_CPU_PILOT_PROTOCOL.md",
+  "harness_sha256": "e62fda13b720a5e879570b342bbfc0dd00aac34949a31e187046ad5b75d90a49",
+  "uv_lock_sha256": "6e39885b01950fd0343ac939cf7ccb342e5edd46228635031467d041fc6aa949",
+  "data_source": {
+    "url": "https://zenodo.org/records/7648117",
+    "doi": "10.5281/zenodo.7648117",
+    "author": "Leonardo Santiago Benitez Pereira",
+    "license": "CC BY 4.0",
+    "source_tickets": 2229,
+    "adapted_splits": {
+      "train": 690,
+      "calibration": 170,
+      "test": 524,
+      "ood_limited_EOL": 2
+    },
+    "four_csv_sha256": {
+      "X_train.csv": "789712f97fb472544eeb82d8f5a142ed46e0bf254c6c34ac53a9f1575a9d460e",
+      "y_train.csv": "cb851ff4d5e792886504b3040bcc85a5dbf94514d31293eddd6d69fcb7278d53",
+      "X_test.csv": "4b808bc32c57f063960a3a4e7a4a30769c96be8143649aadc86835f4cb9763e5",
+      "y_test.csv": "2b10db5e2f071e649efb3d40dd007ec62bc661f35b4afaf44117a00865760f94"
+    }
+  },
+  "source_registry_files_sha256": {
+    "active.json": "17bef377b54b7369d57114a76c662c0c63276d4084410d4a90969c6815335ae3",
+    "it-support-demo/dataset.json": "9da9f8968315edf3599d359a191ad9670f200960d7e4109f773c3f45428a7cd1",
+    "it-support-demo/manifest.json": "73f18f2d7e88574b6b3d422cfc0a53c9d64536e69abde273042186f4946bdf0b",
+    "it-support-demo/model.json.gz": "193bee3ef9dcefdc37585909fb708c635bb37eb600de7e8dfa2a620c15cccac8",
+    "it-support-demo/report.json": "3e61b6d7a468147cfa6885b4b1aa4f4925b7b4d153bceb0ee249522f3af50c90",
+    "it-support-demo/status.json": "8f8eb36e67b9b17537f8fa3646550c0e6e4c47d7491372613073928786fa4c99",
+    "it-support-demo/task.json": "538402ddd6011dd0a54084c16c56527c170597710705c9874b8cfa8467ec5b00",
+    "it-support-demo/training-plan.json": "66fe09ab5a25444dd8bcdce28aeb21c2df94c47e7f7110cbde6edf52fde9281d"
+  },
+  "recovery_backup_files_sha256": {
+    "active.json": "17bef377b54b7369d57114a76c662c0c63276d4084410d4a90969c6815335ae3",
+    "it-support-demo/dataset.json": "9da9f8968315edf3599d359a191ad9670f200960d7e4109f773c3f45428a7cd1",
+    "it-support-demo/manifest.json": "73f18f2d7e88574b6b3d422cfc0a53c9d64536e69abde273042186f4946bdf0b",
+    "it-support-demo/model.json.gz": "193bee3ef9dcefdc37585909fb708c635bb37eb600de7e8dfa2a620c15cccac8",
+    "it-support-demo/report.json": "3e61b6d7a468147cfa6885b4b1aa4f4925b7b4d153bceb0ee249522f3af50c90",
+    "it-support-demo/status.json": "8f8eb36e67b9b17537f8fa3646550c0e6e4c47d7491372613073928786fa4c99",
+    "it-support-demo/task.json": "538402ddd6011dd0a54084c16c56527c170597710705c9874b8cfa8467ec5b00",
+    "it-support-demo/training-plan.json": "66fe09ab5a25444dd8bcdce28aeb21c2df94c47e7f7110cbde6edf52fde9281d"
+  },
+  "service_lifecycle": [
+    {
+      "phase": "public-http",
+      "host": "127.0.0.1",
+      "started_at_utc": "2026-10-31T09:41:21.837014+00:00",
+      "credential_in_argv": false,
+      "startup_liveness_seconds": 0.6541930840176065,
+      "rss_kib_after_start": 73632,
+      "exit_code": -15,
+      "reaped": true,
+      "credential_in_service_log": false
+    },
+    {
+      "phase": "restart",
+      "host": "127.0.0.1",
+      "started_at_utc": "2026-10-31T09:41:24.090891+00:00",
+      "credential_in_argv": false,
+      "startup_liveness_seconds": 0.5368336670217104,
+      "rss_kib_after_start": 72688,
+      "ready_status": 200,
+      "ready_latency_ms": 1.5673330053687096,
+      "prediction_status": 200,
+      "prediction_latency_ms": 1.5008329937700182,
+      "exit_code": -15,
+      "reaped": true,
+      "credential_in_service_log": false
+    },
+    {
+      "phase": "restore",
+      "host": "127.0.0.1",
+      "started_at_utc": "2026-10-31T09:41:24.858129+00:00",
+      "credential_in_argv": false,
+      "startup_liveness_seconds": 0.5904360419954173,
+      "rss_kib_after_start": 72656,
+      "ready_status": 200,
+      "ready_latency_ms": 1.2826250167563558,
+      "prediction_status": 200,
+      "prediction_latency_ms": 1.45870799315162,
+      "exit_code": -15,
+      "reaped": true,
+      "credential_in_service_log": false
+    },
+    {
+      "phase": "corrupt",
+      "host": "127.0.0.1",
+      "started_at_utc": "2026-10-31T09:41:25.582088+00:00",
+      "credential_in_argv": false,
+      "startup_liveness_seconds": 0.5325650839949958,
+      "rss_kib_after_start": 64512,
+      "exit_code": -15,
+      "reaped": true,
+      "credential_in_service_log": false
+    },
+    {
+      "phase": "promote",
+      "host": "127.0.0.1",
+      "started_at_utc": "2026-10-31T09:41:29.209546+00:00",
+      "credential_in_argv": false,
+      "startup_liveness_seconds": 0.5401894580281805,
+      "rss_kib_after_start": 70752,
+      "ready_status": 200,
+      "ready_latency_ms": 1.352999999653548,
+      "prediction_status": 200,
+      "prediction_latency_ms": 1.4834589965175837,
+      "exit_code": -15,
+      "reaped": true,
+      "credential_in_service_log": false
+    },
+    {
+      "phase": "rollback",
+      "host": "127.0.0.1",
+      "started_at_utc": "2026-10-31T09:41:29.927749+00:00",
+      "credential_in_argv": false,
+      "startup_liveness_seconds": 0.5889684169960674,
+      "rss_kib_after_start": 72048,
+      "ready_status": 200,
+      "ready_latency_ms": 1.2435830140020698,
+      "prediction_status": 200,
+      "prediction_latency_ms": 1.4382500085048378,
+      "exit_code": -15,
+      "reaped": true,
+      "credential_in_service_log": false
+    }
+  ],
+  "graceful_shutdown_log_markers_verified": 6,
+  "normal_recovery_prediction_requests": {
+    "restart": 1,
+    "restore": 1,
+    "promote": 1,
+    "rollback": 1
+  },
+  "candidate_quality": {
+    "gates": {
+      "max_ece": {
+        "actual": 0.02981463930387438,
+        "passed": true,
+        "threshold": 0.1
+      },
+      "min_accepted_accuracy": {
+        "actual": 0.9242902208201893,
+        "passed": true,
+        "threshold": 0.85
+      },
+      "min_accuracy": {
+        "actual": 0.7652671755725191,
+        "passed": true,
+        "threshold": 0.6
+      },
+      "min_coverage": {
+        "actual": 0.6049618320610687,
+        "passed": true,
+        "threshold": 0.2
+      },
+      "min_macro_f1": {
+        "actual": 0.7289548049324832,
+        "passed": true,
+        "threshold": 0.5
+      }
+    },
+    "qualified": true,
+    "requirements": {
+      "max_ece": 0.1,
+      "min_accepted_accuracy": 0.85,
+      "min_accuracy": 0.6,
+      "min_coverage": 0.2,
+      "min_macro_f1": 0.5
+    }
+  },
+  "limitations": [
+    "Shared macOS ARM64 CPU host with concurrent unrelated Node/ML work: short loopback latency/rate observations are not isolated benchmarks, causal concurrency comparisons, capacity or SLO commitments.",
+    "Public reused single-organization corpus; regression quality, not fresh independent field holdout. Feature grouping does not establish temporal/semantic/organization independence.",
+    "Source author PII scrubbing description not independently audited; only four public CSVs reused; no upstream code/pickle/H5 executed.",
+    "No remote deployment, external customer, long-duration availability, GPU/modelprovider, Russian accuracy, broad OOD or tenant-isolation qualification.",
+    "RSS is sampled after phases, not peak memory. Startup/request/cleanup watchdogs are harness bounds, not SLOs.",
+    "Ephemeral key is owned-loopback only, excluded from argv/logs; environment secrecy against local privileged processes is not claimed."
+  ]
+}

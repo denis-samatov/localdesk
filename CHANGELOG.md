@@ -4,6 +4,14 @@ All notable changes to this project are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project uses
 [Semantic Versioning](https://semver.org/).
 
+## Unreleased
+
+### Added
+- A frozen local CPU/public-data operational pilot and replay harness: actual
+  authenticated HTTP, bounded load, restart, backup/restore, fail-closed corrupt
+  artifact checks and promotion/rollback. Synthetic checks, reused public quality
+  measurements and future external-pilot requirements are explicitly separated.
+
 ## [0.3.1] - 2026-10-13
 
 ### Added

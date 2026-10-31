@@ -66,6 +66,9 @@ rollback is another explicit pointer/version selection and restart.
 `python -m pytest tests/test_recovery_acceptance.py` performs a synthetic local
 backup/restore/rollback drill and rejects a corrupted model. This is an offline
 artifact-contract check; operators still need a target-machine restore/SLO drill.
+The [local CPU operational pilot](LOCAL_CPU_PILOT.md) additionally exercises real
+authenticated HTTP, bounded load, restart and recovery on licensed public data.
+Its local measurements do not define or satisfy a production SLO.
 Define domain acceptance thresholds before opening a fresh held-out set. Reused
 public benchmarks are regression evidence, not an independent field estimate.
 
